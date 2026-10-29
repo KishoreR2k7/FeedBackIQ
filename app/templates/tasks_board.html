@@ -1,0 +1,156 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Operational Task Board - {{ current_org.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
+                Workforce Execution
+            </span>
+            <span style="color: var(--text-light);">•</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">SLA-Enforced Autonomous Routing</span>
+        </div>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+            Operational Task Board
+        </h1>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Real-time corrective tasks dispatched directly to department leads and kitchen staff.
+        </p>
+    </div>
+
+    <!-- Filters Strip -->
+    <div class="glass-panel" style="padding: 0.5rem 0.85rem; border-radius: var(--radius-md);">
+        <form method="GET" action="/tasks" style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Department:</span>
+                <select name="department_id" class="form-control" style="font-size: 0.825rem; padding: 0.4rem 0.65rem; width: auto;" onchange="this.form.submit()">
+                    <option value="">All Departments</option>
+                    {% for d in departments %}
+                    <option value="{{ d.id }}" {% if filter_dept == d.id %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.35rem;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Priority:</span>
+                <select name="priority" class="form-control" style="font-size: 0.825rem; padding: 0.4rem 0.65rem; width: auto;" onchange="this.form.submit()">
+                    <option value="">All Priorities</option>
+                    <option value="P1" {% if filter_priority == 'P1' %}selected{% endif %}>P1 Critical</option>
+                    <option value="P2" {% if filter_priority == 'P2' %}selected{% endif %}>P2 High</option>
+                    <option value="P3" {% if filter_priority == 'P3' %}selected{% endif %}>P3 Medium</option>
+                    <option value="P4" {% if filter_priority == 'P4' %}selected{% endif %}>P4 Low</option>
+                </select>
+            </div>
+
+            <a href="/tasks" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.75rem;">
+                Reset
+            </a>
+        </form>
+    </div>
+</div>
+
+<!-- 4-Column Modern Kanban Board -->
+<div class="kanban-board">
+    <!-- Column 1: Pending -->
+    <div class="kanban-col">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.15rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--border);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted);"></div>
+                <span style="font-weight: 800; font-size: 0.925rem; color: var(--text-main);">Pending Triage</span>
+            </div>
+            <span style="background: var(--bg-surface); font-weight: 800; font-size: 0.775rem; color: var(--text-main); padding: 0.2rem 0.6rem; border-radius: var(--radius-full); border: 1px solid var(--border); box-shadow: var(--shadow-xs);">
+                {{ pending_tasks | length }}
+            </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            {% for t in pending_tasks %}
+                {% include "partials/task_card.html" %}
+            {% else %}
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.825rem; padding: 3rem 1rem; border: 2px dashed var(--border); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem; opacity: 0.6;">⏳</div>
+                    <div>No pending tasks</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">New items will appear here</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Column 2: In Progress -->
+    <div class="kanban-col">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.15rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--primary);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary);"></div>
+                <span style="font-weight: 800; font-size: 0.925rem; color: var(--primary);">Active Fixing</span>
+            </div>
+            <span style="background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 0.775rem; padding: 0.2rem 0.6rem; border-radius: var(--radius-full);">
+                {{ in_progress_tasks | length }}
+            </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            {% for t in in_progress_tasks %}
+                {% include "partials/task_card.html" %}
+            {% else %}
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.825rem; padding: 3rem 1rem; border: 2px dashed var(--border); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem; opacity: 0.6;">⚙️</div>
+                    <div>No active work items</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">Assign a pending task to begin</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Column 3: Resolved (Awaiting Audit) -->
+    <div class="kanban-col">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.15rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--warning);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--warning);"></div>
+                <span style="font-weight: 800; font-size: 0.925rem; color: var(--warning);">Awaiting Verification</span>
+            </div>
+            <span style="background: var(--warning-bg); color: var(--warning); font-weight: 800; font-size: 0.775rem; padding: 0.2rem 0.6rem; border-radius: var(--radius-full);">
+                {{ resolved_tasks | length }}
+            </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            {% for t in resolved_tasks %}
+                {% include "partials/task_card.html" %}
+            {% else %}
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.825rem; padding: 3rem 1rem; border: 2px dashed var(--border); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem; opacity: 0.6;">📝</div>
+                    <div>Queue clean</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">No tasks awaiting quality audit</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Column 4: Verified Closed -->
+    <div class="kanban-col">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.15rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--success);">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--success);"></div>
+                <span style="font-weight: 800; font-size: 0.925rem; color: var(--success);">Audited & Closed</span>
+            </div>
+            <span style="background: var(--success-bg); color: var(--success); font-weight: 800; font-size: 0.775rem; padding: 0.2rem 0.6rem; border-radius: var(--radius-full);">
+                {{ verified_tasks | length }}
+            </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            {% for t in verified_tasks %}
+                {% include "partials/task_card.html" %}
+            {% else %}
+                <div style="text-align: center; color: var(--text-muted); font-size: 0.825rem; padding: 3rem 1rem; border: 2px dashed var(--border); border-radius: var(--radius-md);">
+                    <div style="font-size: 1.75rem; margin-bottom: 0.5rem; opacity: 0.6;">🛡️</div>
+                    <div>No verified history yet</div>
+                    <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">Audited fixes will archive here</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Departments & SLAs - {{ current_org.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
+                Facility Architecture
+            </span>
+            <span style="color: var(--text-light);">•</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">SLA-Enforced Ground Operations</span>
+        </div>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+            Departments & Service Level Agreements
+        </h1>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Configured resolution turnaround deadlines and staff assignments mapped per dining sector.
+        </p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem;">
+    {% for dept in departments %}
+    {% set m = dept_metrics.get(dept.id, {}) %}
+    <div class="glass-panel" style="padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; transition: var(--transition);">
+        <div>
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <div>
+                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; background: var(--primary-light); padding: 0.2rem 0.5rem; border-radius: var(--radius-xs);">
+                        CODE: {{ dept.code }}
+                    </span>
+                    <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-top: 0.4rem; letter-spacing: -0.01em;">
+                        {{ dept.name }}
+                    </h2>
+                </div>
+                <span class="badge {% if m.get('sla_compliance_pct', 100) >= 90 %}badge-positive{% else %}badge-warning{% endif %}" style="font-size: 0.775rem;">
+                    {{ m.get('sla_compliance_pct', 100) }}% SLA
+                </span>
+            </div>
+
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
+                {{ dept.description or 'Operational dining department.' }}
+            </p>
+
+            <!-- Department In-Charge Card -->
+            <div style="background: var(--bg-surface); padding: 0.85rem 1.15rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="avatar-pill avatar-sm" style="{% if not dept.in_charge_user %}background: var(--text-light);{% endif %}">
+                    {{ (dept.in_charge_user.full_name[:2] if dept.in_charge_user else 'UN') | upper }}
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <span style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block;">Department Lead</span>
+                    <strong style="font-size: 0.9rem; color: var(--text-main); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ dept.in_charge_user.full_name if dept.in_charge_user else 'Unassigned Supervisor' }}
+                    </strong>
+                    {% if dept.in_charge_user %}
+                    <span style="font-size: 0.75rem; color: var(--text-muted); display: block; font-family: var(--font-mono);">{{ dept.in_charge_user.email }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Code-Enforced SLA Targets (Rule 3) -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                    Resolution SLA Deadlines
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center;">
+                    <div style="background: var(--p1-bg); border: 1px solid var(--p1-border); padding: 0.5rem 0.25rem; border-radius: var(--radius-sm);">
+                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--p1-color); display: block;">P1 CRITICAL</span>
+                        <strong style="font-size: 0.95rem; font-weight: 800; color: var(--p1-color);">{{ dept.sla_hours_p1 }}h</strong>
+                    </div>
+                    <div style="background: var(--p2-bg); border: 1px solid var(--p2-border); padding: 0.5rem 0.25rem; border-radius: var(--radius-sm);">
+                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--p2-color); display: block;">P2 HIGH</span>
+                        <strong style="font-size: 0.95rem; font-weight: 800; color: var(--p2-color);">{{ dept.sla_hours_p2 }}h</strong>
+                    </div>
+                    <div style="background: var(--p3-bg); border: 1px solid var(--p3-border); padding: 0.5rem 0.25rem; border-radius: var(--radius-sm);">
+                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--p3-color); display: block;">P3 MEDIUM</span>
+                        <strong style="font-size: 0.95rem; font-weight: 800; color: var(--p3-color);">{{ dept.sla_hours_p3 }}h</strong>
+                    </div>
+                    <div style="background: var(--p4-bg); border: 1px solid var(--p4-border); padding: 0.5rem 0.25rem; border-radius: var(--radius-sm);">
+                        <span style="font-size: 0.7rem; font-weight: 800; color: var(--p4-color); display: block;">P4 LOW</span>
+                        <strong style="font-size: 0.95rem; font-weight: 800; color: var(--p4-color);">{{ dept.sla_hours_p4 }}h</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Stats Footer -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 1rem; font-size: 0.825rem; color: var(--text-muted);">
+            <div>
+                Open: <strong style="color: var(--text-main);">{{ m.get('open_tasks', 0) }}</strong> • Total: <strong style="color: var(--text-main);">{{ m.get('total_tasks', 0) }}</strong>
+            </div>
+            <a href="/tasks?department_id={{ dept.id }}" style="color: var(--primary); font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                View Tasks <span>→</span>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

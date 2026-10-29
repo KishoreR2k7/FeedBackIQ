@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Share Dining Feedback - {{ org.name }}{% endblock %}
+
+{% block content %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; background: radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.08) 0%, transparent 50%), radial-gradient(circle at 90% 90%, rgba(20, 184, 166, 0.08) 0%, transparent 50%);">
+    <div style="width: 100%; max-width: 540px;" class="animate-fade-in">
+        
+        <!-- Header Branding & Org Card -->
+        <div class="glass-panel" style="padding: 2.25rem 2rem; margin-bottom: 1.5rem; text-align: center; border-radius: var(--radius-xl);">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; border-radius: 18px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; margin-bottom: 1rem; box-shadow: 0 8px 24px -4px var(--primary-glow);">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+            </div>
+            
+            <h1 style="font-size: 1.65rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.025em; margin-bottom: 0.35rem;">
+                {{ org.name }}
+            </h1>
+            <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 420px; margin: 0 auto;">
+                {{ org.settings.get('tagline', 'How was your food and service today? Your feedback directly notifies our culinary and ops team in real-time.') }}
+            </p>
+
+            <div style="margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.25rem 0.75rem; background: var(--bg-subtle); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">
+                <span class="live-pulse"></span>
+                <span>Autonomous Ops Active</span>
+            </div>
+        </div>
+
+        <!-- Interactive Feedback Card -->
+        <div class="glass-panel" style="padding: 2.25rem 2rem; border-radius: var(--radius-xl);">
+            <form action="/f/{{ org.slug }}/submit-form" method="POST" id="feedbackForm">
+                <input type="hidden" name="channel" value="{{ channel }}">
+
+                <!-- Star Rating Experience -->
+                <div class="star-rating-box">
+                    <label style="font-size: 0.875rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+                        Overall Experience
+                    </label>
+                    <div class="star-rating-group">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5" title="5 stars">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" title="4 stars">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3" title="3 stars">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" title="2 stars">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" title="1 star">★</label>
+                    </div>
+                    <div id="ratingText" style="font-size: 0.9rem; font-weight: 700; color: var(--primary); min-height: 1.5rem; text-align: center;">
+                        Select rating to begin
+                    </div>
+                </div>
+
+                <!-- Meal Session Tabs -->
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label class="form-label">Meal Session</label>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
+                        {% for m, emoji in [('breakfast', '🌅'), ('lunch', '☀️'), ('snacks', '☕'), ('dinner', '🌙')] %}
+                        <label style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.6rem 0.25rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 700; text-transform: capitalize; cursor: pointer; transition: var(--transition);" class="meal-label">
+                            <input type="radio" name="meal_type" value="{{ m }}" style="display: none;" class="meal-radio">
+                            <span style="font-size: 1.1rem; margin-bottom: 0.15rem;">{{ emoji }}</span>
+                            <span>{{ m }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Quick Tags / Topic Chips -->
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label class="form-label">Quick Highlights / Grievances (Tap to add)</label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;" id="quickTags">
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Hot & Fresh Food 🍲')">🍲 Hot & Fresh</button>
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Great Taste ✨')">✨ Great Taste</button>
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Clean Dining Area 🧼')">🧼 Clean Dining</button>
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Slow Counter Service ⏱️')">⏱️ Long Wait</button>
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Food was Cold ❄️')">❄️ Food Was Cold</button>
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Unclean Tables / Trays ⚠️')">⚠️ Dirty Tables</button>
+                        <button type="button" class="btn btn-secondary btn-sm quick-tag" onclick="appendTag('Courteous Staff 🤝')">🤝 Friendly Staff</button>
+                    </div>
+                </div>
+
+                <!-- Location / Counter -->
+                <div class="form-group">
+                    <label class="form-label" for="location_table">Table Number / Serving Counter</label>
+                    <input type="text" id="location_table" name="location_table" class="form-control" placeholder="e.g. Table 14, Main Hall Counter 2" value="{{ table or '' }}">
+                </div>
+
+                <!-- Feedback Comment -->
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.4rem;">
+                        <label class="form-label" for="raw_text" style="margin-bottom: 0;">Detailed Feedback *</label>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);" id="charCount">0 characters</span>
+                    </div>
+                    <textarea id="raw_text" name="raw_text" class="form-control" rows="4" placeholder="Tell our managers and chefs how we did, or what should be improved immediately..." required minlength="3" oninput="updateCharCount(this)"></textarea>
+                </div>
+
+                <!-- Contact Info Accordion -->
+                <details style="margin-bottom: 1.75rem; background: var(--bg-subtle); padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <summary style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: space-between;">
+                        <span>Optional: Resolution follow-up</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">(name / email / phone)</span>
+                    </summary>
+                    <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <input type="text" name="customer_name" class="form-control" placeholder="Your Name">
+                        <input type="text" name="customer_contact" class="form-control" placeholder="Email or Phone Number">
+                    </div>
+                </details>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="btn btn-primary btn-lg" style="width: 100%; justify-content: center; box-shadow: 0 4px 18px rgba(99, 102, 241, 0.42);">
+                    <span>Submit Dining Feedback</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .meal-label:has(input:checked) {
+        border-color: var(--primary);
+        background: var(--primary-light);
+        color: var(--primary);
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const ratingLabels = {
+        '5': '🤩 Outstanding Experience!',
+        '4': '🙂 Good & Tasty!',
+        '3': '😐 Average / Room for Improvement',
+        '2': '🙁 Unsatisfactory / Needs Attention',
+        '1': '😡 Terrible / Urgent Triage Needed'
+    };
+
+    document.querySelectorAll('.star-rating-group input').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const val = this.value;
+            const textEl = document.getElementById('ratingText');
+            textEl.textContent = ratingLabels[val] || '';
+            if (val <= 2) {
+                textEl.style.color = 'var(--danger)';
+            } else if (val == 3) {
+                textEl.style.color = 'var(--warning)';
+            } else {
+                textEl.style.color = 'var(--success)';
+            }
+        });
+    });
+
+    function appendTag(tagText) {
+        const textarea = document.getElementById('raw_text');
+        if (textarea.value.trim().length > 0) {
+            textarea.value += ' ' + tagText;
+        } else {
+            textarea.value = tagText;
+        }
+        updateCharCount(textarea);
+        textarea.focus();
+    }
+
+    function updateCharCount(el) {
+        document.getElementById('charCount').textContent = el.value.length + ' characters';
+    }
+</script>
+{% endblock %}

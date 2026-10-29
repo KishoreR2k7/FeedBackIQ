@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; min-height: 100vh;">
+    <!-- Top Navigation Bar -->
+    <header style="background: var(--bg-surface-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0.75rem 1.75rem; position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow-xs);">
+        <div style="display: flex; align-items: center; justify-content: space-between; max-width: 1440px; margin: 0 auto; width: 100%;">
+            
+            <!-- Brand & Current Org Context -->
+            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                <a href="/dashboard" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none;">
+                    <div style="width: 40px; height: 40px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="font-weight: 800; font-size: 1.15rem; color: var(--text-main); letter-spacing: -0.025em;">FeedbackIQ</span>
+                            <span style="font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.45rem; background: var(--primary-light); color: var(--primary); border-radius: var(--radius-full); text-transform: uppercase;">v2.0</span>
+                        </div>
+                        <div style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">Autonomous Food Ops</div>
+                    </div>
+                </a>
+
+                <!-- Org Switcher Badge -->
+                <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-subtle); padding: 0.4rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">{{ current_org.name }}</span>
+                    {% if current_user.is_superuser and all_orgs %}
+                    <form action="/switch-org" method="POST" style="margin: 0; display: inline;">
+                        <select name="target_org_id" onchange="this.form.submit()" style="font-size: 0.75rem; background: transparent; border: none; font-weight: 700; color: var(--primary); cursor: pointer; padding: 0.1rem;">
+                            {% for o in all_orgs %}
+                            <option value="{{ o.id }}" {% if o.id == current_org.id %}selected{% endif %}>Switch: {{ o.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <!-- Live Pipeline Indicator -->
+                <div class="badge" style="background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); display: none; @media(min-width: 900px){display: inline-flex;}">
+                    <span class="live-pulse"></span>
+                    <span>AI Operations Active</span>
+                </div>
+            </div>
+
+            <!-- User Status & Actions -->
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+                <a href="/f/{{ current_org.slug }}" target="_blank" class="btn btn-secondary btn-sm" title="View customer feedback portal">
+                    <span>📱 Public Portal</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+                <a href="/f/{{ current_org.slug }}/qr" target="_blank" class="btn btn-secondary btn-sm" title="Print table standee QR code">
+                    <span>🖨️ Standee QR</span>
+                </a>
+
+                <div style="display: flex; align-items: center; gap: 0.75rem; border-left: 1px solid var(--border); padding-left: 1rem;">
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="btn btn-secondary" style="padding: 0.45rem 0.65rem; border-radius: var(--radius-full);" title="Toggle Dark/Light Mode">
+                        🌓
+                    </button>
+
+                    <!-- User Pill -->
+                    <div style="display: flex; align-items: center; gap: 0.6rem;">
+                        <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; box-shadow: 0 2px 8px var(--primary-glow);">
+                            {{ (current_user.name or current_user.full_name or 'U')[:2] | upper }}
+                        </div>
+                        <div style="text-align: left; display: none; @media(min-width: 600px){display: block;}">
+                            <div style="font-size: 0.825rem; font-weight: 700; color: var(--text-main); line-height: 1.2;">{{ current_user.name or current_user.full_name }}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ current_user.role.name if current_user.role else 'Staff' }}</div>
+                        </div>
+                    </div>
+
+                    <a href="/logout" class="btn btn-subtle btn-sm" style="color: var(--danger);" title="Sign Out">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Secondary Nav Bar (Permission-Aware: Phase 1 Requirement 6) -->
+    <nav style="background: var(--bg-surface); border-bottom: 1px solid var(--border); padding: 0.4rem 1.75rem;">
+        <div style="display: flex; gap: 0.5rem; max-width: 1440px; margin: 0 auto; overflow-x: auto; width: 100%; padding-bottom: 0.2rem;">
+            {% if can(current_user, 'dashboard.view') %}
+            <a href="/dashboard" class="nav-tab {% if active_tab == 'dashboard' %}active{% endif %}" id="nav-dashboard">
+                <span>📊</span>
+                <span>Operations Overview</span>
+            </a>
+            {% endif %}
+
+            {% if can(current_user, 'feedback.view') %}
+            <a href="/feedback" class="nav-tab {% if active_tab == 'feedback' %}active{% endif %}" id="nav-feedback">
+                <span>💬</span>
+                <span>Live Feedback</span>
+            </a>
+            {% endif %}
+
+            {% if can(current_user, 'task.view_all') or can(current_user, 'task.view_dept') or can(current_user, 'task.view_own') %}
+            <a href="/tasks" class="nav-tab {% if active_tab == 'tasks' %}active{% endif %}" id="nav-tasks">
+                <span>📋</span>
+                <span>Operational Tasks</span>
+            </a>
+            {% endif %}
+
+            {% if can(current_user, 'dashboard.view') or can(current_user, 'feedback.view') %}
+            <a href="/recurring" class="nav-tab {% if active_tab == 'recurring' %}active{% endif %}" id="nav-recurring">
+                <span>🔁</span>
+                <span>Recurring Issues</span>
+            </a>
+            {% endif %}
+
+            {% if can(current_user, 'export') or can(current_user, 'dashboard.view') %}
+            <a href="/reports" class="nav-tab {% if active_tab == 'reports' %}active{% endif %}" id="nav-reports">
+                <span>📑</span>
+                <span>Executive Reports</span>
+            </a>
+            {% endif %}
+
+            {% if can(current_user, 'departments.manage') %}
+            <a href="/departments" class="nav-tab {% if active_tab == 'departments' %}active{% endif %}" id="nav-departments">
+                <span>🏢</span>
+                <span>Departments & SLAs</span>
+            </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main style="flex: 1; padding: 2rem 1.75rem; max-width: 1440px; margin: 0 auto; width: 100%;">
+        {% block dashboard_content %}{% endblock %}
+    </main>
+
+    <!-- Polished Footer -->
+    <footer style="border-top: 1px solid var(--border); padding: 1.25rem 1.75rem; background: var(--bg-surface-glass); text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+        <div style="max-width: 1440px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-weight: 700; color: var(--text-main);">FeedbackIQ</span>
+                <span>•</span>
+                <span>Autonomous Food-Service Operations System</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span>Deterministic Math Engine</span>
+                <span>•</span>
+                <span>Multi-Agent LangGraph Pipeline</span>
+                <span>•</span>
+                <span>Tenant Scoped (Rule 1)</span>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - FeedbackIQ Multi-Tenant Operations{% endblock %}
+
+{% block content %}
+<div class="public-container" style="max-width: 620px; margin: 3rem auto;">
+    <!-- Brand Header -->
+    <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; border-radius: 18px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; margin-bottom: 1rem; box-shadow: 0 8px 24px var(--primary-glow);">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+        </div>
+        <h1 style="font-size: 1.85rem; font-weight: 800; letter-spacing: -0.02em; color: var(--text-main); margin-bottom: 0.35rem;">
+            Onboard Your Dining Facility
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.925rem;">
+            Launch autonomous multi-agent quality control and operational routing
+        </p>
+    </div>
+
+    <!-- Glassmorphism Signup Card -->
+    <div class="glass-panel" style="padding: 2.5rem; box-shadow: var(--shadow-xl);">
+        {% if error %}
+        <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 0.85rem 1rem; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚠️</span> {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/signup" id="signup-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <!-- Organization Details Section -->
+            <div style="margin-bottom: 1.75rem;">
+                <div style="font-size: 0.775rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>🏢</span> 1. Organization & Facility Settings
+                </div>
+
+                <div class="form-group">
+                    <label for="org_name" class="form-label">Organization / Mess Name</label>
+                    <input type="text" id="org_name" name="org_name" class="form-control" placeholder="e.g. Apex Central Mess or Campus Bistro" required autofocus oninput="updateSlugPreview(this.value)">
+                </div>
+
+                <div class="form-group">
+                    <label for="org_slug" class="form-label">Public Feedback URL Slug</label>
+                    <div style="display: flex; align-items: center; gap: 0.35rem;">
+                        <span style="font-size: 0.85rem; color: var(--text-muted); font-family: var(--font-mono); background: var(--bg-subtle); padding: 0.75rem 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                            /f/
+                        </span>
+                        <input type="text" id="org_slug" name="org_slug" class="form-control" placeholder="apex-mess" style="font-family: var(--font-mono);" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Department Architecture Template</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+                        <label id="tpl-mess" style="border: 2px solid var(--primary); background: var(--primary-light); padding: 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 0.35rem; transition: var(--transition);" onclick="selectTemplate('college_mess')">
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <input type="radio" name="template_type" value="college_mess" checked style="accent-color: var(--primary);">
+                                <span style="font-weight: 800; font-size: 0.9rem; color: var(--text-main);">🎓 College Mess</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                                Kitchen, Housekeeping, Service, Quality & Safety, Management
+                            </span>
+                        </label>
+
+                        <label id="tpl-rest" style="border: 1px solid var(--border); background: var(--bg-surface); padding: 1rem; border-radius: var(--radius-md); cursor: pointer; display: flex; flex-direction: column; gap: 0.35rem; transition: var(--transition);" onclick="selectTemplate('restaurant')">
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                                <input type="radio" name="template_type" value="restaurant" style="accent-color: var(--primary);">
+                                <span style="font-weight: 800; font-size: 0.9rem; color: var(--text-main);">🍽️ Restaurant Chain</span>
+                            </div>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+                                Kitchen, Front of House, Packaging, Hygiene & Safety, Management
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Primary Admin User Section -->
+            <div style="margin-bottom: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                <div style="font-size: 0.775rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>👑</span> 2. Primary Facility Administrator Account
+                </div>
+
+                <div class="form-group">
+                    <label for="admin_name" class="form-label">Administrator Full Name</label>
+                    <input type="text" id="admin_name" name="admin_name" class="form-control" placeholder="e.g. Dr. Arthur Vance" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="admin_email" class="form-label">Administrator Work Email</label>
+                    <input type="email" id="admin_email" name="admin_email" class="form-control" placeholder="admin@organization.edu" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="admin_password" class="form-label">Master Password</label>
+                    <input type="password" id="admin_password" name="admin_password" class="form-control" placeholder="Minimum 8 characters" minlength="8" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.95rem; font-size: 1rem; font-weight: 800; justify-content: center;">
+                Launch Organization Dashboard →
+            </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+            Already have an organization?
+            <a href="/login" style="color: var(--primary); font-weight: 700; text-decoration: none;">Sign In</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function updateSlugPreview(val) {
+        const slugInput = document.getElementById('org_slug');
+        if (!slugInput.dataset.manual) {
+            slugInput.value = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        }
+    }
+    document.getElementById('org_slug').addEventListener('input', function() {
+        this.dataset.manual = "true";
+    });
+
+    function selectTemplate(tpl) {
+        const mess = document.getElementById('tpl-mess');
+        const rest = document.getElementById('tpl-rest');
+        if (tpl === 'college_mess') {
+            mess.style.borderColor = 'var(--primary)';
+            mess.style.background = 'var(--primary-light)';
+            rest.style.borderColor = 'var(--border)';
+            rest.style.background = 'var(--bg-surface)';
+        } else {
+            rest.style.borderColor = 'var(--primary)';
+            rest.style.background = 'var(--primary-light)';
+            mess.style.borderColor = 'var(--border)';
+            mess.style.background = 'var(--bg-surface)';
+        }
+    }
+</script>
+{% endblock %}

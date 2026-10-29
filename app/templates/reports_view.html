@@ -1,0 +1,145 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Executive Operations Reports - {{ current_org.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
+                Autonomous Intelligence
+            </span>
+            <span style="color: var(--text-light);">•</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Agent 5 Strategic Operational Synthesis</span>
+        </div>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+            Executive Operations Reports
+        </h1>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.2rem;">
+            High-level executive operational briefings synthesized autonomously from deterministic database metrics.
+        </p>
+    </div>
+
+    {% if can_generate %}
+    <form action="/reports/generate" method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
+        <select name="timeframe" class="form-control" style="font-size: 0.825rem; padding: 0.5rem 0.75rem; width: auto;">
+            <option value="Past 7 Days">Past 7 Days</option>
+            <option value="Past 30 Days">Past 30 Days</option>
+            <option value="Current Academic Term">Current Term</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.5rem 1rem;">
+            <span>✨ Generate Executive Synthesis</span>
+        </button>
+    </form>
+    {% endif %}
+</div>
+
+{% if success_msg %}
+<div style="background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success); padding: 0.85rem 1.25rem; border-radius: var(--radius-md); font-weight: 700; font-size: 0.875rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+    <span>✓</span> {{ success_msg }}
+</div>
+{% endif %}
+
+<!-- Latest Generated Report View -->
+{% if latest_report %}
+<div class="glass-panel" style="padding: 2.5rem; margin-bottom: 2rem; border-top: 6px solid var(--primary);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); background: var(--primary-light); padding: 0.2rem 0.65rem; border-radius: var(--radius-full); margin-bottom: 0.5rem;">
+                <span>📑</span> EXECUTIVE BRIEFING • {{ latest_report.timeframe }}
+            </div>
+            <h2 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+                {{ latest_report.title }}
+            </h2>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem;">
+                Organization: <strong style="color: var(--text-main);">{{ current_org.name }}</strong> • Prepared by FeedbackIQ Multi-Agent Intelligence Engine
+            </div>
+        </div>
+        <button onclick="window.print()" class="btn btn-secondary btn-sm" style="padding: 0.5rem 1rem;">
+            <span>🖨️ Export PDF / Print</span>
+        </button>
+    </div>
+
+    <!-- Quantitative Metrics Summary Strip (Rule 3) -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem;">
+        <div class="glass-panel" style="padding: 1.25rem; background: var(--bg-surface);">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.35rem;">Sample Volume</span>
+            <strong style="font-size: 1.5rem; font-weight: 800; color: var(--text-main);">{{ latest_report.kpis.total_feedback }}</strong>
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.15rem;">Validated Feedbacks</span>
+        </div>
+        <div class="glass-panel" style="padding: 1.25rem; background: var(--bg-surface);">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.35rem;">Customer Satisfaction</span>
+            <strong style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">{{ latest_report.kpis.avg_rating }}</strong>
+            <span style="font-size: 0.75rem; color: #f59e0b; display: block; margin-top: 0.15rem;">★ Out of 5.0 Stars</span>
+        </div>
+        <div class="glass-panel" style="padding: 1.25rem; background: var(--bg-surface);">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.35rem;">Net Sentiment Score</span>
+            <strong style="font-size: 1.5rem; font-weight: 800; color: {% if latest_report.kpis.net_sentiment_score >= 0 %}var(--success){% else %}var(--danger){% endif %};">
+                {{ latest_report.kpis.net_sentiment_score }}
+            </strong>
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.15rem;">Net Sentiment Scale</span>
+        </div>
+        <div class="glass-panel" style="padding: 1.25rem; background: var(--bg-surface);">
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 0.35rem;">SLA Resolution Rate</span>
+            <strong style="font-size: 1.5rem; font-weight: 800; color: var(--success);">{{ latest_report.kpis.sla_compliance_pct }}%</strong>
+            <span style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-top: 0.15rem;">On-time resolution</span>
+        </div>
+    </div>
+
+    <!-- Executive Narrative -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.45rem;">
+            <span>📋</span> Executive Summary
+        </h3>
+        <div style="font-size: 1.025rem; color: var(--text-main); line-height: 1.75; background: var(--bg-subtle); padding: 1.5rem; border-radius: var(--radius-md); border-left: 4px solid var(--primary);">
+            {{ latest_report.executive_summary }}
+        </div>
+    </div>
+
+    <!-- Highlights & Strategic Recommendations Grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+        <!-- Operational Highlights -->
+        <div class="glass-panel" style="padding: 1.5rem; background: var(--bg-surface);">
+            <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: #f59e0b;">🌟</span> Key Operational Highlights
+            </h4>
+            <ul style="padding-left: 1.25rem; font-size: 0.9rem; color: var(--text-main); line-height: 1.7;">
+                {% for h in latest_report.highlights %}
+                <li style="margin-bottom: 0.65rem;">{{ h }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Preventive Recommendations -->
+        <div class="glass-panel" style="padding: 1.5rem; background: var(--bg-surface);">
+            <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--primary);">🎯</span> Strategic Preventive Recommendations
+            </h4>
+            <ul style="padding-left: 1.25rem; font-size: 0.9rem; color: var(--text-main); line-height: 1.7;">
+                {% for rec in latest_report.recommendations %}
+                <li style="margin-bottom: 0.65rem;">{{ rec }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="glass-panel" style="padding: 4rem 2rem; text-align: center;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📑</div>
+    <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.4rem;">
+        No Executive Reports Synthesized Yet
+    </h3>
+    <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 520px; margin: 0 auto 1.5rem auto;">
+        Trigger Agent 5 to synthesize a structured operations briefing covering customer sentiment distribution, SLA benchmarks, and strategic corrective plans.
+    </p>
+    {% if can_generate %}
+    <form action="/reports/generate" method="POST" style="display: inline-block;">
+        <input type="hidden" name="timeframe" value="Past 7 Days">
+        <button type="submit" class="btn btn-primary">
+            <span>✨ Generate First Executive Synthesis</span>
+        </button>
+    </form>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

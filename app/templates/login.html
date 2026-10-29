@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - FeedbackIQ Autonomous Dining Operations{% endblock %}
+
+{% block content %}
+<div class="public-container" style="max-width: 460px; margin: 3.5rem auto;">
+    <div class="glass-panel" style="padding: 2.75rem 2.25rem; box-shadow: var(--shadow-xl);">
+        <!-- Brand Header -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; width: 62px; height: 62px; border-radius: 18px; background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; margin-bottom: 1rem; box-shadow: 0 8px 24px var(--primary-glow);">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+            </div>
+            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+                FeedbackIQ Portal
+            </h1>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Autonomous Multi-Agent Dining Quality Operations
+            </p>
+        </div>
+
+        {% if error %}
+        <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 0.85rem 1rem; border-radius: var(--radius-md); font-size: 0.85rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚠️</span> {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/login" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+            <div class="form-group">
+                <label class="form-label" for="email">Work Email Address</label>
+                <input type="email" id="email" name="email" class="form-control" placeholder="admin@apexmess.com" required value="admin@apexmess.com">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+                    <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
+                </div>
+                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required value="AdminPass123!">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.95rem;">
+                Sign In to Operations Console →
+            </button>
+            <div style="margin-top: 1.25rem; text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+                Need to onboard a facility? 
+                <a href="/signup" style="color: var(--primary); font-weight: 700; text-decoration: none;">Create an organization</a>
+            </div>
+        </form>
+
+        <!-- Fast Demo Credentials Quick Access -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; text-align: center;">
+                ⚡ Fast Demo Sign-In
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <button type="button" onclick="fillCreds('admin@apexmess.com', 'AdminPass123!')" class="btn btn-secondary" style="padding: 0.55rem 0.85rem; font-size: 0.8rem; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; text-align: left;">
+                        <span>👑</span>
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-main);">Facility Administrator</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">Full operational & AI control</div>
+                        </div>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 0.725rem; color: var(--primary);">admin@apexmess.com</span>
+                </button>
+
+                <button type="button" onclick="fillCreds('chef@apexmess.com', 'StaffPass123!')" class="btn btn-secondary" style="padding: 0.55rem 0.85rem; font-size: 0.8rem; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; text-align: left;">
+                        <span>🍳</span>
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-main);">Head Chef</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">Kitchen Lead & Task Resolver</div>
+                        </div>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 0.725rem; color: var(--primary);">chef@apexmess.com</span>
+                </button>
+
+                <button type="button" onclick="fillCreds('hygiene@apexmess.com', 'StaffPass123!')" class="btn btn-secondary" style="padding: 0.55rem 0.85rem; font-size: 0.8rem; justify-content: space-between; width: 100%;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; text-align: left;">
+                        <span>🧼</span>
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-main);">Hygiene Supervisor</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">Sanitation & Quality Lead</div>
+                        </div>
+                    </div>
+                    <span style="font-family: var(--font-mono); font-size: 0.725rem; color: var(--primary);">hygiene@apexmess.com</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function fillCreds(email, password) {
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = password;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,63 @@
+# Environment variables (NEVER commit secrets or real credentials)
+.env
+.env.*
+!.env.example
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# IDEs & Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+*.sublime-project
+
+# Operating System files
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Database & SQLite files
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs & temporary files
+*.log
+logs/
+*.tmp
+*.bak
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/

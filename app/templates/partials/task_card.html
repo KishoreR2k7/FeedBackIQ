@@ -1,0 +1,104 @@
+<div class="glass-panel" style="padding: 1.15rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm); position: relative; background: var(--bg-surface); border-radius: var(--radius-md); transition: var(--transition); border-left: 4px solid {% if t.priority == 'P1' %}var(--p1-color){% elif t.priority == 'P2' %}var(--p2-color){% elif t.priority == 'P3' %}var(--p3-color){% else %}var(--p4-color){% endif %};">
+    <!-- Header: Priority + Department -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+        <span class="badge badge-{{ t.priority | lower }}">{{ t.priority }}</span>
+        <span style="font-size: 0.725rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; background: var(--bg-subtle); padding: 0.2rem 0.5rem; border-radius: var(--radius-xs);">
+            {{ t.department.name.split('&')[0] }}
+        </span>
+    </div>
+
+    <!-- Title & Description -->
+    <h3 style="font-size: 0.925rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem; line-height: 1.35;">
+        {{ t.title }}
+    </h3>
+    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.45; margin-bottom: 0.85rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+        {{ t.description }}
+    </p>
+
+    <!-- SLA Countdown Clock Badge -->
+    <div style="margin-bottom: 0.85rem;">
+        {% if t.status in ['resolved', 'verified'] %}
+            {% if t.sla_breached %}
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; font-weight: 700; color: var(--danger); background: var(--danger-bg); border: 1px solid var(--danger-border); padding: 0.25rem 0.55rem; border-radius: var(--radius-full);">
+                <span>⚠️</span> SLA Breached
+            </span>
+            {% else %}
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; font-weight: 700; color: var(--success); background: var(--success-bg); border: 1px solid var(--success-border); padding: 0.25rem 0.55rem; border-radius: var(--radius-full);">
+                <span>✓</span> Resolved on Time
+            </span>
+            {% endif %}
+        {% else %}
+            {% if t.is_overdue %}
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; font-weight: 700; color: var(--danger); background: var(--danger-bg); border: 1px solid var(--danger-border); padding: 0.25rem 0.55rem; border-radius: var(--radius-full);">
+                <span class="live-pulse" style="--success: var(--danger);"></span>
+                <span>🚨 Overdue ({{ (t.hours_remaining | abs) }}h)</span>
+            </span>
+            {% else %}
+            <span style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.725rem; font-weight: 600; color: var(--text-main); background: var(--bg-subtle); border: 1px solid var(--border); padding: 0.25rem 0.55rem; border-radius: var(--radius-full);">
+                <span>⏱️</span> {{ t.hours_remaining }}h remaining
+            </span>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Assignment Footer & Actions -->
+    <div style="border-top: 1px solid var(--border); padding-top: 0.75rem; font-size: 0.75rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                <div class="avatar-pill avatar-xs" style="{% if not t.assigned_to %}background: var(--text-light);{% endif %}">
+                    {{ (t.assigned_to.full_name[:2] if t.assigned_to else 'UN') | upper }}
+                </div>
+                <strong style="color: var(--text-main); font-size: 0.8rem;">
+                    {{ t.assigned_to.full_name if t.assigned_to else 'Unassigned' }}
+                </strong>
+            </div>
+
+            {% if t.feedback_id %}
+            <a href="/feedback/{{ t.feedback_id }}" style="font-size: 0.725rem; color: var(--primary); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.2rem;">
+                #{{ t.feedback_id }} <span>→</span>
+            </a>
+            {% endif %}
+        </div>
+
+        {% if t.status == 'pending' and can_assign %}
+        <!-- Quick Assign Form -->
+        <form action="/tasks/{{ t.id }}/assign" method="POST" style="margin-top: 0.5rem;">
+            <div style="display: flex; gap: 0.4rem;">
+                <select name="assigned_user_id" class="form-control" style="padding: 0.35rem 0.5rem; font-size: 0.75rem; border-radius: var(--radius-sm);">
+                    {% for u in staff_users %}
+                    <option value="{{ u.id }}">{{ u.full_name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;">
+                    Assign
+                </button>
+            </div>
+        </form>
+        {% elif t.status == 'in_progress' and can_resolve %}
+        <!-- Quick Resolve Form -->
+        <form action="/tasks/{{ t.id }}/resolve" method="POST" style="margin-top: 0.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <input type="text" name="resolution_notes" class="form-control" placeholder="Action taken to fix..." required style="padding: 0.35rem 0.55rem; font-size: 0.75rem; border-radius: var(--radius-sm);">
+                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.35rem 0.65rem; font-size: 0.75rem; background: var(--success); border-color: var(--success); box-shadow: none;">
+                    Mark Resolved ✓
+                </button>
+            </div>
+        </form>
+        {% elif t.status == 'resolved' and can_verify %}
+        <!-- Auditor Verification Form -->
+        <form action="/tasks/{{ t.id }}/verify" method="POST" style="margin-top: 0.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <input type="text" name="audit_notes" class="form-control" placeholder="Verification notes..." required style="padding: 0.35rem 0.55rem; font-size: 0.75rem; border-radius: var(--radius-sm);">
+                <div style="display: flex; gap: 0.4rem;">
+                    <button type="submit" name="audit_status" value="passed" class="btn btn-primary btn-sm" style="flex: 1; padding: 0.35rem 0.5rem; font-size: 0.75rem; background: var(--success); border-color: var(--success); box-shadow: none;">
+                        Pass Audit
+                    </button>
+                    <button type="submit" name="audit_status" value="failed" class="btn btn-danger btn-sm" style="flex: 1; padding: 0.35rem 0.5rem; font-size: 0.75rem; box-shadow: none;">
+                        Reopen
+                    </button>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,195 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Live Feedback Stream - {{ current_org.name }}{% endblock %}
+
+{% block dashboard_content %}
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span class="live-pulse"></span>
+            <span style="font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.08em;">
+                Live Ingestion Stream
+            </span>
+            <span style="color: var(--text-light);">•</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Multi-Agent Autonomous Classification</span>
+        </div>
+        <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); letter-spacing: -0.02em;">
+            Customer Feedback Stream
+        </h1>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Continuous dining feedback automatically processed, classified, and mapped to departments.
+        </p>
+    </div>
+
+    <div style="display: flex; gap: 0.65rem; align-items: center;">
+        <a href="/f/{{ current_org.slug }}/qr" target="_blank" class="btn btn-secondary btn-sm">
+            <span>📱 Table QR Standee</span>
+        </a>
+        <a href="/f/{{ current_org.slug }}" target="_blank" class="btn btn-primary btn-sm">
+            <span>+ Test Public Submission</span>
+        </a>
+    </div>
+</div>
+
+<!-- Elite Filter Bar -->
+<div class="filter-bar-container" style="margin-bottom: 1.5rem;">
+    <form method="GET" action="/feedback" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; width: 100%;">
+        <!-- Rating Filter -->
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Rating:</span>
+            <select name="rating" class="form-control" style="padding: 0.4rem 0.65rem; font-size: 0.825rem; width: auto;" onchange="this.form.submit()">
+                <option value="">All Ratings</option>
+                {% for r in [5, 4, 3, 2, 1] %}
+                <option value="{{ r }}" {% if filters.rating == r %}selected{% endif %}>{{ "★" * r }} ({{ r }} Star{{ 's' if r > 1 else '' }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Department Filter -->
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Department:</span>
+            <select name="department_id" class="form-control" style="padding: 0.4rem 0.65rem; font-size: 0.825rem; width: auto;" onchange="this.form.submit()">
+                <option value="">All Departments</option>
+                {% for d in departments %}
+                <option value="{{ d.id }}" {% if filters.department_id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Sentiment Filter -->
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Sentiment:</span>
+            <select name="sentiment" class="form-control" style="padding: 0.4rem 0.65rem; font-size: 0.825rem; width: auto;" onchange="this.form.submit()">
+                <option value="">All Sentiments</option>
+                <option value="positive" {% if filters.sentiment == 'positive' %}selected{% endif %}>Positive</option>
+                <option value="neutral" {% if filters.sentiment == 'neutral' %}selected{% endif %}>Neutral</option>
+                <option value="negative" {% if filters.sentiment == 'negative' %}selected{% endif %}>Negative</option>
+                <option value="critical" {% if filters.sentiment == 'critical' %}selected{% endif %}>Critical</option>
+            </select>
+        </div>
+
+        <!-- Urgency Filter -->
+        <div style="display: flex; align-items: center; gap: 0.35rem;">
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Urgency:</span>
+            <select name="urgency" class="form-control" style="padding: 0.4rem 0.65rem; font-size: 0.825rem; width: auto;" onchange="this.form.submit()">
+                <option value="">All Urgencies</option>
+                <option value="P1" {% if filters.urgency == 'P1' %}selected{% endif %}>P1 - Immediate</option>
+                <option value="P2" {% if filters.urgency == 'P2' %}selected{% endif %}>P2 - High</option>
+                <option value="P3" {% if filters.urgency == 'P3' %}selected{% endif %}>P3 - Medium</option>
+                <option value="P4" {% if filters.urgency == 'P4' %}selected{% endif %}>P4 - Low</option>
+            </select>
+        </div>
+
+        <a href="/feedback" class="btn btn-secondary btn-sm" style="margin-left: auto; padding: 0.4rem 0.85rem;">
+            Clear Filters
+        </a>
+    </form>
+</div>
+
+<!-- Modern Feedback Table -->
+<div class="table-wrapper">
+    {% if feedbacks %}
+    <div style="overflow-x: auto;">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Record</th>
+                    <th style="width: 140px;">Rating</th>
+                    <th>Customer Feedback & Context</th>
+                    <th>Department</th>
+                    <th>Sentiment</th>
+                    <th>Urgency</th>
+                    <th>Origin</th>
+                    <th>Submitted</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in feedbacks %}
+                <tr>
+                    <td>
+                        <span style="font-family: var(--font-mono); font-weight: 700; font-size: 0.825rem; color: var(--text-muted); background: var(--bg-subtle); padding: 0.2rem 0.45rem; border-radius: var(--radius-xs);">
+                            #{{ f.id }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.4rem;">
+                            <span style="color: #f59e0b; font-size: 1rem; letter-spacing: 0.05em;">
+                                {{ "★" * f.rating }}{{ "☆" * (5 - f.rating) }}
+                            </span>
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">
+                                ({{ f.rating }}.0)
+                            </span>
+                        </div>
+                    </td>
+                    <td style="max-width: 360px;">
+                        <div style="font-weight: 600; color: var(--text-main); line-height: 1.45; margin-bottom: 0.35rem;">
+                            "{{ f.raw_text }}"
+                        </div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; font-size: 0.725rem;">
+                            {% if f.meal_type %}
+                            <span style="background: var(--bg-subtle); color: var(--text-muted); padding: 0.15rem 0.45rem; border-radius: var(--radius-full); font-weight: 600; text-transform: capitalize;">
+                                🍽️ {{ f.meal_type }}
+                            </span>
+                            {% endif %}
+                            {% if f.customer_name %}
+                            <span style="color: var(--text-muted);">
+                                👤 {{ f.customer_name }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-weight: 700; font-size: 0.825rem; color: var(--text-main); background: var(--bg-subtle); padding: 0.25rem 0.6rem; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                            {{ f.department.name if f.department else (f.category | capitalize if f.category else 'General') }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if f.sentiment == 'positive' %}
+                        <span class="badge badge-positive">✓ Positive</span>
+                        {% elif f.sentiment == 'negative' %}
+                        <span class="badge badge-negative">✕ Negative</span>
+                        {% elif f.sentiment == 'critical' %}
+                        <span class="badge badge-negative" style="background: rgba(239,68,68,0.2); border-color: var(--danger);">🚨 Critical</span>
+                        {% else %}
+                        <span class="badge badge-neutral">● Neutral</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-{{ f.urgency | lower if f.urgency else 'p4' }}">
+                            {{ f.urgency or 'P4' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.775rem; color: var(--text-main); font-weight: 600;">
+                            {{ f.location_table or 'Main Dining' }}
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: capitalize;">
+                            {{ f.channel | replace('_', ' ') }}
+                        </div>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">
+                            {{ f.created_at.strftime('%b %d, %H:%M') }}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="/feedback/{{ f.id }}" class="btn btn-secondary btn-sm" style="font-size: 0.75rem; padding: 0.35rem 0.65rem;">
+                            Details <span>→</span>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="padding: 4rem 2rem; text-align: center; color: var(--text-muted);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.6;">🔍</div>
+        <div style="font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 0.25rem;">No Feedback Records Found</div>
+        <div style="font-size: 0.85rem; max-width: 400px; margin: 0 auto 1.25rem auto;">No customer feedback matched your selected filter criteria. Try adjusting or clearing your filters.</div>
+        <a href="/feedback" class="btn btn-secondary btn-sm">Clear Filters</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

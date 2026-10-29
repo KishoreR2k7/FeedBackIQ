@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Tabletop QR Standee - {{ org.name }}{% endblock %}
+
+{% block head %}
+<style>
+    @media print {
+        body { 
+            background: white !important; 
+            color: black !important;
+        }
+        .no-print { 
+            display: none !important; 
+        }
+        .standee-container {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .standee-card { 
+            box-shadow: none !important; 
+            border: 2px solid #000 !important;
+            background: white !important;
+            color: black !important;
+            page-break-inside: avoid;
+        }
+        .standee-card * {
+            color: black !important;
+        }
+        .standee-card .badge-print {
+            border: 1px solid #000 !important;
+            background: #eee !important;
+            color: #000 !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="public-container standee-container" style="max-width: 480px; margin: 2rem auto;">
+    <div class="no-print" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="/f/{{ org.slug }}" class="btn btn-secondary btn-sm">
+            <span>← Open Feedback Form</span>
+        </a>
+        <button onclick="window.print()" class="btn btn-primary btn-sm">
+            <span>🖨️ Print Acrylic Standee</span>
+        </button>
+    </div>
+
+    <!-- Realistic Printable Acrylic Table Standee -->
+    <div class="glass-panel acrylic-standee standee-card" style="padding: 2.75rem 2.25rem; text-align: center; border: 2px solid var(--border);">
+        <div class="badge-print" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.775rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; color: var(--primary); background: var(--primary-light); padding: 0.35rem 0.85rem; border-radius: var(--radius-full); margin-bottom: 1rem;">
+            <span>🍽️</span> Scan & Rate Your Meal
+        </div>
+        
+        <h1 style="font-size: 1.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.35rem; letter-spacing: -0.02em;">
+            {{ org.name }}
+        </h1>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2rem;">
+            {{ org.settings.get('tagline', 'Direct Feedback to Kitchen & Management') }}
+        </p>
+
+        <!-- QR Code Frame with Glass Sheen -->
+        <div style="background: #ffffff; padding: 1.5rem; border-radius: 20px; display: inline-block; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05); margin-bottom: 1.75rem;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ feedback_url | urlencode }}&format=svg" alt="Scan QR Code to rate your experience" width="220" height="220" style="display: block; width: 220px; height: 220px;">
+        </div>
+
+        <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+            Point your mobile camera at the code
+        </div>
+        <div style="font-size: 0.775rem; color: var(--text-muted); font-family: var(--font-mono); word-break: break-all; max-width: 380px; margin: 0 auto;">
+            {{ feedback_url }}
+        </div>
+
+        <div style="margin-top: 2.25rem; padding-top: 1.25rem; border-top: 1px dashed var(--border); font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+            <span>⚡ Powered by</span>
+            <strong style="color: var(--text-main);">FeedbackIQ</strong>
+            <span>Autonomous Dining Engine</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

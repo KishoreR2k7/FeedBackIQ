@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FeedbackIQ - Autonomous AI Operations & Feedback Intelligence for Campus Messes, Restaurants, and Cafeterias">
+    <title>{% block title %}FeedbackIQ - Autonomous Dining Operations{% endblock %}</title>
+    
+    <!-- Modern Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>">
+    
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    <script>
+        // Dark / Light Mode Sync
+        const currentTheme = localStorage.getItem('fiq_theme') || 
+            (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        function toggleTheme() {
+            const active = document.documentElement.getAttribute('data-theme');
+            const target = active === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            localStorage.setItem('fiq_theme', target);
+            
+            // Dispatch event for chart re-theming if needed
+            window.dispatchEvent(new Event('themechange'));
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

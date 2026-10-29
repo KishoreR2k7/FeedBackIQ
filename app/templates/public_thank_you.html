@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Received - {{ org.name }}{% endblock %}
+
+{% block content %}
+<div class="public-container" style="max-width: 500px; margin: 4rem auto;">
+    <div class="glass-panel" style="padding: 3rem 2.25rem; text-align: center; box-shadow: var(--shadow-xl);">
+        {% if sentiment in ['critical', 'negative'] %}
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: var(--danger-bg); border: 2px solid var(--danger-border); color: var(--danger); margin-bottom: 1.5rem; box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+        </div>
+        <h1 style="font-size: 1.65rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+            Priority Resolution Dispatched
+        </h1>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
+            We apologize that your meal did not meet expectations. FeedbackIQ's AI pipeline has triaged your report as 
+            <span class="badge badge-negative" style="font-size: 0.75rem; vertical-align: middle;">{{ sentiment | upper }}</span> 
+            and dispatched an immediate SLA-enforced corrective task to the dining supervisor.
+        </p>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-around;">
+            <div>
+                <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Department</div>
+                <strong style="font-size: 0.875rem; color: var(--text-main);">Kitchen & Operations</strong>
+            </div>
+            <div style="height: 30px; width: 1px; background: var(--border);"></div>
+            <div>
+                <div style="font-size: 0.725rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Status</div>
+                <strong style="font-size: 0.875rem; color: var(--danger);">Task Assigned ⏱️</strong>
+            </div>
+        </div>
+        {% else %}
+        <div style="display: inline-flex; align-items: center; justify-content: center; width: 72px; height: 72px; border-radius: 50%; background: var(--success-bg); border: 2px solid var(--success-border); color: var(--success); margin-bottom: 1.5rem; box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        <h1 style="font-size: 1.65rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+            Thank You for Dining with Us!
+        </h1>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+            Your feedback directly informs today's kitchen preparation and customer service standards at <strong>{{ org.name }}</strong>.
+        </p>
+        {% endif %}
+
+        <div style="padding: 0.85rem; background: var(--bg-subtle); border-radius: var(--radius-md); font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.75rem; border: 1px solid var(--border);">
+            Verified via <span style="font-family: var(--font-mono); font-weight: 700; color: var(--text-main);">FeedbackIQ Autonomous Engine</span>
+        </div>
+
+        <a href="/f/{{ org.slug }}" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">
+            Submit Another Response
+        </a>
+    </div>
+</div>
+{% endblock %}
