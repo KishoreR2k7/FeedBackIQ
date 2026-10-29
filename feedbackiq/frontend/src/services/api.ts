@@ -249,5 +249,179 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify(config),
     }),
+
+  // Tasks & Corrective Action Recommendations (Implementation 3)
+  getTasks: (
+    params: {
+      status?: string;
+      approval_status?: string;
+      risk_level?: string;
+      responsible_role?: string;
+      assignee_id?: string;
+      item?: string;
+      issue_category?: string;
+      date_from?: string;
+      date_to?: string;
+      limit?: number;
+      offset?: number;
+    } = {},
+    orgId?: string
+  ): Promise<import('../types').ActionTask[]> => {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.approval_status) query.set('approval_status', params.approval_status);
+    if (params.risk_level) query.set('risk_level', params.risk_level);
+    if (params.responsible_role) query.set('responsible_role', params.responsible_role);
+    if (params.assignee_id) query.set('assignee_id', params.assignee_id);
+    if (params.item) query.set('item', params.item);
+    if (params.issue_category) query.set('issue_category', params.issue_category);
+    if (params.date_from) query.set('date_from', params.date_from);
+    if (params.date_to) query.set('date_to', params.date_to);
+    if (params.limit) query.set('limit', params.limit.toString());
+    if (params.offset) query.set('offset', params.offset.toString());
+
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').ActionTask[]>(`/api/v1/tasks?${query.toString()}`, { headers });
+  },
+
+  generateTasks: (orgId?: string): Promise<import('../types').ActionTask[]> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').ActionTask[]>('/api/v1/tasks/generate', {
+      method: 'POST',
+      headers,
+    });
+  },
+
+  getTask: (taskId: string, orgId?: string): Promise<import('../types').ActionTask> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').ActionTask>(`/api/v1/tasks/${taskId}`, { headers });
+  },
+
+  approveTask: (
+    taskId: string,
+    body: {
+      approved: boolean;
+      rejection_reason?: string;
+      assignee_id?: string;
+      assignee_name?: string;
+      due_date?: string;
+    },
+    userRole = 'org_admin',
+    orgId?: string
+  ): Promise<import('../types').ActionTask> => {
+    const headers: Record<string, string> = {
+      'X-User-Role': userRole,
+    };
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').ActionTask>(`/api/v1/tasks/${taskId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers,
+    });
+  },
+
+  assignTask: (
+    taskId: string,
+    body: {
+      assignee_id: string;
+      assignee_name: string;
+      due_date?: string;
+    },
+    userRole = 'org_admin',
+    orgId?: string
+  ): Promise<import('../types').ActionTask> => {
+    const headers: Record<string, string> = {
+      'X-User-Role': userRole,
+    };
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').ActionTask>(`/api/v1/tasks/${taskId}/assign`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers,
+    });
+  },
+
+  updateTaskStatus: (
+    taskId: string,
+    body: {
+      status: string;
+      completion_notes?: string;
+    },
+    userRole = 'staff',
+    orgId?: string
+  ): Promise<import('../types').ActionTask> => {
+    const headers: Record<string, string> = {
+      'X-User-Role': userRole,
+    };
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').ActionTask>(`/api/v1/tasks/${taskId}/status`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      headers,
+    });
+  },
+
+  verifyTask: (
+    taskId: string,
+    windowDays = 7,
+    orgId?: string
+  ): Promise<import('../types').VerificationResult> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').VerificationResult>(
+      `/api/v1/tasks/${taskId}/verify?window_days=${windowDays}`,
+      {
+        method: 'POST',
+        headers,
+      }
+    );
+  },
+
+  // In-App Notifications
+  getNotifications: (
+    params: {
+      is_read?: boolean;
+      limit?: number;
+    } = {},
+    orgId?: string
+  ): Promise<import('../types').NotificationItem[]> => {
+    const query = new URLSearchParams();
+    if (params.is_read !== undefined) query.set('is_read', params.is_read.toString());
+    if (params.limit) query.set('limit', params.limit.toString());
+
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').NotificationItem[]>(`/api/v1/notifications?${query.toString()}`, {
+      headers,
+    });
+  },
+
+  markNotificationRead: (
+    notificationId: string,
+    orgId?: string
+  ): Promise<{ status: string; message: string }> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<{ status: string; message: string }>(
+      `/api/v1/notifications/${notificationId}/read`,
+      {
+        method: 'POST',
+        headers,
+      }
+    );
+  },
 };
+
 

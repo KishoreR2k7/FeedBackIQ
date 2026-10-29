@@ -7,6 +7,7 @@ import { IngestionPanel } from './components/IngestionPanel';
 import { FeedbackListView } from './components/FeedbackListView';
 import { TopicTrendView } from './components/TopicTrendView';
 import { PrioritizedIssuesView } from './components/PrioritizedIssuesView';
+import { PrioritizedActionBoard } from './components/PrioritizedActionBoard';
 import { LoadingState } from './components/LoadingState';
 import { ErrorAlert } from './components/ErrorAlert';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -188,8 +189,8 @@ export const App: React.FC = () => {
                             FeedbackIQ Architecture Roadmap
                           </h3>
                         </div>
-                        <span className="text-xs text-indigo-400 font-mono font-semibold">
-                          Phase 2 Active
+                        <span className="text-xs text-emerald-400 font-mono font-semibold">
+                          Implementation 3 Active
                         </span>
                       </div>
 
@@ -199,7 +200,7 @@ export const App: React.FC = () => {
                             <span>Phase 0: Foundation</span>
                             <ShieldCheck className="w-4 h-4" />
                           </div>
-                          <p className="text-xs text-slate-300 font-medium">Core Monorepo & Multi-Tenancy</p>
+                          <p className="text-xs text-slate-300 font-medium">Core Monorepo &amp; Multi-Tenancy</p>
                           <p className="text-[11px] text-slate-400 mt-1">
                             FastAPI, PostgreSQL 16 (Docker), SQLAlchemy async, Alembic, React UI shell.
                           </p>
@@ -207,34 +208,34 @@ export const App: React.FC = () => {
 
                         <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/30">
                           <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 mb-2">
-                            <span>Phase 1: Ingestion & NLP</span>
+                            <span>Phase 1: Ingestion &amp; NLP</span>
                             <Database className="w-4 h-4" />
                           </div>
-                          <p className="text-xs text-slate-300 font-medium">Data Pipeline & Safety Agent</p>
+                          <p className="text-xs text-slate-300 font-medium">Data Pipeline &amp; Safety Agent</p>
                           <p className="text-[11px] text-slate-400 mt-1">
-                            CSV Upload, Zomato mapping, synthetic scenarios, LangChain Aspect Analysis & Rule 9 Safety.
+                            CSV Upload, Zomato mapping, synthetic scenarios, LangChain Aspect Analysis &amp; Rule 9 Safety.
                           </p>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-indigo-500/50 ring-1 ring-indigo-500/20">
-                          <div className="flex items-center justify-between text-xs font-semibold text-indigo-300 mb-2">
-                            <span>Phase 2: Recurrence & Trends</span>
+                        <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/30">
+                          <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 mb-2">
+                            <span>Phase 2: Recurrence Intelligence</span>
                             <Cpu className="w-4 h-4" />
                           </div>
-                          <p className="text-xs text-slate-300 font-medium">Intelligence & Priority Engine</p>
+                          <p className="text-xs text-slate-300 font-medium">Intelligence &amp; Priority Engine</p>
                           <p className="text-[11px] text-slate-400 mt-1">
-                            SQL/Python fact trends, Recurrence Reasoning Agent, deterministic priority formula & Rule 9 override.
+                            Deterministic priority formula (Severity + Recurrence + Frequency + Impact) &amp; Rule 9 override.
                           </p>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-950/40 border border-slate-800">
-                          <div className="flex items-center justify-between text-xs font-semibold text-amber-400 mb-2">
-                            <span>Phase 3 & 4: Actions</span>
+                        <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/50 ring-1 ring-emerald-500/20">
+                          <div className="flex items-center justify-between text-xs font-semibold text-emerald-300 mb-2">
+                            <span>Phase 3: CAPA Actions</span>
                             <Network className="w-4 h-4" />
                           </div>
-                          <p className="text-xs text-slate-300 font-medium">LangGraph Decision System</p>
+                          <p className="text-xs text-slate-300 font-medium">Closed-Loop Task &amp; Verification</p>
                           <p className="text-[11px] text-slate-400 mt-1">
-                            Staff task assignment, kitchen SOP formulation, and closed-loop verification.
+                            Pydantic action recommendations, manager approvals, staff delegation, and statistical verification.
                           </p>
                         </div>
                       </div>
@@ -273,7 +274,7 @@ export const App: React.FC = () => {
                   </div>
                 )}
 
-                {/* Topic Trends & Recurrence Intelligence */}
+                {/* Topic Trends & Aspect Intelligence */}
                 {(activeTab === 'analytics' || activeTab === 'recurrence') && (
                   <TopicTrendView
                     orgId={currentOrg?.id}
@@ -281,9 +282,17 @@ export const App: React.FC = () => {
                   />
                 )}
 
-                {/* Prioritized Issues & Rule 9 Safety Overrides */}
+                {/* Prioritized Issues & Rule 9 Safety Overrides (Deterministic Priority Queue) */}
                 {activeTab === 'actions' && (
                   <PrioritizedIssuesView
+                    orgId={currentOrg?.id}
+                    onRefreshData={loadFeedback}
+                  />
+                )}
+
+                {/* Implementation 3: Prioritized Action Board & CAPA Management */}
+                {activeTab === 'capa' && (
+                  <PrioritizedActionBoard
                     orgId={currentOrg?.id}
                     onRefreshData={loadFeedback}
                   />

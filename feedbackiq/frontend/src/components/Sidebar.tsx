@@ -18,9 +18,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
   const navItems = [
     { id: 'overview', label: 'Platform Status', icon: LayoutDashboard, badge: 'Phase 0' },
     { id: 'feedback', label: 'Feedback Ingestion', icon: MessageSquareText, badge: 'Phase 1' },
-    { id: 'analytics', label: 'Aspect Intelligence', icon: BrainCircuit, badge: 'Phase 2' },
-    { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'Phase 3' },
-    { id: 'actions', label: 'Prioritized Actions', icon: CheckSquare, badge: 'Phase 4' },
+    { id: 'analytics', label: 'Aspect Intelligence', icon: BrainCircuit, badge: 'Phase 1' },
+    { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'Phase 2' },
+    { id: 'actions', label: 'Prioritized Actions', icon: CheckSquare, badge: 'Phase 2' },
+    { id: 'capa', label: 'CAPA Action Board', icon: CheckSquare, badge: 'Phase 3' },
     { id: 'tenants', label: 'Organization & Templates', icon: Building2, badge: 'Active' },
     { id: 'system', label: 'System Architecture', icon: Server, badge: 'Docs' },
   ];

@@ -176,34 +176,143 @@ Implemented as a compiled 5-node `StateGraph` in `app/workflows/recurrence_workf
 
 ---
 
+---
+
+## 🎯 Implementation 3: Priority Scoring, Corrective Actions (CAPA) & Closed-Loop Verification
+
+FeedbackIQ Implementation 3 delivers complete closed-loop action management that translates recurrence assessments and quality intelligence into concrete operational workflows:
+
+```
+[ Feedback Stream ] 
+       │
+       ▼ (NLP & Rule 9 Safety)
+[ Historical Clustering & Recurrence Analysis ]
+       │
+       ▼ (Python/SQL Deterministic Priority Engine + Safety Override)
+[ Priority Score (0–100) & Risk Level ]
+       │
+       ▼ (LangChain Action Recommendation Agent)
+[ Structured CAPA Recommendations (Corrective & Preventive) ]
+       │
+       ▼ (Idempotent Task Service: dedup_fingerprint)
+[ ActionTask Lifecycle: Proposed → Awaiting Approval → Assigned → In Progress → Completed → Verified ]
+       │
+       ├── Manager Approvals & Role Permissions (org_admin, quality_reviewer)
+       ├── Staff Delegation & Execution Progress Notes (staff)
+       ├── In-App Notifications & SMTP Delivery Tracking (delivered / simulated)
+       │
+       ▼ (Verification Service: Pre vs Post Statistical Comparison)
+[ Outcome Verification: Improved | No Clear Improvement | Worsened | Insufficient Evidence ]
+```
+
+### 1. Deterministic Priority Calculation (Python/SQL)
+- Transparent, reproducible formula combining normalized 0–100 components:
+  $$\text{Priority Score} = 0.50 \times \text{Severity} + 0.30 \times \text{Recurrence Risk} + 0.20 \times \text{Recent Frequency} + w_{\text{impact}} \times \text{Impact}$$
+- All numerical scoring is performed purely in Python and SQL; the LLM is never tasked with calculating the final score.
+- Weights and safety floors are fully configurable via REST endpoints:
+  - `GET /api/v1/intelligence/priority-config`
+  - `PUT /api/v1/intelligence/priority-config`
+- **Rule 9 Deterministic Safety Floor**: Any critical food-safety hazard (foreign objects, pests, severe foodborne illness, undercooked poultry, toxic odor) triggers an uncompromising safety floor ($\ge 85.0$). Low complaint frequency or lack of historical records **never** suppresses required safety reviews.
+
+### 2. Evidence-Grounded Action Recommendation Agent (LangChain)
+- Structured Pydantic contract (`ActionRecommendationOutput`) with strict schema validation:
+  - `issue_summary`: Concise description of the failure.
+  - `evidence_and_priority_reason`: Transparent rationale linking priority to historical facts.
+  - `suggested_corrective_action`: Immediate operational remediation.
+  - `suggested_preventive_action`: Systemic root-cause mitigation (SOPs, supplier checks).
+  - `responsible_role`: Delegated role (`Head Chef`, `Food Safety Officer`, `Hygiene Supervisor`, etc.).
+  - `suggested_deadline_days`: Pragmatic target window.
+  - `required_approval`: Required sign-off authority (`Operations Manager`, `Quality Assurance Lead`).
+  - `estimated_effort`: `Low`, `Medium`, or `High`.
+  - `verification_criteria`: Concrete metric to confirm resolution.
+  - `expected_outcome`: Target operational state.
+- **Strict Evidence Guardrail**: The agent is restricted from hallucinating equipment serial numbers, ingredient supplier batch codes, or employee names. Where facts are insufficient, the agent explicitly recommends inspection and root-cause investigation.
+
+### 3. Task Management & CAPA Lifecycle
+- Persistent PostgreSQL schema (`action_tasks` table) supporting the full operational lifecycle:
+  `Proposed` $\rightarrow$ `Awaiting Approval` $\rightarrow$ `Assigned` $\rightarrow$ `In Progress` $\rightarrow$ `Completed` $\rightarrow$ `Verified` (and `Rejected`).
+- **Role Permissions Enforced**:
+  - Only authorized managers (`super_admin`, `org_admin`, `quality_reviewer`) can approve, reject, edit, reprioritize, or reassign tasks.
+  - Kitchen and operations staff can view assigned tasks and record execution progress/completion notes.
+- **Workflow Idempotency & Duplicate Prevention**:
+  - Tasks compute a unique cryptographic fingerprint: `dedup_fingerprint = sha256(f"{organization_id}:{cluster_key}")`.
+  - Periodic LangGraph retries update existing open tasks instead of creating duplicate clutter.
+
+### 4. Notifications & Delivery Auditing
+- Dual-channel notification system:
+  - **In-App Notifications**: Real-time persisted alerts with unread tracking (`GET /api/v1/notifications`, `POST /api/v1/notifications/{id}/read`).
+  - **Email Integration**: Background SMTP dispatch with exponential retry handling.
+- **Delivery Confirmation Guardrail**: The system never falsely claims an email was delivered without provider confirmation. In local or non-SMTP environments, delivery status is accurately flagged as `simulated` with explicit diagnostic context.
+- Dispatched for:
+  - New task assignments.
+  - Manager approval requests.
+  - Approaching or missed deadlines.
+  - Critical Rule 9 safety alerts.
+  - Investigation requests for ambiguous incidents.
+
+### 5. Closed-Loop Verification Workflow
+- Compares relevant feedback before and after corrective actions across selectable evaluation windows (7, 14, or 30 days).
+- Computes empirical changes:
+  - Pre vs Post complaint volume and percentage change.
+  - Pre vs Post average star rating.
+- Returns standardized statistical outcomes:
+  - `Improved`: Statistically significant reduction in complaints and rating recovery.
+  - `No Clear Improvement`: Complaint frequency remains unchanged.
+  - `Worsened`: Complaints increased post-intervention.
+  - `Insufficient Evidence`: Fewer than required feedback samples to evaluate.
+- **Non-Causal Analytical Disclosure**: Adheres strictly to scientific and regulatory guidelines: *Does not claim the corrective action caused an improvement solely from before/after comparison.* Discloses potential external confounding factors (menu changes, weather, attendance shifts).
+
+### 6. Interactive Prioritized Action Board UI
+- Located in the **CAPA Action Board** tab (`PrioritizedActionBoard.tsx`).
+- **Live Persona Switcher**: Instantly toggle between `Operations Manager (Admin)` and `Kitchen Staff (Operator)` to test permissions, approvals, and completions directly in the browser.
+- **KPI Summary Cards**: Total tasks, awaiting manager approval, active in progress, verified outcomes, and Rule 9 safety overrides.
+- **Action Control Modals**:
+  - Manager Authorization & Rejection Modal.
+  - Staff Delegation & Due Date Modal.
+  - Execution Progress & Completion Notes Modal.
+  - Before/After Statistical Outcome Verification Modal.
+- **Slide-Down Notification Drawer**: Real-time alerts with delivery status pills and one-click "Mark as Read".
+
+---
+
 ## 🧪 Automated Testing & Evaluation Scenarios
 
-### Backend Tests (Pytest — 40 Tests Passing)
+### Backend Tests (Pytest — 48 Tests Passing)
 ```bash
 cd backend
-PYTHONPATH=. .venv/bin/python -m pytest tests -v
+.venv/bin/pytest tests/ --show-capture=no
 ```
 
-The test suite validates the 6 required recurrence test scenarios in `tests/test_implementation2_recurrence_reasoning.py`:
-1. **Complaint recurring every Friday**: 4 consecutive Friday lunch complaints -> identifies Friday lunch pattern, assigns `High` risk, hypotheses labeled with `[HYPOTHESIS]`.
-2. **Problem increasing over several weeks**: 1 historical complaint vs 4 recent complaints -> `velocity_trend = increasing`, `velocity_change_percent = 300%`, assigns `High` risk.
-3. **Isolated complaint with insufficient evidence**: 1 isolated complaint -> `velocity_trend = insufficient_data`, assigns `Insufficient Evidence` with explicit high uncertainty explanation.
-4. **Previously recurring issue that is now decreasing**: 4 historical complaints vs 1 recent complaint -> `velocity_trend = decreasing`, `velocity_change_percent = -75%`, assigns `Low` risk.
-5. **Critical safety complaint with 0 historical matches**: Single isolated report of glass/pest -> Rule 9 safety override triggers, escalates to `Critical` risk, priority floored to $\ge 85.0$.
-6. **Missing or unreliable metadata**: None dates, meal types, and items processed gracefully without crashes; synthetic and real records accurately distinguished.
-7. **Independent Statistical Verification**: SQL/Python metrics tested independently of LLM outputs.
-8. **LLM Failure Resilience**: Mock LLM raising exceptions -> fallback deterministic reasoning still enforces Rule 9 safety escalation.
-9. **LangGraph Execution Tracing**: Validates that all 5 workflow nodes execute and populate `execution_trace`.
+Test coverage across implementations:
+- `test_feedback_ingestion.py` (7 tests): CSV ingestion, Zomato mapping, synthetic generation, multi-tenancy.
+- `test_health.py` (4 tests): Liveness, readiness, database probe latency, LLM connectivity.
+- `test_implementation1_sentiment_and_topics.py` (11 tests): Sentiment analysis, aspect extraction, Rule 9 deterministic safety escalations, audit logging.
+- `test_implementation2_recurrence_reasoning.py` (9 tests): Empirical velocity, distinct day counts, recurrence agent hypotheses, missing metadata resilience.
+- `test_implementation3_priority_and_actions.py` (8 tests):
+  1. Configurable priority score formula with normalized inputs and optional impact.
+  2. Rule 9 food-safety overrides never suppressed by low frequency or isolated history.
+  3. Action recommendation agent structured Pydantic output and evidence grounding.
+  4. Workflow idempotency and duplicate task prevention (`dedup_fingerprint`).
+  5. Task lifecycle transitions and manager authorization enforcement.
+  6. Backend role permissions: staff rejected from unauthorized approvals.
+  7. In-app and email notification dispatch with delivery status tracking.
+  8. Before/after outcome verification workflow with non-causal analytical disclosure.
+- `test_recurrence_and_priority.py` (7 tests): Recurrence engine and priority queue integration.
+- `test_tenant_isolation.py` (2 tests): Multi-tenant database isolation.
 
-### Frontend Tests (Vitest — 6 Tests Passing)
+### Frontend Tests (Vitest — 10 Tests Passing)
 ```bash
 cd frontend
-npm test
+npm test -- --run
 ```
+- `App.test.tsx` (6 tests): App shell, telemetry, tenant switching, feedback ingestion, topic trends, and deterministic priority queue navigation.
+- `ActionBoard.test.tsx` (4 tests): Action board KPI cards, Rule 9 indicators, manager approval modal, verification modal, and in-app alerts drawer.
 
 ### Production Build Verification
 ```bash
 cd frontend
 npm run build
 ```
+Builds clean production bundle with zero TypeScript or Vite compilation errors.
+
 

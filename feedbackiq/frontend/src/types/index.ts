@@ -189,6 +189,95 @@ export interface PriorityConfig {
   w_severity: number;
   w_recurrence_risk: number;
   w_recent_frequency: number;
+  w_impact?: number;
   safety_override_floor: number;
+}
+
+export type TaskStatusType =
+  | 'proposed'
+  | 'awaiting_approval'
+  | 'assigned'
+  | 'in_progress'
+  | 'completed'
+  | 'verified'
+  | 'rejected';
+
+export type TaskApprovalStatusType = 'proposed' | 'awaiting_approval' | 'approved' | 'rejected';
+
+export type VerificationOutcomeType =
+  | 'Improved'
+  | 'No Clear Improvement'
+  | 'Worsened'
+  | 'Insufficient Evidence'
+  | 'Pending';
+
+export interface VerificationResult {
+  task_id: string;
+  verification_status: VerificationOutcomeType;
+  pre_action_complaints: number;
+  post_action_complaints: number;
+  complaint_change_percent?: number;
+  pre_action_avg_rating?: number;
+  post_action_avg_rating?: number;
+  pre_window_days: number;
+  post_window_days: number;
+  non_causal_explanation: string;
+}
+
+export interface ActionTask {
+  id: string;
+  organization_id: string;
+  issue_cluster_key: string;
+  item?: string;
+  issue_category?: string;
+  meal_type?: string;
+  priority_score: number;
+  risk_level: RiskLevelType;
+  is_safety_override: boolean;
+  issue_summary: string;
+  evidence_and_priority_reason: string;
+  corrective_action: string;
+  preventive_action: string;
+  responsible_role: string;
+  assignee_id?: string;
+  assignee_name?: string;
+  due_date?: string;
+  required_approval: string;
+  approval_status: TaskApprovalStatusType;
+  status: TaskStatusType;
+  estimated_effort: 'Low' | 'Medium' | 'High';
+  verification_criteria: string;
+  expected_outcome: string;
+  completion_notes?: string;
+  completed_at?: string;
+  verified_at?: string;
+  verification_status: VerificationOutcomeType;
+  verification_results?: VerificationResult;
+  dedup_fingerprint: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  organization_id: string;
+  user_id?: string;
+  target_role?: string;
+  title: string;
+  message: string;
+  notification_type:
+    | 'task_assigned'
+    | 'approval_required'
+    | 'deadline_approaching'
+    | 'deadline_missed'
+    | 'critical_safety_alert'
+    | 'investigation_required';
+  task_id?: string;
+  channel: string;
+  is_read: boolean;
+  delivery_status: 'pending' | 'delivered' | 'failed' | 'simulated';
+  retry_count: number;
+  created_at: string;
+  updated_at: string;
 }
 

@@ -333,6 +333,39 @@ async def persist_assessment_node(state: RecurrenceGraphState) -> Dict[str, Any]
     }
 
 
+async def generate_action_tasks_node(state: RecurrenceGraphState) -> Dict[str, Any]:
+    """
+    Node 6: Corrective & Preventive Action (CAPA) Task Generation
+    Synthesizes actionable, evidence-based tasks from prioritized issues with deduplication.
+    """
+    trace = list(state.get("execution_trace", []))
+    trace.append(f"[{datetime.now(timezone.utc).isoformat()}] START: generate_action_tasks_node")
+
+    db = state["db"]
+    org_id = state["organization_id"]
+    items = state.get("prioritized_items", [])
+
+    try:
+        from app.services.task_service import TaskService
+        tasks = await TaskService.generate_tasks_for_prioritized_issues(
+            db=db,
+            organization_id=org_id,
+            prioritized_items=items,
+        )
+        trace.append(
+            f"[{datetime.now(timezone.utc).isoformat()}] Successfully synthesized {len(tasks)} deduplicated action tasks"
+        )
+        for item in items:
+            item.execution_trace = list(trace)
+    except Exception as e:
+        logger.error(f"Error in generate_action_tasks_node: {e}", exc_info=True)
+        trace.append(f"[{datetime.now(timezone.utc).isoformat()}] Action tasks generation notice: {e}")
+
+    return {
+        "execution_trace": trace,
+    }
+
+
 # ---------------------------------------------------------------------------
 # LangGraph Workflow Construction
 # ---------------------------------------------------------------------------
@@ -346,13 +379,15 @@ def create_recurrence_workflow() -> Any:
     graph.add_node("safety_override", safety_override_node)
     graph.add_node("priority_scoring", priority_scoring_node)
     graph.add_node("persist_assessment", persist_assessment_node)
+    graph.add_node("generate_action_tasks", generate_action_tasks_node)
 
     graph.add_edge(START, "retrieve_evidence")
     graph.add_edge("retrieve_evidence", "reason_recurrence")
     graph.add_edge("reason_recurrence", "safety_override")
     graph.add_edge("safety_override", "priority_scoring")
     graph.add_edge("priority_scoring", "persist_assessment")
-    graph.add_edge("persist_assessment", END)
+    graph.add_edge("persist_assessment", "generate_action_tasks")
+    graph.add_edge("generate_action_tasks", END)
 
     return graph.compile()
 

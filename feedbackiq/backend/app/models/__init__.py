@@ -8,6 +8,18 @@ from app.models.analysis import FeedbackAnalysis
 from app.models.import_job import ImportJob, ImportJobStatus
 from app.models.audit import AuditEvent
 from app.models.recurrence import RecurrenceAssessment
+from app.models.task import (
+    ActionTask,
+    TaskStatus,
+    TaskApprovalStatus,
+    VerificationOutcome,
+)
+from app.models.notification import (
+    Notification,
+    NotificationType,
+    NotificationChannel,
+    DeliveryStatus,
+)
 
 __all__ = [
     "Base",
@@ -26,4 +38,12 @@ __all__ = [
     "ImportJobStatus",
     "AuditEvent",
     "RecurrenceAssessment",
+    "ActionTask",
+    "TaskStatus",
+    "TaskApprovalStatus",
+    "VerificationOutcome",
+    "Notification",
+    "NotificationType",
+    "NotificationChannel",
+    "DeliveryStatus",
 ]

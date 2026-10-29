@@ -16,11 +16,12 @@ class PriorityConfigSchema(BaseModel):
     w_severity: float = Field(default=0.50, ge=0.0, le=1.0, description="Weight for normalized issue severity")
     w_recurrence_risk: float = Field(default=0.30, ge=0.0, le=1.0, description="Weight for recurrence risk")
     w_recent_frequency: float = Field(default=0.20, ge=0.0, le=1.0, description="Weight for recent complaint volume")
+    w_impact: float = Field(default=0.0, ge=0.0, le=1.0, description="Optional weight for customer impact or volume affected")
     safety_override_floor: float = Field(default=85.0, ge=0.0, le=100.0, description="Minimum priority for critical food safety issues")
 
     @model_validator(mode="after")
     def check_weights_sum(self) -> "PriorityConfigSchema":
-        total = self.w_severity + self.w_recurrence_risk + self.w_recent_frequency
+        total = self.w_severity + self.w_recurrence_risk + self.w_recent_frequency + self.w_impact
         if abs(total - 1.0) > 0.01:
             raise ValueError(f"Priority weights must sum to approximately 1.0 (got {total:.3f})")
         return self

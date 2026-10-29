@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 from app.core.config import settings
 from app.schemas.intelligence import PriorityConfigSchema, RiskLevelType
 
@@ -59,6 +59,13 @@ class PriorityEngine:
         return round(normalized, 1)
 
     @classmethod
+    def normalize_impact(cls, affected_customers: Optional[int]) -> float:
+        """Normalizes affected customer count to 0-100 scale (50+ customers = 100.0)."""
+        if not affected_customers:
+            return 0.0
+        return round(min(100.0, max(0.0, float(affected_customers) * 2.0)), 1)
+
+    @classmethod
     def calculate_priority(
         cls,
         avg_severity: float,
@@ -66,11 +73,12 @@ class PriorityEngine:
         risk_level: str,
         recent_complaints: int,
         has_food_safety_hazard: bool = False,
+        affected_customers: Optional[int] = None,
         config: PriorityConfigSchema = None,
     ) -> Tuple[float, float, float, float, bool]:
         """
         Calculates deterministic priority score:
-        Priority = (w_sev * Severity) + (w_rec * RecurrenceRisk) + (w_freq * RecentFrequency)
+        Priority = (w_sev * Severity) + (w_rec * RecurrenceRisk) + (w_freq * RecentFrequency) + (w_impact * Impact)
 
         Returns:
             (priority_score, norm_severity, norm_recurrence, norm_frequency, is_safety_override)
@@ -80,12 +88,15 @@ class PriorityEngine:
         norm_sev = cls.normalize_severity(avg_severity, max_severity)
         norm_rec = cls.normalize_recurrence_risk(risk_level)
         norm_freq = cls.normalize_recent_frequency(recent_complaints)
+        norm_impact = cls.normalize_impact(affected_customers)
 
         # Linear combination
+        w_impact = getattr(cfg, "w_impact", 0.0)
         raw_priority = (
             (cfg.w_severity * norm_sev)
             + (cfg.w_recurrence_risk * norm_rec)
             + (cfg.w_recent_frequency * norm_freq)
+            + (w_impact * norm_impact)
         )
         calculated_priority = round(max(0.0, min(100.0, raw_priority)), 1)
 
