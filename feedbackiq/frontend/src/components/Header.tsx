@@ -24,11 +24,11 @@ export const Header: React.FC<HeaderProps> = ({
   const isReady = readiness?.status === 'ready';
 
   return (
-    <header className="h-16 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-30 px-6 flex items-center justify-between">
+    <header className="h-16 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur sticky top-0 z-30 px-6 flex items-center justify-between">
       {/* Brand & Project Info */}
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/10">
-          <Layers className="w-5 h-5 text-white" />
+        <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shadow-sm">
+          <Layers className="w-5 h-5 text-emerald-400" />
         </div>
         <div>
           <div className="flex items-center gap-2">
@@ -36,9 +36,15 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">
               SaaS MVP
             </span>
+            <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-md uppercase tracking-wider font-mono">
+              PS 2.5
+            </span>
+            <span className="hidden lg:inline text-[10px] font-semibold text-slate-400 border-l border-slate-800 pl-2">
+              Food Quality Intelligence
+            </span>
           </div>
           <p className="text-[11px] text-slate-400 hidden sm:block">
-            AI-Powered Multi-Tenant Quality Intelligence
+            Sentiment Analysis • Recurrence Prediction • Canteen Prioritized Actions
           </p>
         </div>
       </div>

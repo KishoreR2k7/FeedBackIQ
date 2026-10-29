@@ -193,14 +193,14 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
             onClick={() => setIsConfigOpen(true)}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all"
           >
-            <Sliders className="w-3.5 h-3.5 text-indigo-400" />
+            <Sliders className="w-3.5 h-3.5 text-emerald-400" />
             Configure Weights
           </button>
 
           <button
             onClick={handleRecalculateAll}
             disabled={isAssessing}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-600/20 disabled:opacity-50"
           >
             {isAssessing ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -226,7 +226,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
             placeholder="Filter by item..."
             value={itemFilter}
             onChange={(e) => setItemFilter(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-1.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-1.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
           <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2 top-2.5" />
           {itemFilter && (
@@ -243,7 +243,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
           value={riskFilter}
           onChange={(e) => setRiskFilter(e.target.value)}
           aria-label="Filter by Risk Level"
-          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
         >
           <option value="">All Risk Levels</option>
           <option value="Critical">Critical Risk</option>
@@ -257,12 +257,12 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
           aria-label="Filter by Category"
-          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
         >
           <option value="">All Categories</option>
           <option value="taste">Taste</option>
           <option value="temperature">Temperature</option>
-          <option value="hygiene">Hygiene & Safety</option>
+          <option value="hygiene">Hygiene &amp; Safety</option>
           <option value="freshness">Freshness</option>
           <option value="service">Service</option>
         </select>
@@ -271,7 +271,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
           value={mealFilter}
           onChange={(e) => setMealFilter(e.target.value)}
           aria-label="Filter by Meal Type"
-          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500"
         >
           <option value="">All Meal Types</option>
           <option value="Breakfast">Breakfast</option>
@@ -343,9 +343,9 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                 <div className="shrink-0 flex items-center gap-3">
                   <button
                     onClick={() => handleInspectEvidence(issue)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-indigo-600/15 hover:bg-indigo-600/25 text-indigo-300 border border-indigo-500/30 transition-all hover:scale-[1.02]"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-all hover:scale-[1.02]"
                   >
-                    <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                    <Eye className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Inspect Evidence</span>
                   </button>
 
@@ -369,7 +369,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
               {/* Formula Subscores Breakdown */}
               <div className="mt-4 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/60">
                 <div className="text-[11px] font-semibold text-slate-400 mb-2 flex items-center gap-1.5">
-                  <Info className="w-3.5 h-3.5 text-indigo-400" />
+                  <Info className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Deterministic Score Breakdown (0–100 Normalized):</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
@@ -406,13 +406,13 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                   <div>
                     <div className="flex justify-between text-slate-400 mb-1">
                       <span>Recent Frequency (×{config.w_recent_frequency.toFixed(2)}):</span>
-                      <span className="font-mono font-bold text-indigo-300">
+                      <span className="font-mono font-bold text-emerald-400">
                         {issue.recent_frequency_normalized.toFixed(1)}
                       </span>
                     </div>
                     <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                       <div
-                        className="bg-indigo-500 h-full rounded-full"
+                        className="bg-emerald-500 h-full rounded-full"
                         style={{ width: `${issue.recent_frequency_normalized}%` }}
                       />
                     </div>
@@ -693,7 +693,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                 onClick={() => setEvidenceModalTab('evidence')}
                 className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
                   evidenceModalTab === 'evidence'
-                    ? 'border-indigo-500 text-indigo-300'
+                    ? 'border-emerald-500 text-emerald-300'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -704,7 +704,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                 onClick={() => setEvidenceModalTab('hypotheses')}
                 className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
                   evidenceModalTab === 'hypotheses'
-                    ? 'border-indigo-500 text-indigo-300'
+                    ? 'border-emerald-500 text-emerald-300'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -715,7 +715,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                 onClick={() => setEvidenceModalTab('trace')}
                 className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
                   evidenceModalTab === 'trace'
-                    ? 'border-indigo-500 text-indigo-300'
+                    ? 'border-emerald-500 text-emerald-300'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >

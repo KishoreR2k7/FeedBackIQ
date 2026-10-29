@@ -17,7 +17,6 @@ import {
   User,
   Shield,
   FileCheck,
-  AlertTriangle,
   Flame,
 } from 'lucide-react';
 import { api } from '../services/api';
@@ -282,15 +281,15 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   const getStatusBadge = (status: TaskStatusType) => {
     switch (status) {
       case 'proposed':
-        return 'bg-purple-500/15 text-purple-300 border border-purple-500/30';
+        return 'bg-slate-800 text-slate-300 border border-slate-700';
       case 'awaiting_approval':
-        return 'bg-amber-500/15 text-amber-300 border border-amber-500/30 animate-pulse';
+        return 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 animate-pulse';
       case 'assigned':
-        return 'bg-sky-500/15 text-sky-300 border border-sky-500/30';
+        return 'bg-slate-800 text-slate-200 border border-slate-700';
       case 'in_progress':
-        return 'bg-blue-500/20 text-blue-300 border border-blue-500/40';
+        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
       case 'completed':
-        return 'bg-teal-500/15 text-teal-300 border border-teal-500/30';
+        return 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
       case 'verified':
         return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
       case 'rejected':
@@ -307,9 +306,9 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
       case 'Worsened':
         return 'bg-rose-500/20 text-rose-300 border border-rose-500/40';
       case 'No Clear Improvement':
-        return 'bg-slate-500/20 text-slate-300 border border-slate-500/40';
+        return 'bg-slate-800 text-slate-300 border border-slate-700';
       case 'Insufficient Evidence':
-        return 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        return 'bg-slate-800 text-slate-400 border border-slate-700';
       default:
         return 'bg-slate-800 text-slate-400 border border-slate-700';
     }
@@ -334,8 +333,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             <h2 className="text-xl font-bold text-white tracking-tight">
               Prioritized Action Board &amp; CAPA
             </h2>
-            <span className="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              Implementation 3
+            <span className="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">
+              Capability 3
             </span>
           </div>
           <p className="text-xs text-slate-400 max-w-2xl">
@@ -349,10 +348,10 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             onClick={() => setShowNotificationsDrawer(!showNotificationsDrawer)}
             className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 transition shadow-sm"
           >
-            <Bell className="w-4 h-4 text-amber-400" />
+            <Bell className="w-4 h-4 text-emerald-400" />
             <span>Alerts</span>
             {unreadCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500 text-slate-950 font-mono">
                 {unreadCount}
               </span>
             )}
@@ -361,7 +360,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           {/* Persona Role Switcher for Testability */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-              <User className="w-3.5 h-3.5 text-indigo-400" /> Persona:
+              <User className="w-3.5 h-3.5 text-emerald-400" /> Persona:
             </span>
             <select
               value={actingRole}
@@ -384,7 +383,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           <button
             onClick={handleGenerateTasks}
             disabled={isGenerating}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white shadow-lg shadow-emerald-600/20 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition disabled:opacity-50"
           >
             <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
             <span>{isGenerating ? 'Synthesizing...' : 'Generate Action Tasks'}</span>
@@ -397,31 +396,31 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
         <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 flex items-center justify-between">
           <div>
             <div className="text-[11px] font-medium text-slate-400 uppercase">Total Tasks</div>
-            <div className="text-xl font-bold text-slate-100 mt-0.5">{totalCount}</div>
+            <div className="text-xl font-bold text-slate-100 mt-0.5 font-mono">{totalCount}</div>
           </div>
           <FileCheck className="w-5 h-5 text-slate-500" />
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-amber-500/30 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/20 flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-medium text-amber-400 uppercase">Awaiting Approval</div>
-            <div className="text-xl font-bold text-amber-300 mt-0.5">{awaitingApprovalCount}</div>
+            <div className="text-[11px] font-medium text-slate-400 uppercase">Awaiting Approval</div>
+            <div className="text-xl font-bold text-emerald-300 mt-0.5 font-mono">{awaitingApprovalCount}</div>
           </div>
-          <Clock className="w-5 h-5 text-amber-400 animate-pulse" />
+          <Clock className="w-5 h-5 text-emerald-400" />
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-blue-500/30 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/20 flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-medium text-blue-400 uppercase">In Progress</div>
-            <div className="text-xl font-bold text-blue-300 mt-0.5">{inProgressCount}</div>
+            <div className="text-[11px] font-medium text-slate-400 uppercase">In Progress</div>
+            <div className="text-xl font-bold text-emerald-300 mt-0.5 font-mono">{inProgressCount}</div>
           </div>
-          <PlayCircle className="w-5 h-5 text-blue-400" />
+          <PlayCircle className="w-5 h-5 text-emerald-400" />
         </div>
 
         <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/30 flex items-center justify-between">
           <div>
             <div className="text-[11px] font-medium text-emerald-400 uppercase">Verified</div>
-            <div className="text-xl font-bold text-emerald-300 mt-0.5">{verifiedCount}</div>
+            <div className="text-xl font-bold text-emerald-300 mt-0.5 font-mono">{verifiedCount}</div>
           </div>
           <Award className="w-5 h-5 text-emerald-400" />
         </div>
@@ -429,7 +428,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
         <div className="p-4 rounded-xl bg-slate-900/40 border border-rose-500/30 flex items-center justify-between col-span-2 md:col-span-1">
           <div>
             <div className="text-[11px] font-medium text-rose-400 uppercase">Safety Overrides</div>
-            <div className="text-xl font-bold text-rose-300 mt-0.5">{safetyOverrideCount}</div>
+            <div className="text-xl font-bold text-rose-300 mt-0.5 font-mono">{safetyOverrideCount}</div>
           </div>
           <ShieldAlert className="w-5 h-5 text-rose-400" />
         </div>
@@ -668,8 +667,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     </div>
 
                     <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-1">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5">
-                        <Info className="w-3 h-3 text-sky-400" />
+                      <div className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5 font-mono">
+                        <Info className="w-3 h-3 text-emerald-400" />
                         Evidence &amp; Priority Rationale
                       </div>
                       <p className="text-[11px] text-slate-300 leading-relaxed">
@@ -692,10 +691,10 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   {/* Right Column: Corrective & Preventive Action Plans */}
                   <div className="lg:col-span-7 space-y-3">
                     {/* Corrective Action (Immediate) */}
-                    <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <AlertTriangle className="w-3.5 h-3.5" />
+                        <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                           Suggested Corrective Action (Immediate)
                         </span>
                       </div>
@@ -705,14 +704,14 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     </div>
 
                     {/* Preventive Action (Systemic) */}
-                    <div className="p-3.5 rounded-xl bg-sky-500/5 border border-sky-500/20 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <Shield className="w-3.5 h-3.5" />
+                        <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 text-emerald-400" />
                           Suggested Preventive Action (Systemic Root-Cause)
                         </span>
                       </div>
-                      <p className="text-xs text-slate-200 leading-relaxed">
+                      <p className="text-xs text-slate-300 leading-relaxed">
                         {task.preventive_action}
                       </p>
                     </div>

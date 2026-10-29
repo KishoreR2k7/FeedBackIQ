@@ -97,10 +97,10 @@ export const HealthStatusCard: React.FC<HealthStatusCardProps> = ({
         <div className="rounded-xl bg-slate-950/60 border border-slate-800/80 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-              <Cpu className="w-4 h-4 text-purple-400" />
+              <Cpu className="w-4 h-4 text-emerald-400" />
               <span>AI Engine (LangGraph)</span>
             </div>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/10 text-purple-300">
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
               {llmEngine?.provider?.toUpperCase() || 'MOCK'}
             </span>
           </div>
@@ -111,11 +111,11 @@ export const HealthStatusCard: React.FC<HealthStatusCardProps> = ({
             </div>
             <div className="flex justify-between">
               <span>Provider Status:</span>
-              <span className="text-emerald-400">Ready for In-Context Graph</span>
+              <span className="text-emerald-400 font-medium">Active &amp; Ready</span>
             </div>
             <div className="flex justify-between">
-              <span>Rule Engine:</span>
-              <span className="text-slate-200">Deterministic Safety Safeguard</span>
+              <span>Safety Safeguard:</span>
+              <span className="text-slate-200">Rule 9 Floor (≥85)</span>
             </div>
           </div>
         </div>
@@ -124,10 +124,10 @@ export const HealthStatusCard: React.FC<HealthStatusCardProps> = ({
         <div className="rounded-xl bg-slate-950/60 border border-slate-800/80 p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
-              <Clock className="w-4 h-4 text-cyan-400" />
-              <span>SaaS Platform Info</span>
+              <Clock className="w-4 h-4 text-emerald-400" />
+              <span>PS 2.5 Platform Info</span>
             </div>
-            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-cyan-500/10 text-cyan-300">
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-800 text-slate-300 font-mono">
               v{readiness?.version || '0.1.0'}
             </span>
           </div>

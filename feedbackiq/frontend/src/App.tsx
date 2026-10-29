@@ -19,7 +19,17 @@ import {
   OrgTemplateConfig,
   PaginatedFeedback,
 } from './types';
-import { ShieldCheck, Sparkles, Cpu, Database, Network } from 'lucide-react';
+import {
+  ShieldCheck,
+  Sparkles,
+  Cpu,
+  Database,
+  Network,
+  ArrowRight,
+  MessageSquareText,
+  TrendingUp,
+  CheckSquare,
+} from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -163,6 +173,133 @@ export const App: React.FC = () => {
                 {/* Active Organization & Readiness Telemetry */}
                 {activeTab === 'overview' && (
                   <>
+                    {/* PS 2.5 Executive Challenge & Capabilities Command Deck */}
+                    <div className="rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-slate-950 border border-slate-800 p-6 md:p-8 space-y-6 shadow-xl">
+                      {/* Top Header */}
+                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-6 border-b border-slate-800/80">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2.5">
+                            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono tracking-wider">
+                              PROBLEM STATEMENT 2.5
+                            </span>
+                            <span className="text-xs text-slate-400 font-semibold">
+                              AI-Powered Food Feedback &amp; Quality Intelligence
+                            </span>
+                          </div>
+                          <h2 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+                            Canteen Decision Intelligence &amp; Quality Operations
+                          </h2>
+                          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 max-w-3xl leading-relaxed">
+                            <strong className="text-emerald-400 uppercase tracking-wider block text-[10px] mb-1 font-mono">
+                              Operational Challenge:
+                            </strong>
+                            "Student feedback on food quality comes through forms and complaints but is rarely analyzed, so recurring problems are not fixed."
+                          </div>
+                        </div>
+
+                        {/* Supported Datasets Pills */}
+                        <div className="flex flex-col sm:items-end gap-2 shrink-0">
+                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
+                            Data Sources
+                          </span>
+                          <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 text-[11px]">
+                            <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                              Zomato Bangalore (Kaggle)
+                            </span>
+                            <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                              Synthetic Canteen Form (8 Fields)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 3 Core Capability Modules */}
+                      <div className="space-y-2">
+                        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
+                          Three Required Capabilities
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {/* Capability 1 */}
+                          <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 transition flex flex-col justify-between group space-y-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  CAPABILITY 1
+                                </span>
+                                <MessageSquareText className="w-4 h-4 text-emerald-400" />
+                              </div>
+                              <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition">
+                                Feedback Analytics &amp; Topics
+                              </h3>
+                              <p className="text-xs text-slate-400 leading-relaxed">
+                                Analyzes student feedback for sentiment, extracts food items &amp; service aspects, scores severity (1–5), and detects potential food safety indicators with deterministic Rule 9 safeguards.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setActiveTab('feedback')}
+                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-600/20 border border-slate-800 group-hover:border-emerald-500/40 text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition"
+                            >
+                              <span>Ingest &amp; Analyze</span>
+                              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                            </button>
+                          </div>
+
+                          {/* Capability 2 */}
+                          <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 transition flex flex-col justify-between group space-y-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  CAPABILITY 2
+                                </span>
+                                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                              </div>
+                              <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition">
+                                Issue Recurrence Prediction
+                              </h3>
+                              <p className="text-xs text-slate-400 leading-relaxed">
+                                Predicts which quality issues are likely to recur using historical clustering, empirical velocity trends, distinct days, and meal-period patterns without training traditional ML models.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setActiveTab('recurrence')}
+                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-600/20 border border-slate-800 group-hover:border-emerald-500/40 text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition"
+                            >
+                              <span>Predict Recurrence</span>
+                              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                            </button>
+                          </div>
+
+                          {/* Capability 3 */}
+                          <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 transition flex flex-col justify-between group space-y-4">
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                  CAPABILITY 3
+                                </span>
+                                <CheckSquare className="w-4 h-4 text-emerald-400" />
+                              </div>
+                              <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition">
+                                Canteen Prioritized Actions
+                              </h3>
+                              <p className="text-xs text-slate-400 leading-relaxed">
+                                Generates a prioritized action queue with deterministic formula scoring, LangChain Pydantic CAPA recommendations, manager approvals, staff delegation, and closed-loop verification.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setActiveTab('actions')}
+                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-600/20 border border-slate-800 group-hover:border-emerald-500/40 text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition"
+                            >
+                              <span>View Prioritized Actions</span>
+                              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <HealthStatusCard
                       readiness={readiness}
                       isLoading={isHealthChecking}
