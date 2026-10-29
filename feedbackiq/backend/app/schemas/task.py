@@ -116,7 +116,7 @@ class TaskApprovalRequest(BaseModel):
 
 
 class TaskAssignRequest(BaseModel):
-    assignee_id: uuid.UUID
+    assignee_id: Optional[uuid.UUID] = None
     assignee_name: Optional[str] = None
     due_date: Optional[datetime] = None
     operational_notes: Optional[str] = None

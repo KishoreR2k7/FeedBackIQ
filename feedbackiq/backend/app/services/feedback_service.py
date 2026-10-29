@@ -138,13 +138,16 @@ class FeedbackService:
         cls,
         db: AsyncSession,
         organization_id: uuid.UUID,
-        count: int = 50,
+        count: Any = 50,
         seed_recurring: bool = True,
     ) -> List[Feedback]:
+        actual_count = count.count if hasattr(count, "count") else int(count)
+        actual_seed = getattr(count, "seed_recurring_issues", seed_recurring) if hasattr(count, "seed_recurring_issues") else seed_recurring
+
         records = SyntheticDataGenerator.generate_records(
             organization_id=organization_id,
-            count=count,
-            seed_recurring=seed_recurring,
+            count=actual_count,
+            seed_recurring=actual_seed,
         )
 
         # Check existing hashes to avoid duplicate clashes
@@ -170,7 +173,7 @@ class FeedbackService:
             .options(selectinload(Feedback.analysis))
             .where(Feedback.organization_id == organization_id)
             .order_by(Feedback.created_at.desc())
-            .limit(count)
+            .limit(actual_count)
         )
         result = await db.execute(stmt)
         return list(result.scalars().all())

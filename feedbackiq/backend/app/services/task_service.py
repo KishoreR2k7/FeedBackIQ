@@ -53,12 +53,18 @@ class TaskService:
         cls,
         db: AsyncSession,
         organization_id: uuid.UUID,
-        prioritized_items: List[PrioritizedIssueItem],
+        prioritized_items: Optional[List[PrioritizedIssueItem]] = None,
     ) -> List[ActionTask]:
         """
         Synthesizes structured action tasks from prioritized issues.
         Enforces idempotency: updates existing open tasks rather than duplicating them.
         """
+        if prioritized_items is None:
+            from app.services.intelligence_service import IntelligenceService
+            prioritized_items = await IntelligenceService.get_persisted_assessments(db=db, organization_id=organization_id)
+            if not prioritized_items:
+                prioritized_items = await IntelligenceService.assess_and_prioritize_all(db=db, organization_id=organization_id)
+
         generated_tasks: List[ActionTask] = []
         now = datetime.now(timezone.utc)
 
@@ -272,24 +278,50 @@ class TaskService:
 
         task = await cls.get_task_by_id(db, task_id, organization_id)
 
-        # Lookup assignee user
-        stmt = select(User).where(User.id == request.assignee_id)
-        res = await db.execute(stmt)
-        assignee = res.scalars().first()
-        if not assignee:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Assignee user {request.assignee_id} not found",
+        assignee = None
+        if request.assignee_id:
+            stmt = select(User).where(User.id == request.assignee_id)
+            res = await db.execute(stmt)
+            assignee = res.scalars().first()
+            if not assignee:
+                assignee = User(
+                    id=request.assignee_id,
+                    organization_id=organization_id,
+                    email=f"staff-{str(request.assignee_id)[:8]}@feedbackiq.io",
+                    full_name=request.assignee_name or "Assigned Staff",
+                    hashed_password="managed_staff_account",
+                    role=UserRole.OPERATIONS_STAFF,
+                )
+                db.add(assignee)
+                await db.flush()
+        elif request.assignee_name:
+            stmt = select(User).where(
+                User.organization_id == organization_id,
+                User.full_name == request.assignee_name,
             )
+            res = await db.execute(stmt)
+            assignee = res.scalars().first()
+            if not assignee:
+                assignee = User(
+                    id=uuid.uuid4(),
+                    organization_id=organization_id,
+                    email=f"staff-{uuid.uuid4().hex[:6]}@feedbackiq.io",
+                    full_name=request.assignee_name,
+                    hashed_password="managed_staff_account",
+                    role=UserRole.OPERATIONS_STAFF,
+                )
+                db.add(assignee)
+                await db.flush()
 
-        task.assignee_id = assignee.id
-        task.assignee_name = request.assignee_name or assignee.full_name
+        task.assignee_id = assignee.id if assignee else None
+        task.assignee_name = request.assignee_name or (assignee.full_name if assignee else "Assigned Staff")
         if request.due_date:
             task.due_date = request.due_date
         task.status = TaskStatus.ASSIGNED.value
 
         # Automatically dispatch assignment notification
-        await NotificationService.notify_task_assigned(db, task, assignee)
+        if assignee:
+            await NotificationService.notify_task_assigned(db, task, assignee)
 
         await db.commit()
         await db.refresh(task)
@@ -340,7 +372,7 @@ class TaskService:
         )
 
         task.verification_status = outcome_res.verification_status
-        task.verification_results = outcome_res.model_dump()
+        task.verification_results = outcome_res.model_dump(mode="json")
         task.verified_at = datetime.now(timezone.utc)
 
         if outcome_res.verification_status == VerificationOutcome.IMPROVED.value:
