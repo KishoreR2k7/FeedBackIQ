@@ -220,6 +220,7 @@ export const api = {
       category?: string;
       meal_type?: string;
       risk_level?: string;
+      item?: string;
     } = {},
     orgId?: string
   ): Promise<import('../types').PrioritizedIssueItem[]> => {
@@ -227,6 +228,7 @@ export const api = {
     if (params.category) query.set('category', params.category);
     if (params.meal_type) query.set('meal_type', params.meal_type);
     if (params.risk_level) query.set('risk_level', params.risk_level);
+    if (params.item) query.set('item', params.item);
 
     const headers: Record<string, string> = {};
     if (orgId) headers['X-Organization-Id'] = orgId;

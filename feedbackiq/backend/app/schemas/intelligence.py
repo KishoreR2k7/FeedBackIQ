@@ -29,6 +29,7 @@ class PriorityConfigSchema(BaseModel):
 class TrendFilterParams(BaseModel):
     """Filter dimensions for topic grouping and historical trends."""
     location_id: Optional[uuid.UUID] = None
+    item: Optional[str] = None
     date_from: Optional[datetime] = None
     date_to: Optional[datetime] = None
     issue_category: Optional[str] = None
@@ -62,6 +63,13 @@ class TopicTrendSummary(BaseModel):
     historical_complaints_count: int
     velocity_change_percent: Optional[float] = None
     velocity_trend: VelocityTrendType
+
+    # Historical recurrence evidence metrics
+    distinct_days_count: int = Field(default=0, description="Count of distinct calendar days with complaints")
+    days_since_last_occurrence: Optional[int] = Field(default=None, description="Days elapsed since the most recent complaint")
+    last_occurred_at: Optional[datetime] = Field(default=None, description="Timestamp of the most recent complaint")
+    synthetic_records_count: int = Field(default=0, description="Count of complaints from synthetic test datasets")
+    real_records_count: int = Field(default=0, description="Count of complaints from real operational feedback")
 
     # Temporal patterns & evidence quotes
     time_patterns: List[str] = Field(default_factory=list)
@@ -148,6 +156,12 @@ class PrioritizedIssueItem(BaseModel):
     historical_complaints_count: int
     velocity_change_percent: Optional[float] = None
     time_patterns: List[str] = Field(default_factory=list)
+    distinct_days_count: int = Field(default=0, description="Count of distinct calendar days with complaints")
+    days_since_last_occurrence: Optional[int] = Field(default=None, description="Days elapsed since the most recent complaint")
+    last_occurred_at: Optional[datetime] = Field(default=None, description="Timestamp of the most recent complaint")
+    synthetic_records_count: int = Field(default=0, description="Count of complaints from synthetic test datasets")
+    real_records_count: int = Field(default=0, description="Count of complaints from real operational feedback")
+    execution_trace: List[str] = Field(default_factory=list, description="LangGraph workflow execution trace")
     created_at: Optional[datetime] = None
 
 

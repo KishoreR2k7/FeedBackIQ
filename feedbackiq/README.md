@@ -122,45 +122,84 @@ Critical safety complaints trigger deterministic Python safeguards; an LLM is **
 
 ---
 
-## 📈 Phase 2: Topic Intelligence, Recurrence Agent & Priority Engine
+## 📈 Phase 2: Historical Recurrence Reasoning Agent & LangGraph Architecture
 
-FeedbackIQ Phase 2 implements the automated intelligence layer:
+FeedbackIQ Phase 2 implements the automated historical recurrence intelligence layer without traditional ML models:
 
-### 1. Topic & Historical Trend Intelligence
-- Groups unstructured feedback across **food item, issue category, organization, location, meal type, and date windows**.
-- Computes empirical metrics via SQL and Python: complaint count, average rating, negative feedback ratio, recent vs historical frequency, and velocity % change ($((recent - historical) / historical) \times 100$).
-- Discovers temporal failure patterns (e.g., peak days like Tuesdays, shifts like Lunch).
-- Generates natural, human-readable topic labels grounded strictly in evidence quotes without hallucinated statistics.
+### 1. Historical Evidence Retrieval (SQL & Python)
+- Clusters feedback across **food item, issue category, organization, location, meal type, and date windows**.
+- Computes empirical metrics directly via SQL and Python:
+  - Total related complaints & total feedback count.
+  - Number of distinct calendar days with complaints (`distinct_days_count`).
+  - Days since most recent occurrence (`days_since_last_occurrence`) and timestamp.
+  - Frequency in recent vs previous time windows.
+  - Velocity trend (`increasing`, `stable`, `decreasing`, `new`, `insufficient_data`) and % change.
+  - Distinct day-of-week (e.g., repeated Friday complaints) and meal-period patterns.
+  - Negative feedback proportion and average rating trends.
+  - Partitioned counts for **synthetic test records** vs **real operational feedback**.
+- **Strict Grounding Rule**: Missing dates, meal types, and items are preserved as `None` and never hallucinated.
 
 ### 2. Recurrence Reasoning Agent (LangChain)
-- Evaluates empirical trends to assess whether an operational failure will recur.
+- Evaluates empirical evidence to assess whether an operational failure will recur.
 - Strictly separates **verified observations** (quotes, frequencies) from **causal hypotheses** (explicitly prefixed with `[HYPOTHESIS]`).
 - Assigns calibrated risk levels: `Critical`, `High`, `Medium`, `Low`, or `Insufficient Evidence`.
-- Provides actionable kitchen monitoring checklists.
+- Provides actionable investigation checklists and explicit uncertainty explanations.
+- Never outputs arbitrary numerical probabilities as calibrated statistical forecasts.
 
-### 3. Deterministic Priority Engine & Rule 9 Override
-- Combines normalized metrics into a transparent priority score ($0.0$ to $100.0$):
-  $$\text{Priority} = 0.50 \times \text{Severity}_{0-100} + 0.30 \times \text{RecurrenceRisk}_{0-100} + 0.20 \times \text{RecentFrequency}_{0-100}$$
-- Fully configurable weights via `/api/v1/intelligence/priority-config`.
-- **Rule 9 Safety Override**: Food safety hazards (pests, foreign objects, illness, raw meat) are deterministically floored to $\ge 85.0$, ensuring critical hazards are never ignored even if reported only once.
+### 3. LangGraph Execution Workflow
+Implemented as a compiled 5-node `StateGraph` in `app/workflows/recurrence_workflow.py`:
+1. `retrieve_evidence`: Deterministic SQL aggregation of historical metrics.
+2. `reason_recurrence`: LLM agent evaluation with structured output and automatic retry/fallback.
+3. `safety_override`: Deterministic Rule 9 validator enforcing `Critical` risk on food safety hazards.
+4. `priority_scoring`: Transparent 0–100 deterministic weighted score calculation.
+5. `persist_assessment`: PostgreSQL persistence and safety audit event logging.
+- Includes step-by-step `execution_trace` for auditability and diagnostic visibility.
+
+### 4. Interactive UI & Evidence Inspection
+- **Deterministic Priority Queue**: Displays prioritized issues with live score breakdown.
+- **Evidence Inspection Modal**:
+  - Raw supporting feedback comments with timestamps, meal types, and synthetic/real badges.
+  - Observed empirical patterns and temporal distributions.
+  - Root-cause hypotheses clearly labeled with `[HYPOTHESIS]` callouts.
+  - LangGraph workflow execution trace step viewer.
+- **Multi-dimensional Filtering**: Filter by food item, issue category, meal shift, risk level, and date window.
 
 ---
 
-## 🧪 Automated Testing
+## ⚠️ Limitations of Recurrence Assessment
 
-### Backend Tests (Pytest — 20 Tests Passing)
+1. **Heuristics vs Calibrated Probabilities**: While historical velocity, distinct day counts, and temporal clustering reveal empirical operational patterns, they are operational heuristics. They are not statistically calibrated probability predictions of future events.
+2. **Sample Size & Reporting Bias**: In small datasets or low-volume mess halls (< 2 complaints), statistical recurrence cannot be reliably established; the system explicitly outputs `Insufficient Evidence` to prevent misleading operational decisions.
+3. **Hypotheses vs Ground Truth**: Causal root-causes generated by LLMs are working hypotheses (`[HYPOTHESIS]`), derived from feedback text signals (e.g., "Friday lunch rush", "temperature drop during transport"). They require operational kitchen verification and must not be treated as confirmed facts.
+4. **Data Reliability & Missing Metadata**: When dates, meal slots, or items are absent (such as in scraped public review feeds), temporal recurrence patterns cannot be inferred. The system adheres strictly to not hallucinating or inventing missing timestamps or shifts.
+5. **Deterministic Primacy Over LLM Reasoning**: Food safety hazards (pests, broken glass, chemical contamination) bypass statistical frequency and recurrence entirely; the deterministic Rule 9 safety override floors priority $\ge 85.0$ and sets risk to `Critical` even if the issue is reported only once.
+
+---
+
+## 🧪 Automated Testing & Evaluation Scenarios
+
+### Backend Tests (Pytest — 40 Tests Passing)
 ```bash
 cd backend
 PYTHONPATH=. .venv/bin/python -m pytest tests -v
 ```
-*Tests CSV field mapping, Zomato dataset parsing, idempotent duplicate hashing, Rule 9 safety escalation, LangChain structured output, cross-tenant data isolation, topic trends fact math, velocity calculations, recurrence agent hypothesis labeling, priority arithmetic, and safety floor overrides.*
+
+The test suite validates the 6 required recurrence test scenarios in `tests/test_implementation2_recurrence_reasoning.py`:
+1. **Complaint recurring every Friday**: 4 consecutive Friday lunch complaints -> identifies Friday lunch pattern, assigns `High` risk, hypotheses labeled with `[HYPOTHESIS]`.
+2. **Problem increasing over several weeks**: 1 historical complaint vs 4 recent complaints -> `velocity_trend = increasing`, `velocity_change_percent = 300%`, assigns `High` risk.
+3. **Isolated complaint with insufficient evidence**: 1 isolated complaint -> `velocity_trend = insufficient_data`, assigns `Insufficient Evidence` with explicit high uncertainty explanation.
+4. **Previously recurring issue that is now decreasing**: 4 historical complaints vs 1 recent complaint -> `velocity_trend = decreasing`, `velocity_change_percent = -75%`, assigns `Low` risk.
+5. **Critical safety complaint with 0 historical matches**: Single isolated report of glass/pest -> Rule 9 safety override triggers, escalates to `Critical` risk, priority floored to $\ge 85.0$.
+6. **Missing or unreliable metadata**: None dates, meal types, and items processed gracefully without crashes; synthetic and real records accurately distinguished.
+7. **Independent Statistical Verification**: SQL/Python metrics tested independently of LLM outputs.
+8. **LLM Failure Resilience**: Mock LLM raising exceptions -> fallback deterministic reasoning still enforces Rule 9 safety escalation.
+9. **LangGraph Execution Tracing**: Validates that all 5 workflow nodes execute and populate `execution_trace`.
 
 ### Frontend Tests (Vitest — 6 Tests Passing)
 ```bash
 cd frontend
 npm test
 ```
-*Tests App shell, readiness telemetry, multi-tenant switching, Phase 1 Feedback Ingestion, Phase 2 Topic Trends, and Phase 2 Prioritized Issues queue.*
 
 ### Production Build Verification
 ```bash

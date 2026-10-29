@@ -79,6 +79,8 @@ export interface Feedback {
   feedback_id?: string;
   organization_id: string;
   location_id?: string;
+  location?: string;
+  is_synthetic?: boolean;
   date?: string;
   meal_type?: string;
   item?: string;
@@ -143,6 +145,11 @@ export interface TopicTrendSummary {
   average_severity: number;
   max_severity: number;
   supporting_feedback_ids?: string[];
+  distinct_days_count?: number;
+  days_since_last_occurrence?: number;
+  last_occurred_at?: string;
+  synthetic_records_count?: number;
+  real_records_count?: number;
 }
 
 export interface PrioritizedIssueItem {
@@ -169,6 +176,12 @@ export interface PrioritizedIssueItem {
   historical_complaints_count: number;
   velocity_change_percent?: number;
   time_patterns: string[];
+  distinct_days_count?: number;
+  days_since_last_occurrence?: number;
+  last_occurred_at?: string;
+  synthetic_records_count?: number;
+  real_records_count?: number;
+  execution_trace?: string[];
   created_at?: string;
 }
 

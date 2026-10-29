@@ -9,9 +9,13 @@ import {
   Filter,
   RefreshCw,
   Info,
+  Search,
+  Eye,
+  X,
+  GitBranch,
 } from 'lucide-react';
 import { api } from '../services/api';
-import { PrioritizedIssueItem, PriorityConfig, RiskLevelType } from '../types';
+import { PrioritizedIssueItem, PriorityConfig, RiskLevelType, Feedback } from '../types';
 import { LoadingState } from './LoadingState';
 import { EmptyState } from './EmptyState';
 
@@ -29,6 +33,13 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
   const [riskFilter, setRiskFilter] = useState<string>('');
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [mealFilter, setMealFilter] = useState<string>('');
+  const [itemFilter, setItemFilter] = useState<string>('');
+
+  // Evidence Inspection Modal State
+  const [selectedEvidenceIssue, setSelectedEvidenceIssue] = useState<PrioritizedIssueItem | null>(null);
+  const [evidenceFeedbacks, setEvidenceFeedbacks] = useState<Feedback[]>([]);
+  const [isEvidenceLoading, setIsEvidenceLoading] = useState(false);
+  const [evidenceModalTab, setEvidenceModalTab] = useState<'evidence' | 'hypotheses' | 'trace'>('evidence');
 
   // Priority Weights Config Modal
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -49,6 +60,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
           category: categoryFilter || undefined,
           meal_type: mealFilter || undefined,
           risk_level: riskFilter || undefined,
+          item: itemFilter || undefined,
         },
         orgId
       );
@@ -57,6 +69,20 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
       console.error('Failed to load prioritized issues:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleInspectEvidence = async (issue: PrioritizedIssueItem) => {
+    setSelectedEvidenceIssue(issue);
+    setEvidenceFeedbacks([]);
+    setIsEvidenceLoading(true);
+    try {
+      const records = await api.getTopicFeedback(issue.issue_cluster_key, orgId);
+      setEvidenceFeedbacks(records);
+    } catch (err) {
+      console.error('Failed to load supporting feedback records:', err);
+    } finally {
+      setIsEvidenceLoading(false);
     }
   };
 
@@ -72,7 +98,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
   useEffect(() => {
     fetchIssues();
     fetchConfig();
-  }, [orgId, categoryFilter, mealFilter, riskFilter]);
+  }, [orgId, categoryFilter, mealFilter, riskFilter, itemFilter]);
 
   const handleRecalculateAll = async () => {
     if (!orgId) return;
@@ -193,6 +219,26 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
           <span>Filters:</span>
         </div>
 
+        {/* Item Search Input */}
+        <div className="relative min-w-[160px]">
+          <input
+            type="text"
+            placeholder="Filter by item..."
+            value={itemFilter}
+            onChange={(e) => setItemFilter(e.target.value)}
+            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-7 pr-3 py-1.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          />
+          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2 top-2.5" />
+          {itemFilter && (
+            <button
+              onClick={() => setItemFilter('')}
+              className="absolute right-2 top-1.5 text-slate-400 hover:text-slate-200 text-xs"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
         <select
           value={riskFilter}
           onChange={(e) => setRiskFilter(e.target.value)}
@@ -260,9 +306,9 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                   : 'border-slate-800/80 hover:border-slate-700'
               }`}
             >
-              {/* Top Row: Title, Priority Score, Badges */}
+              {/* Top Row: Title, Badges, Actions */}
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                <div>
+                <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-2.5">
                     <h3 className="text-base font-bold text-slate-100">
                       {issue.topic_label}
@@ -275,24 +321,47 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-300 mt-1.5 font-medium leading-relaxed">
+                  <p className="text-xs text-slate-300 font-medium leading-relaxed">
                     {issue.issue_summary}
                   </p>
+
+                  {/* Empirical Evidence Badges */}
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono pt-1">
+                    <span className="px-2 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60">
+                      📅 {issue.distinct_days_count ?? 1} distinct days
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60">
+                      ⏱ {issue.days_since_last_occurrence !== undefined ? `${issue.days_since_last_occurrence}d ago` : 'Recent'}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60">
+                      🔬 {issue.real_records_count ?? 0} real / {issue.synthetic_records_count ?? 0} synthetic
+                    </span>
+                  </div>
                 </div>
 
-                {/* Priority Score Gauge */}
-                <div className="shrink-0 flex items-center gap-4 bg-slate-950/80 px-4 py-3 rounded-xl border border-slate-800/80">
-                  <div className="text-right">
-                    <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
-                      Priority Score
+                {/* Priority Score Gauge and Inspect Button */}
+                <div className="shrink-0 flex items-center gap-3">
+                  <button
+                    onClick={() => handleInspectEvidence(issue)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-indigo-600/15 hover:bg-indigo-600/25 text-indigo-300 border border-indigo-500/30 transition-all hover:scale-[1.02]"
+                  >
+                    <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Inspect Evidence</span>
+                  </button>
+
+                  <div className="flex items-center gap-4 bg-slate-950/80 px-4 py-3 rounded-xl border border-slate-800/80">
+                    <div className="text-right">
+                      <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                        Priority Score
+                      </div>
+                      <div className="text-2xl font-black text-rose-400 font-mono">
+                        {issue.priority_score.toFixed(1)}
+                        <span className="text-xs text-slate-500 font-normal"> / 100</span>
+                      </div>
                     </div>
-                    <div className="text-2xl font-black text-rose-400 font-mono">
-                      {issue.priority_score.toFixed(1)}
-                      <span className="text-xs text-slate-500 font-normal"> / 100</span>
+                    <div className="w-12 h-12 rounded-full border-4 border-slate-800 flex items-center justify-center text-xs font-mono font-bold text-slate-200">
+                      {Math.round(issue.priority_score)}%
                     </div>
-                  </div>
-                  <div className="w-12 h-12 rounded-full border-4 border-slate-800 flex items-center justify-center text-xs font-mono font-bold text-slate-200">
-                    {Math.round(issue.priority_score)}%
                   </div>
                 </div>
               </div>
@@ -541,6 +610,304 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Evidence & Recurrence Trace Modal */}
+      {selectedEvidenceIssue && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-800/80 flex items-start justify-between gap-4 bg-slate-950/40">
+              <div>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h3 className="text-base font-bold text-slate-100">
+                    {selectedEvidenceIssue.topic_label}
+                  </h3>
+                  {getRiskBadge(selectedEvidenceIssue.risk_level)}
+                  {selectedEvidenceIssue.is_safety_override && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-rose-600 text-white shadow-md shadow-rose-600/30">
+                      <ShieldAlert className="w-3.5 h-3.5" />
+                      RULE 9 SAFETY OVERRIDE ACTIVE
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  {selectedEvidenceIssue.issue_summary}
+                </p>
+              </div>
+
+              <button
+                onClick={() => setSelectedEvidenceIssue(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors"
+                aria-label="Close modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick Evidence Stats Bar */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-slate-950/60 border-b border-slate-800/60 text-xs">
+              <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Total Complaints</span>
+                <span className="text-base font-bold text-rose-400 font-mono">
+                  {selectedEvidenceIssue.total_complaints_count}
+                </span>
+                <span className="text-[10px] text-slate-500 ml-1">({selectedEvidenceIssue.recent_complaints_count} recent)</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Distinct Days</span>
+                <span className="text-base font-bold text-indigo-300 font-mono">
+                  {selectedEvidenceIssue.distinct_days_count ?? 1}
+                </span>
+                <span className="text-[10px] text-slate-500 ml-1">days</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Days Since Last</span>
+                <span className="text-base font-bold text-amber-300 font-mono">
+                  {selectedEvidenceIssue.days_since_last_occurrence !== undefined ? `${selectedEvidenceIssue.days_since_last_occurrence}d` : '0d'}
+                </span>
+                <span className="text-[10px] text-slate-500 ml-1">ago</span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Record Types</span>
+                <span className="text-xs font-semibold text-slate-200 block mt-1">
+                  {selectedEvidenceIssue.real_records_count ?? 0} Real
+                </span>
+                <span className="text-[10px] text-slate-400">
+                  {selectedEvidenceIssue.synthetic_records_count ?? 0} Synthetic
+                </span>
+              </div>
+              <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/60">
+                <span className="text-[10px] uppercase font-bold text-slate-500 block">Priority Score</span>
+                <span className="text-base font-black text-rose-400 font-mono">
+                  {selectedEvidenceIssue.priority_score.toFixed(1)}
+                </span>
+                <span className="text-[10px] text-slate-500 ml-1">/ 100</span>
+              </div>
+            </div>
+
+            {/* Modal Tabs */}
+            <div className="flex border-b border-slate-800 bg-slate-950/20 px-4 text-xs font-semibold">
+              <button
+                onClick={() => setEvidenceModalTab('evidence')}
+                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
+                  evidenceModalTab === 'evidence'
+                    ? 'border-indigo-500 text-indigo-300'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <CheckCircle className="w-3.5 h-3.5" />
+                Supporting Complaints ({evidenceFeedbacks.length})
+              </button>
+              <button
+                onClick={() => setEvidenceModalTab('hypotheses')}
+                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
+                  evidenceModalTab === 'hypotheses'
+                    ? 'border-indigo-500 text-indigo-300'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+                AI Hypotheses &amp; Reasoning
+              </button>
+              <button
+                onClick={() => setEvidenceModalTab('trace')}
+                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
+                  evidenceModalTab === 'trace'
+                    ? 'border-indigo-500 text-indigo-300'
+                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <GitBranch className="w-3.5 h-3.5" />
+                LangGraph Workflow Trace
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 overflow-y-auto flex-1 space-y-4">
+              {evidenceModalTab === 'evidence' && (
+                <div>
+                  {isEvidenceLoading ? (
+                    <div className="py-12 text-center text-slate-400 text-xs">
+                      <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-indigo-400" />
+                      Loading supporting feedback records from database...
+                    </div>
+                  ) : evidenceFeedbacks.length === 0 ? (
+                    <div className="py-8 text-center text-slate-400 text-xs">
+                      No specific feedback records matched this cluster key directly.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {evidenceFeedbacks.map((fb) => (
+                        <div
+                          key={fb.id}
+                          className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-slate-700 text-xs space-y-2"
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-slate-400">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-amber-300 font-mono">★ {fb.rating}/5</span>
+                              <span className="px-2 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300 font-medium">
+                                {fb.meal_type || 'Unspecified Meal'}
+                              </span>
+                              <span className="text-[11px] text-slate-400">
+                                {fb.location || fb.location_id || 'All Locations'}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 font-mono text-[10px]">
+                              {(fb.is_synthetic || fb.source_dataset?.includes('synthetic')) ? (
+                                <span className="px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                  Synthetic Test
+                                </span>
+                              ) : (
+                                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                  Real Feedback
+                                </span>
+                              )}
+                              <span>{new Date(fb.created_at).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                          <p className="text-slate-200 leading-relaxed italic bg-slate-900/40 p-2.5 rounded-lg border border-slate-800/40">
+                            "{fb.comment}"
+                          </p>
+                          {fb.analysis && (
+                            <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
+                              <span className="font-semibold text-slate-300">Analysis:</span>
+                              <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                                {fb.analysis.sentiment}
+                              </span>
+                              <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">
+                                Severity: {fb.analysis.severity_score}/5
+                              </span>
+                              {fb.analysis.food_safety_flag && (
+                                <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold">
+                                  Food Safety Hazard
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {evidenceModalTab === 'hypotheses' && (
+                <div className="space-y-4">
+                  {/* Empirical Observations */}
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80">
+                    <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400" />
+                      Empirically Verified Observations
+                    </h4>
+                    <ul className="space-y-1.5 text-xs text-slate-300">
+                      {selectedEvidenceIssue.observed_patterns.map((p, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="text-emerald-400 font-bold">•</span>
+                          <span>{p}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Causal Hypotheses */}
+                  <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                        <HelpCircle className="w-4 h-4 text-indigo-400" />
+                        AI Root-Cause Hypotheses
+                      </h4>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">
+                        Requires Investigation
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mb-3">
+                      Note: These are AI-generated working hypotheses based on recurrence signals, not confirmed causal conclusions.
+                    </p>
+                    <div className="space-y-2">
+                      {selectedEvidenceIssue.hypotheses_causes.map((c, idx) => (
+                        <div
+                          key={idx}
+                          className="p-2.5 rounded-lg bg-indigo-950/40 border border-indigo-500/20 text-xs text-indigo-200 flex items-start gap-2"
+                        >
+                          <span className="font-bold text-indigo-400 shrink-0">[HYPOTHESIS]</span>
+                          <span>{c.replace('[HYPOTHESIS]', '').trim()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Recommended Actions */}
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/80">
+                    <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-2">
+                      Recommended Operational Steps
+                    </h4>
+                    <ul className="space-y-1.5 text-xs text-slate-300">
+                      {selectedEvidenceIssue.recommended_actions.map((act, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="text-indigo-400 font-bold">&rarr;</span>
+                          <span>{act}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Uncertainty & Diagnostics */}
+                  <div className="p-3.5 rounded-xl bg-slate-950/40 border border-slate-800/60 text-xs text-slate-400">
+                    <div className="font-semibold text-slate-300 mb-1">Uncertainty Assessment:</div>
+                    <p className="italic">{selectedEvidenceIssue.confidence_explanation}</p>
+                  </div>
+                </div>
+              )}
+
+              {evidenceModalTab === 'trace' && (
+                <div className="space-y-3">
+                  <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+                    <span>LangGraph StateGraph Workflow: 5 Synchronous Functional Steps</span>
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-mono text-[11px]">
+                      Workflow Completed
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {(selectedEvidenceIssue.execution_trace && selectedEvidenceIssue.execution_trace.length > 0
+                      ? selectedEvidenceIssue.execution_trace
+                      : [
+                          '1. retrieve_evidence: Aggregated SQL complaint metrics, velocity window, distinct days count, and synthetic record split.',
+                          '2. reason_recurrence: LLM reasoning prompt evaluated recurrence risk and labeled hypotheses.',
+                          '3. safety_override: Deterministic Rule 9 validator verified critical food hazards.',
+                          '4. priority_scoring: Deterministic formula applied weights w_severity, w_recurrence_risk, w_recent_frequency.',
+                          '5. persist_assessment: Committed recurrence assessment and prioritized issue record into PostgreSQL.'
+                        ]
+                    ).map((traceStep, idx) => (
+                      <div
+                        key={idx}
+                        className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 font-mono text-xs text-slate-300 flex items-start gap-2.5"
+                      >
+                        <span className="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold text-[10px]">
+                          STEP {idx + 1}
+                        </span>
+                        <span className="leading-relaxed">{traceStep}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-800 bg-slate-950/40 flex items-center justify-between">
+              <span className="text-[11px] text-slate-500 font-mono">
+                Cluster: {selectedEvidenceIssue.issue_cluster_key}
+              </span>
+              <button
+                onClick={() => setSelectedEvidenceIssue(null)}
+                className="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

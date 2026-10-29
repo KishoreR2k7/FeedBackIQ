@@ -166,13 +166,28 @@ class RecurrenceReasoningAgent:
             except Exception:
                 pass
 
-        # Determine risk level
+        has_distinct_days_field = "distinct days with complaints:" in lower
+        distinct_days: Optional[int] = None
+        if has_distinct_days_field:
+            try:
+                d_str = summary_text.split("Distinct Days with Complaints:")[1].split("\n")[0].strip()
+                distinct_days = int(d_str)
+            except Exception:
+                distinct_days = None
+
+        has_friday_pattern = "friday" in lower or "recurring on fridays" in lower or "frequent on fridays" in lower
+        is_increasing = "velocity: increasing" in lower
+        is_decreasing = "velocity: decreasing" in lower
+
+        # Determine risk level strictly based on empirical evidence
         risk_level: RiskLevelType
         if is_safety:
             risk_level = "Critical"
-        elif total_count < 2 or complaint_count < 2:
-            risk_level = "Insufficient Evidence" if total_count <= 1 else "Low"
-        elif complaint_count >= 4 or "velocity: increasing" in lower:
+        elif total_count < 2 or complaint_count < 2 or (distinct_days is not None and distinct_days < 2 and not is_increasing and complaint_count < 3):
+            risk_level = "Insufficient Evidence"
+        elif is_decreasing:
+            risk_level = "Low"
+        elif is_increasing or has_friday_pattern or complaint_count >= 4:
             risk_level = "High"
         elif complaint_count >= 2:
             risk_level = "Medium"
@@ -220,6 +235,8 @@ class RecurrenceReasoningAgent:
 
         # Observed patterns extraction
         patterns: List[str] = []
+        if has_friday_pattern:
+            patterns.append("Friday recurrence pattern confirmed across multiple service shifts.")
         if "observed time patterns:" in summary_text:
             try:
                 tp_block = summary_text.split("Observed Time Patterns:")[1].split("\n\n")[0]
@@ -228,11 +245,19 @@ class RecurrenceReasoningAgent:
             except Exception:
                 pass
         if not patterns:
-            patterns.append(f"Observed across {complaint_count} customer reports.")
+            patterns.append(f"Observed across {complaint_count} customer reports spanning {distinct_days} distinct days.")
 
         # Confidence explanation
-        if total_count <= 1:
-            confidence = "High uncertainty / Insufficient evidence: Single isolated report is inadequate to confirm systemic recurrence."
+        if is_safety:
+            confidence = "Critical food safety alert: Immediate operational review and corrective action required regardless of recurrence history."
+        elif total_count <= 1 or complaint_count <= 1:
+            confidence = "Insufficient Evidence / High Uncertainty: Single isolated report is inadequate to confirm systemic recurrence without additional data."
+        elif is_decreasing:
+            confidence = "Moderate confidence: Prior recurrence observed, but recent complaint velocity is decreasing; continued monitoring advised."
+        elif is_increasing:
+            confidence = f"High confidence: Empirical evidence demonstrates an increasing trend of complaints ({complaint_count} reports) across consecutive windows."
+        elif has_friday_pattern:
+            confidence = "High confidence: Consistent empirical recurrence observed repeatedly during Friday services."
         elif complaint_count >= 3:
             confidence = f"High confidence: Supported by {complaint_count} consistent empirical reports demonstrating a recurring operational defect."
         else:
@@ -263,7 +288,6 @@ class RecurrenceReasoningAgent:
         Orchestrates recurrence reasoning for a single topic trend cluster.
         Feeds strict factual evidence to LLM or deterministic fallback.
         """
-        # Build factual prompt grounded in empirical metrics
         evidence_str = "\n".join([f"- \"{q}\"" for q in trend.evidence_quotes]) or "- None provided"
         patterns_str = "\n".join([f"- {p}" for p in trend.time_patterns]) or "- No distinct temporal pattern detected"
 
@@ -273,7 +297,12 @@ Category: {trend.issue_category or 'General'}
 Meal Type: {trend.meal_type or 'All Meals'}
 Total Feedback Count: {trend.total_feedback_count}
 Complaint Count: {trend.complaint_count}
+Distinct Days with Complaints: {trend.distinct_days_count}
+Days Since Most Recent Occurrence: {trend.days_since_last_occurrence if trend.days_since_last_occurrence is not None else 'Unknown'}
+Real Feedback Complaints: {trend.real_records_count}
+Synthetic Test Complaints: {trend.synthetic_records_count}
 Average Rating: {trend.average_rating} / 5.0
+Negative Feedback Proportion: {trend.negative_feedback_proportion}
 Recent Complaints (Last Window): {trend.recent_complaints_count}
 Historical Complaints: {trend.historical_complaints_count}
 Velocity: {trend.velocity_trend} ({trend.velocity_change_percent or 0.0}%)

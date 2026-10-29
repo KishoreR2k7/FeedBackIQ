@@ -113,6 +113,7 @@ async def list_prioritized_issues(
     category: Optional[str] = None,
     meal_type: Optional[str] = None,
     risk_level: Optional[str] = None,
+    item: Optional[str] = None,
     org: Organization = Depends(resolve_org_or_first),
     db: AsyncSession = Depends(get_db),
 ) -> List[PrioritizedIssueItem]:
@@ -126,6 +127,7 @@ async def list_prioritized_issues(
         category=category,
         meal_type=meal_type,
         risk_level=risk_level,
+        item=item,
     )
 
 
@@ -134,6 +136,7 @@ async def get_assessments(
     category: Optional[str] = None,
     meal_type: Optional[str] = None,
     risk_level: Optional[str] = None,
+    item: Optional[str] = None,
     org: Organization = Depends(resolve_org_or_first),
     db: AsyncSession = Depends(get_db),
 ) -> List[PrioritizedIssueItem]:
@@ -144,6 +147,7 @@ async def get_assessments(
         category=category,
         meal_type=meal_type,
         risk_level=risk_level,
+        item=item,
     )
 
 

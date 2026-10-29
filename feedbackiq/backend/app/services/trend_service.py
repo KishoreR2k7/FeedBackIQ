@@ -48,12 +48,14 @@ class TrendService:
         if filters:
             if filters.location_id:
                 query = query.where(Feedback.location_id == filters.location_id)
+            if filters.item:
+                query = query.where(Feedback.item.ilike(f"%{filters.item}%"))
             if filters.date_from:
                 query = query.where(Feedback.date >= filters.date_from)
             if filters.date_to:
                 query = query.where(Feedback.date <= filters.date_to)
             if filters.issue_category:
-                query = query.where(Feedback.issue_category == filters.issue_category)
+                query = query.where(Feedback.issue_category.ilike(f"%{filters.issue_category}%"))
             if filters.meal_type:
                 query = query.where(Feedback.meal_type == filters.meal_type)
             if filters.channel:
@@ -67,13 +69,10 @@ class TrendService:
 
         # Determine cutoff for recent vs historical window
         now = datetime.now(timezone.utc)
-        # Normalize all dates to timezone-aware UTC to prevent SQLite/Postgres naive/aware mismatch
-        dates_present = [
-            (f.date.replace(tzinfo=timezone.utc) if f.date.tzinfo is None else f.date)
-            for f in feedbacks
-            if f.date is not None
-        ]
-        ref_date = max(dates_present) if dates_present else now
+        if filters and filters.date_to:
+            ref_date = filters.date_to.replace(tzinfo=timezone.utc) if filters.date_to.tzinfo is None else filters.date_to
+        else:
+            ref_date = now
         recent_cutoff = ref_date - timedelta(days=recent_days)
 
         # Group feedback into clusters: (normalized_item, normalized_category, optional_meal)
@@ -133,6 +132,10 @@ class TrendService:
             recent_complaints = 0
             historical_complaints = 0
 
+            distinct_days: set = set()
+            complaint_dates: List[datetime] = []
+            synthetic_complaints = 0
+
             for fb in group:
                 analysis = fb.analysis
                 is_complaint = False
@@ -171,14 +174,26 @@ class TrendService:
                             historical_complaints += 1
                         
                         day_counter[fb_date.strftime("%A")] += 1
+                        distinct_days.add(fb_date.date())
+                        complaint_dates.append(fb_date)
                     else:
                         recent_complaints += 1
+
+                    if fb.source_dataset and ("synthetic" in fb.source_dataset.lower() or "seed" in fb.source_dataset.lower()):
+                        synthetic_complaints += 1
 
                 if fb.meal_type:
                     meal_counter[fb.meal_type] += 1
 
             complaint_count = len(complaints)
             positive_count = len(positives)
+            real_complaints = complaint_count - synthetic_complaints
+            distinct_days_count = len(distinct_days)
+            last_occurred_at: Optional[datetime] = max(complaint_dates) if complaint_dates else None
+            days_since_last: Optional[int] = None
+            if last_occurred_at:
+                days_since_last = max(0, (ref_date.date() - last_occurred_at.date()).days)
+
             neg_prop = round(complaint_count / total_count, 3) if total_count > 0 else 0.0
             avg_sev = round(sum(severities) / len(severities), 2) if severities else 1.0
             max_sev = max(severities) if severities else 1
@@ -218,6 +233,8 @@ class TrendService:
                     pct = int((count / total_count) * 100)
                     if pct >= 50:
                         time_patterns.append(f"Predominantly {m_name} service ({pct}% of reports)")
+            if distinct_days_count >= 3:
+                time_patterns.append(f"Recurring across {distinct_days_count} distinct calendar days")
 
             # Evidence quotes deduplicated & trimmed
             dedup_quotes = list(dict.fromkeys([q for q in quotes if len(q) > 4]))[:5]
@@ -250,6 +267,11 @@ class TrendService:
                     historical_complaints_count=historical_complaints,
                     velocity_change_percent=velocity_change_percent,
                     velocity_trend=velocity_trend,
+                    distinct_days_count=distinct_days_count,
+                    days_since_last_occurrence=days_since_last,
+                    last_occurred_at=last_occurred_at,
+                    synthetic_records_count=synthetic_complaints,
+                    real_records_count=real_complaints,
                     time_patterns=time_patterns,
                     evidence_quotes=dedup_quotes,
                     has_food_safety_hazard=has_food_safety,
