@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: feedbackiq-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-feedbackiq_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-feedbackiq_secret_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-feedbackiq}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - feedbackiq_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-feedbackiq_user} -d ${POSTGRES_DB:-feedbackiq}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - feedbackiq-network
+
+networks:
+  feedbackiq-network:
+    driver: bridge
+
+volumes:
+  feedbackiq_postgres_data:
