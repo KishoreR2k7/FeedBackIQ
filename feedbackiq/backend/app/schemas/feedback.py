@@ -76,3 +76,13 @@ class ImportJobResponse(BaseModel):
 class CSVUploadResponse(BaseModel):
     import_job: ImportJobResponse
     message: str
+
+
+class DatasetStatsResponse(BaseModel):
+    total_feedback: int
+    student_canteen_count: int
+    synthetic_count: int
+    zomato_count: int
+    other_count: int
+    dataset_breakdown: Dict[str, int]
+

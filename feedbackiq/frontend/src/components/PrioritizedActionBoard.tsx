@@ -10,7 +10,6 @@ import {
   Search,
   CheckCircle2,
   PlayCircle,
-  Check,
   Award,
   Bell,
   Info,
@@ -53,15 +52,14 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   // Modals state
   const [selectedTask, setSelectedTask] = useState<ActionTask | null>(null);
   const [actionModalType, setActionModalType] = useState<
-    'approve' | 'assign' | 'status' | 'verify' | null
+    'correct' | 'assign' | 'status' | 'verify' | null
   >(null);
 
   // Form states for modals
-  const [approvalDecision, setApprovalDecision] = useState<boolean>(true);
-  const [rejectionReason, setRejectionReason] = useState<string>('');
+  const [targetRole, setTargetRole] = useState<string>('');
   const [assigneeName, setAssigneeName] = useState<string>('');
   const [dueDate, setDueDate] = useState<string>('');
-  const [statusProgress, setStatusProgress] = useState<string>('in_progress');
+  const [statusProgress, setStatusProgress] = useState<string>('completed');
   const [completionNotes, setCompletionNotes] = useState<string>('');
   const [verificationWindowDays, setVerificationWindowDays] = useState<number>(7);
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null);
@@ -136,30 +134,41 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   };
 
   // Open modals
-  const openApproveModal = (task: ActionTask) => {
+  const openCorrectionModal = (task: ActionTask) => {
     setSelectedTask(task);
-    setApprovalDecision(true);
-    setRejectionReason('');
+    setTargetRole(task.responsible_role || 'Head Chef');
     setAssigneeName(task.assignee_name || '');
     setDueDate(task.due_date ? task.due_date.substring(0, 10) : '');
+    setStatusProgress(task.status === 'in_progress' ? 'completed' : 'in_progress');
+    setCompletionNotes(task.completion_notes || '');
     setModalError(null);
-    setActionModalType('approve');
+    setActionModalType('correct');
+  };
+
+  const handleStartCorrection = async (task: ActionTask) => {
+    try {
+      await api.updateTaskStatus(
+        task.id,
+        {
+          status: 'in_progress',
+          completion_notes: `Correction commenced by ${task.responsible_role}. Action underway.`,
+        },
+        actingRole,
+        orgId
+      );
+      await fetchTasks();
+    } catch (err: any) {
+      console.error('Failed to start correction:', err);
+    }
   };
 
   const openAssignModal = (task: ActionTask) => {
     setSelectedTask(task);
+    setTargetRole(task.responsible_role || 'Head Chef');
     setAssigneeName(task.assignee_name || 'Chef Executive');
     setDueDate(task.due_date ? task.due_date.substring(0, 10) : '');
     setModalError(null);
     setActionModalType('assign');
-  };
-
-  const openStatusModal = (task: ActionTask, nextStatus: string) => {
-    setSelectedTask(task);
-    setStatusProgress(nextStatus);
-    setCompletionNotes(task.completion_notes || '');
-    setModalError(null);
-    setActionModalType('status');
   };
 
   const openVerifyModal = async (task: ActionTask) => {
@@ -170,27 +179,43 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   };
 
   // Submit Modal Actions
-  const handleApproveSubmit = async () => {
+  const handleCorrectionSubmit = async () => {
     if (!selectedTask) return;
+    if (!completionNotes.trim()) {
+      setModalError('Please describe the specific physical or culinary correction action taken.');
+      return;
+    }
     setIsSubmittingModal(true);
     setModalError(null);
     try {
-      await api.approveTask(
+      // 1. Update assignment / role details
+      await api.assignTask(
         selectedTask.id,
         {
-          approved: approvalDecision,
-          rejection_reason: approvalDecision ? undefined : rejectionReason,
-          assignee_name: assigneeName || undefined,
+          assignee_id: '00000000-0000-0000-0000-000000000001',
+          assignee_name: assigneeName || selectedTask.responsible_role,
           due_date: dueDate ? new Date(dueDate).toISOString() : undefined,
         },
         actingRole,
         orgId
       );
+
+      // 2. Update status and log resolution notes
+      await api.updateTaskStatus(
+        selectedTask.id,
+        {
+          status: statusProgress as TaskStatusType,
+          completion_notes: completionNotes,
+        },
+        actingRole,
+        orgId
+      );
+
       setActionModalType(null);
       await fetchTasks();
       await fetchNotifications();
     } catch (err: any) {
-      setModalError(err.message || 'Failed to submit approval.');
+      setModalError(err.message || 'Failed to record correction update.');
     } finally {
       setIsSubmittingModal(false);
     }
@@ -219,7 +244,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
       await fetchTasks();
       await fetchNotifications();
     } catch (err: any) {
-      setModalError(err.message || 'Failed to assign task.');
+      setModalError(err.message || 'Failed to route task.');
     } finally {
       setIsSubmittingModal(false);
     }
@@ -233,7 +258,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
       await api.updateTaskStatus(
         selectedTask.id,
         {
-          status: statusProgress,
+          status: statusProgress as TaskStatusType,
           completion_notes: completionNotes || undefined,
         },
         actingRole,
@@ -281,21 +306,39 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   const getStatusBadge = (status: TaskStatusType) => {
     switch (status) {
       case 'proposed':
-        return 'bg-slate-100 text-slate-700 border border-slate-200';
       case 'awaiting_approval':
-        return 'bg-amber-50 text-amber-800 border border-amber-200 animate-pulse';
       case 'assigned':
         return 'bg-blue-50 text-blue-700 border border-blue-200';
       case 'in_progress':
-        return 'bg-blue-100 text-blue-800 border border-blue-300';
+        return 'bg-amber-50 text-amber-800 border border-amber-300';
       case 'completed':
         return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
       case 'verified':
         return 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
       case 'rejected':
-        return 'bg-red-50 text-red-700 border border-red-200';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
       default:
         return 'bg-slate-100 text-slate-700 border border-slate-200';
+    }
+  };
+
+  const formatStatusLabel = (status: TaskStatusType) => {
+    switch (status) {
+      case 'proposed':
+      case 'awaiting_approval':
+        return 'Routed to Role';
+      case 'assigned':
+        return 'Role Assigned';
+      case 'in_progress':
+        return 'Under Correction';
+      case 'completed':
+        return 'Issue Corrected';
+      case 'verified':
+        return 'Verified & Solved';
+      case 'rejected':
+        return 'Dismissed';
+      default:
+        return String(status || '').replace('_', ' ');
     }
   };
 
@@ -316,8 +359,9 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
   // Summary counts
   const totalCount = tasks.length;
-  const awaitingApprovalCount = tasks.filter((t) => t.status === 'awaiting_approval' || t.approval_status === 'awaiting_approval').length;
-  const inProgressCount = tasks.filter((t) => t.status === 'in_progress' || t.status === 'assigned').length;
+  const routedCount = tasks.filter((t) => t.status === 'proposed' || t.status === 'awaiting_approval' || t.status === 'assigned').length;
+  const inProgressCount = tasks.filter((t) => t.status === 'in_progress').length;
+  const completedCount = tasks.filter((t) => t.status === 'completed').length;
   const verifiedCount = tasks.filter((t) => t.status === 'verified').length;
   const safetyOverrideCount = tasks.filter((t) => t.is_safety_override).length;
 
@@ -334,11 +378,11 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               Prioritized Action Board &amp; CAPA
             </h2>
             <span className="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-blue-50 text-blue-700 border border-blue-200 font-mono">
-              Capability 3
+              Role Routing &amp; CAPA
             </span>
           </div>
           <p className="text-xs text-slate-600 max-w-2xl font-medium">
-            Generates evidence-grounded corrective and preventive action recommendations (CAPA) with deterministic priority scoring, manager approvals, staff delegation, and closed-loop outcome verification.
+            Automatically routes diner quality issues directly to responsible kitchen, hygiene, and operations roles. Roles correct the issue, log physical updates, and track before/after verification without approval bottleneck.
           </p>
         </div>
 
@@ -360,7 +404,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           {/* Persona Role Switcher for Testability */}
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-              <User className="w-3.5 h-3.5 text-blue-600" /> Persona:
+              <User className="w-3.5 h-3.5 text-blue-600" /> Role View:
             </span>
             <select
               value={actingRole}
@@ -374,7 +418,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                 Quality Reviewer (Reviewer)
               </option>
               <option value="staff" className="bg-white text-slate-800">
-                Kitchen Staff (Operator)
+                Kitchen Staff / Chef (Operator)
               </option>
             </select>
           </div>
@@ -386,16 +430,16 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition disabled:opacity-50"
           >
             <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
-            <span>{isGenerating ? 'Synthesizing...' : 'Generate Action Tasks'}</span>
+            <span>{isGenerating ? 'Synthesizing...' : 'Route New Issues'}</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Counters Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      {/* KPI Counters Bar: Role Routing & Correction Lifecycle */}
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total Tasks</div>
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total Issues</div>
             <div className="text-xl font-bold text-slate-900 mt-0.5 font-mono">{totalCount}</div>
           </div>
           <FileCheck className="w-5 h-5 text-slate-400" />
@@ -403,24 +447,44 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Awaiting Approval</div>
-            <div className="text-xl font-bold text-amber-600 mt-0.5 font-mono">{awaitingApprovalCount}</div>
+            <div className="text-[11px] font-semibold text-blue-700 uppercase tracking-wider flex items-center gap-1">
+              <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+              Routed to Roles
+            </div>
+            <div className="text-xl font-bold text-blue-700 mt-0.5 font-mono">{routedCount}</div>
           </div>
-          <Clock className="w-5 h-5 text-amber-500" />
+          <div className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">In Progress</div>
-            <div className="text-xl font-bold text-blue-600 mt-0.5 font-mono">{inProgressCount}</div>
+            <div className="text-[11px] font-semibold text-amber-700 uppercase tracking-wider flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-amber-600" />
+              Under Correction
+            </div>
+            <div className="text-xl font-bold text-amber-600 mt-0.5 font-mono">{inProgressCount}</div>
           </div>
-          <PlayCircle className="w-5 h-5 text-blue-500" />
+          <PlayCircle className="w-5 h-5 text-amber-500" />
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Verified</div>
-            <div className="text-xl font-bold text-emerald-600 mt-0.5 font-mono">{verifiedCount}</div>
+            <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              Issue Corrected
+            </div>
+            <div className="text-xl font-bold text-emerald-600 mt-0.5 font-mono">{completedCount}</div>
+          </div>
+          <CheckSquare className="w-5 h-5 text-emerald-500" />
+        </div>
+
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <div className="text-[11px] font-semibold text-emerald-900 uppercase tracking-wider flex items-center gap-1">
+              <Award className="w-3.5 h-3.5 text-emerald-600" />
+              Verified &amp; Solved
+            </div>
+            <div className="text-xl font-bold text-emerald-700 mt-0.5 font-mono">{verifiedCount}</div>
           </div>
           <Award className="w-5 h-5 text-emerald-500" />
         </div>
@@ -522,13 +586,12 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
           >
             <option value="">All Lifecycle Stages</option>
-            <option value="proposed">Proposed</option>
-            <option value="awaiting_approval">Awaiting Approval</option>
-            <option value="assigned">Assigned</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-            <option value="verified">Verified</option>
-            <option value="rejected">Rejected</option>
+            <option value="proposed">Routed to Role</option>
+            <option value="assigned">Role Assigned</option>
+            <option value="in_progress">Under Correction</option>
+            <option value="completed">Issue Corrected</option>
+            <option value="verified">Verified &amp; Solved</option>
+            <option value="rejected">Dismissed</option>
           </select>
 
           {/* Risk Filter */}
@@ -633,7 +696,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   <div className="flex items-center gap-3">
                     <div className="text-right">
                       <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Priority Score</div>
-                      <div className="text-xl font-black text-blue-600 font-mono">
+                      <div className="text-xl font-bold text-blue-600 font-mono">
                         {task.priority_score.toFixed(1)} <span className="text-xs text-slate-400 font-normal">/ 100</span>
                       </div>
                     </div>
@@ -646,7 +709,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                           task.status
                         )}`}
                       >
-                        {task.status.replace('_', ' ')}
+                        {formatStatusLabel(task.status)}
                       </span>
                     </div>
                   </div>
@@ -681,8 +744,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                         <span className="font-semibold text-slate-800">{task.estimated_effort}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500">Approval Required: </span>
-                        <span className="font-semibold text-slate-800">{task.required_approval}</span>
+                        <span className="text-slate-500">Accountable Role: </span>
+                        <span className="font-semibold text-blue-700">{task.responsible_role}</span>
                       </div>
                     </div>
                   </div>
@@ -763,63 +826,74 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
                   {/* Contextual Action Buttons */}
                   <div className="flex flex-wrap items-center gap-2">
-                    {/* Approve / Reject Controls (Awaiting Approval or Proposed) */}
+                    {/* Role Correction Controls (Newly Routed / Assigned) */}
                     {(task.status === 'awaiting_approval' ||
                       task.status === 'proposed' ||
-                      task.approval_status === 'awaiting_approval') && (
+                      task.status === 'assigned') && (
                         <>
                           <button
-                            onClick={() => openApproveModal(task)}
+                            onClick={() => handleStartCorrection(task)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 transition"
+                            title="Acknowledge and mark under active correction"
+                          >
+                            <PlayCircle className="w-3.5 h-3.5" />
+                            <span>Start Correction</span>
+                          </button>
+                          <button
+                            onClick={() => openCorrectionModal(task)}
                             className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
                           >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Review &amp; Approve</span>
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Correct Issue &amp; Update</span>
+                          </button>
+                          <button
+                            onClick={() => openAssignModal(task)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                          >
+                            <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                            <span>Re-route Role</span>
                           </button>
                         </>
                       )}
 
-                    {/* Assignment Control (Approved but not assigned) */}
-                    {task.status === 'assigned' || task.approval_status === 'approved' ? (
-                      <button
-                        onClick={() => openAssignModal(task)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-                      >
-                        <UserCheck className="w-3.5 h-3.5 text-blue-600" />
-                        <span>Reassign</span>
-                      </button>
-                    ) : null}
-
-                    {/* Advance to In-Progress */}
-                    {task.status === 'assigned' && (
-                      <button
-                        onClick={() => openStatusModal(task, 'in_progress')}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
-                      >
-                        <PlayCircle className="w-3.5 h-3.5" />
-                        <span>Start Work</span>
-                      </button>
-                    )}
-
-                    {/* Complete Task */}
+                    {/* In-Progress (Under Correction) Controls */}
                     {task.status === 'in_progress' && (
-                      <button
-                        onClick={() => openStatusModal(task, 'completed')}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Mark Completed</span>
-                      </button>
+                      <>
+                        <button
+                          onClick={() => openCorrectionModal(task)}
+                          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Correct Issue &amp; Update</span>
+                        </button>
+                        <button
+                          onClick={() => openAssignModal(task)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                        >
+                          <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Re-route Role</span>
+                        </button>
+                      </>
                     )}
 
-                    {/* Outcome Verification Button */}
+                    {/* Outcome Verification Controls (Completed or Verified) */}
                     {(task.status === 'completed' || task.status === 'verified') && (
-                      <button
-                        onClick={() => openVerifyModal(task)}
-                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
-                      >
-                        <Award className="w-3.5 h-3.5" />
-                        <span>{task.status === 'verified' ? 'View Verification' : 'Verify Outcome'}</span>
-                      </button>
+                      <>
+                        <button
+                          onClick={() => openVerifyModal(task)}
+                          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
+                        >
+                          <Award className="w-3.5 h-3.5" />
+                          <span>{task.status === 'verified' ? 'View Verification' : 'Verify Outcome'}</span>
+                        </button>
+                        <button
+                          onClick={() => openCorrectionModal(task)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                        >
+                          <FileCheck className="w-3.5 h-3.5 text-slate-600" />
+                          <span>Update Record</span>
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -879,15 +953,20 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
         </div>
       )}
 
-      {/* MODAL 1: Manager Review & Approval */}
-      {actionModalType === 'approve' && selectedTask && (
+      {/* MODAL 1: Role Operational Correction & Status Update */}
+      {actionModalType === 'correct' && selectedTask && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-blue-600" />
-                Manager Authorization &amp; Assignment
-              </h3>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Role Operational Correction &amp; Status Update
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Assigned role records direct physical/culinary solution and updates status.
+                </p>
+              </div>
               <button
                 onClick={() => setActionModalType(null)}
                 className="text-slate-400 hover:text-slate-600 text-xs font-semibold"
@@ -902,81 +981,100 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               </div>
             )}
 
-            <div className="text-xs text-slate-700 space-y-1">
-              <div className="font-bold text-slate-900">{selectedTask.item || selectedTask.issue_cluster_key}</div>
+            <div className="text-xs p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-900">{selectedTask.item || selectedTask.issue_cluster_key}</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-blue-100 text-blue-800">
+                  Routed to: {targetRole || selectedTask.responsible_role}
+                </span>
+              </div>
               <p className="text-slate-600">{selectedTask.issue_summary}</p>
             </div>
 
-            <div className="space-y-3 pt-2 text-xs">
+            <div className="space-y-3 pt-1 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
+                    Assigned Role
+                  </label>
+                  <select
+                    value={targetRole}
+                    onChange={(e) => setTargetRole(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="Head Chef">Kitchen Head Chef</option>
+                    <option value="Hygiene Supervisor">Hygiene Supervisor</option>
+                    <option value="Station Cook">Station Cook / Line Chef</option>
+                    <option value="Food Safety Officer">Food Safety Officer</option>
+                    <option value="Procurement & Stores Manager">Procurement &amp; Stores</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
+                    Assignee / Handler Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Chef Sanjay, Officer Meera"
+                    value={assigneeName}
+                    onChange={(e) => setAssigneeName(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
+                  Correction Action Taken (Physical / Culinary Fix)
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="Describe the physical correction executed (e.g. Recalibrated deep fryer thermostat to 175°C, discarded old oil batch, retrained fry station cook on timer use)..."
+                  value={completionNotes}
+                  onChange={(e) => setCompletionNotes(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
               <div>
                 <label className="block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase">
-                  Approval Decision
+                  Update Issue Status
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setApprovalDecision(true)}
-                    className={`py-2 rounded-xl font-bold border transition ${approvalDecision
-                        ? 'bg-blue-50 text-blue-700 border-blue-400'
-                        : 'bg-slate-50 text-slate-600 border-slate-200'
-                      }`}
+                    onClick={() => setStatusProgress('in_progress')}
+                    className={`p-2.5 rounded-xl text-left border transition ${
+                      statusProgress === 'in_progress'
+                        ? 'bg-amber-50 text-amber-900 border-amber-300 ring-1 ring-amber-300'
+                        : 'bg-slate-50 text-slate-700 border-slate-200'
+                    }`}
                   >
-                    ✓ Approve Action
+                    <div className="font-bold flex items-center gap-1.5 text-xs">
+                      <PlayCircle className="w-3.5 h-3.5 text-amber-600" />
+                      Under Correction
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">Role actively fixing issue</div>
                   </button>
+
                   <button
                     type="button"
-                    onClick={() => setApprovalDecision(false)}
-                    className={`py-2 rounded-xl font-bold border transition ${!approvalDecision
-                        ? 'bg-red-50 text-red-700 border-red-300'
-                        : 'bg-slate-50 text-slate-600 border-slate-200'
-                      }`}
+                    onClick={() => setStatusProgress('completed')}
+                    className={`p-2.5 rounded-xl text-left border transition ${
+                      statusProgress === 'completed'
+                        ? 'bg-emerald-50 text-emerald-900 border-emerald-300 ring-1 ring-emerald-300'
+                        : 'bg-slate-50 text-slate-700 border-slate-200'
+                    }`}
                   >
-                    ✕ Reject Action
+                    <div className="font-bold flex items-center gap-1.5 text-xs">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      Issue Corrected
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">Physical fix applied &amp; resolved</div>
                   </button>
                 </div>
               </div>
-
-              {approvalDecision ? (
-                <>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
-                      Assign to Staff / Role
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Chef Sanjay, Quality Inspector..."
-                      value={assigneeName}
-                      onChange={(e) => setAssigneeName(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
-                      Target Due Date
-                    </label>
-                    <input
-                      type="date"
-                      value={dueDate}
-                      onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                </>
-              ) : (
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
-                    Rejection Reason
-                  </label>
-                  <textarea
-                    rows={3}
-                    placeholder="Provide operational reason for rejecting this CAPA recommendation..."
-                    value={rejectionReason}
-                    onChange={(e) => setRejectionReason(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-red-500"
-                  />
-                </div>
-              )}
             </div>
 
             <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
@@ -987,11 +1085,12 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                 Cancel
               </button>
               <button
-                onClick={handleApproveSubmit}
+                onClick={handleCorrectionSubmit}
                 disabled={isSubmittingModal}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-xs"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-xs flex items-center gap-1.5"
               >
-                {isSubmittingModal ? 'Submitting...' : 'Confirm Decision'}
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>{isSubmittingModal ? 'Saving...' : 'Save Correction & Update Status'}</span>
               </button>
             </div>
           </div>

@@ -3,12 +3,13 @@ from datetime import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, status, Header
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func, desc
 
 from app.core.database import get_db
 from app.api.deps import get_current_active_org
 from app.models.organization import Organization
 from app.models.import_job import ImportJob
+from app.models.feedback import Feedback
 from app.schemas.feedback import (
     FeedbackCreate,
     FeedbackResponse,
@@ -17,6 +18,7 @@ from app.schemas.feedback import (
     SyntheticGenerationResponse,
     CSVUploadResponse,
     ImportJobResponse,
+    DatasetStatsResponse,
 )
 from app.schemas.analysis import (
     FeedbackAnalysisResponse,
@@ -62,6 +64,8 @@ async def list_feedback(
     channel: Optional[str] = None,
     food_safety_only: bool = False,
     source_dataset: Optional[str] = None,
+    rating: Optional[int] = Query(None, ge=1, le=5),
+    has_analysis: Optional[bool] = None,
     org: Organization = Depends(resolve_org_or_first),
     db: AsyncSession = Depends(get_db),
 ) -> PaginatedFeedbackResponse:
@@ -80,7 +84,10 @@ async def list_feedback(
         channel=channel,
         food_safety_only=food_safety_only,
         source_dataset=source_dataset,
+        rating=rating,
+        has_analysis=has_analysis,
     )
+
 
 
 @router.post("", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED, summary="Submit Single Feedback")
@@ -101,6 +108,69 @@ async def create_single_feedback(
     if refreshed:
         fb = refreshed
     return FeedbackResponse.model_validate(fb)
+
+
+@router.get("/dataset-stats", response_model=DatasetStatsResponse, summary="Get Dataset Segregation Statistics")
+async def get_dataset_stats(
+    org: Organization = Depends(resolve_org_or_first),
+    db: AsyncSession = Depends(get_db),
+) -> DatasetStatsResponse:
+    """Returns dataset segregation counts separating Student Feedback, Synthetic, and Zomato."""
+    stmt = (
+        select(Feedback.source_dataset, func.count())
+        .where(Feedback.organization_id == org.id)
+        .group_by(Feedback.source_dataset)
+    )
+    res = await db.execute(stmt)
+    rows = res.all()
+
+    breakdown: dict[str, int] = {}
+    total = 0
+    student_canteen = 0
+    synthetic = 0
+    zomato = 0
+    other = 0
+
+    for src, count in rows:
+        src_name = src or "unspecified"
+        breakdown[src_name] = count
+        total += count
+        src_lower = src_name.lower()
+        if "zomato" in src_lower:
+            zomato += count
+        elif "synth" in src_lower:
+            synthetic += count
+        elif "canteen" in src_lower or "student" in src_lower or "manual" in src_lower:
+            student_canteen += count
+        else:
+            other += count
+
+    return DatasetStatsResponse(
+        total_feedback=total,
+        student_canteen_count=student_canteen,
+        synthetic_count=synthetic,
+        zomato_count=zomato,
+        other_count=other,
+        dataset_breakdown=breakdown,
+    )
+
+
+@router.get("/import-jobs", response_model=List[ImportJobResponse], summary="List Ingestion Import Jobs")
+async def list_import_jobs(
+    limit: int = Query(20, ge=1, le=100),
+    org: Organization = Depends(resolve_org_or_first),
+    db: AsyncSession = Depends(get_db),
+) -> List[ImportJobResponse]:
+    """Lists historical and running CSV import jobs for the organization."""
+    stmt = (
+        select(ImportJob)
+        .where(ImportJob.organization_id == org.id)
+        .order_by(desc(ImportJob.created_at))
+        .limit(limit)
+    )
+    res = await db.execute(stmt)
+    jobs = res.scalars().all()
+    return [ImportJobResponse.model_validate(j) for j in jobs]
 
 
 @router.get("/{feedback_id}", response_model=FeedbackResponse, summary="Get Feedback Details")
@@ -220,6 +290,8 @@ async def batch_analyze_feedback(
     )
 
 
+
+
 @router.get("/import-jobs/{job_id}", response_model=ImportJobResponse, summary="Get Import Job Status")
 async def get_import_job(
     job_id: uuid.UUID,
@@ -232,3 +304,4 @@ async def get_import_job(
     if not job:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Import job not found")
     return ImportJobResponse.model_validate(job)
+

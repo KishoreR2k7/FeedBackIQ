@@ -23,7 +23,7 @@ ISSUE_CATEGORIES = [
     "Service & Waiting Time",
 ]
 
-CHANNELS = ["student_form", "complaint_box", "qr_scan"]
+CHANNELS = ["form", "complaint", "student_form", "complaint_box", "qr_scan"]
 
 # Seeded Systemic Recurring Scenarios
 SCENARIOS = {

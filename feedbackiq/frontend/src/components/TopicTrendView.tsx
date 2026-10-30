@@ -12,13 +12,12 @@ import {
   RefreshCw,
   Filter,
   Eye,
-  X,
-  Star,
 } from 'lucide-react';
 import { api } from '../services/api';
-import { TopicTrendSummary, Feedback } from '../types';
+import { TopicTrendSummary } from '../types';
 import { LoadingState } from './LoadingState';
 import { EmptyState } from './EmptyState';
+import { IssueDetailModal } from './IssueDetailModal';
 
 interface TopicTrendViewProps {
   orgId?: string;
@@ -37,22 +36,11 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
   const [recentDays, setRecentDays] = useState(7);
   const [assessmentSuccess, setAssessmentSuccess] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<TopicTrendSummary | null>(null);
-  const [supportingFeedbacks, setSupportingFeedbacks] = useState<Feedback[]>([]);
-  const [isLoadingSupporting, setIsLoadingSupporting] = useState(false);
 
-  const handleViewSupportingFeedback = async (topic: TopicTrendSummary) => {
+  const handleViewSupportingFeedback = (topic: TopicTrendSummary) => {
     setSelectedTopic(topic);
-    setIsLoadingSupporting(true);
-    try {
-      const data = await api.getTopicFeedback(topic.issue_cluster_key, orgId);
-      setSupportingFeedbacks(data);
-    } catch (err) {
-      console.error('Failed to load supporting feedback:', err);
-      setSupportingFeedbacks([]);
-    } finally {
-      setIsLoadingSupporting(false);
-    }
   };
+
 
   const fetchTrends = async () => {
     if (!orgId) return;
@@ -381,74 +369,19 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
         </div>
       )}
 
-      {/* Supporting Feedback Modal Dialog */}
-      {selectedTopic && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-3xl rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl relative max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span>{selectedTopic.topic_label}</span>
-                  <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
-                    {selectedTopic.total_feedback_count} reports
-                  </span>
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Empirical database records backing this common topic cluster.
-                </p>
-              </div>
-              <button
-                onClick={() => setSelectedTopic(null)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto py-4 space-y-3">
-              {isLoadingSupporting ? (
-                <div className="py-8 text-center text-xs text-slate-500">
-                  <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2 text-blue-600" />
-                  Loading supporting records...
-                </div>
-              ) : supportingFeedbacks.length === 0 ? (
-                <div className="py-8 text-center text-xs text-slate-500">
-                  No direct feedback items retrieved for this cluster.
-                </div>
-              ) : (
-                supportingFeedbacks.map((item) => (
-                  <div
-                    key={item.id}
-                    className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-xs"
-                  >
-                    <div className="flex items-center justify-between text-[11px] text-slate-500">
-                      <span className="font-semibold text-slate-900">{item.item}</span>
-                      <span>{item.date ? new Date(item.date).toLocaleDateString() : 'N/A'} • {item.meal_type || 'General'}</span>
-                    </div>
-                    <p className="text-slate-800 font-medium">"{item.comment}"</p>
-                    {item.rating && (
-                      <div className="flex items-center gap-0.5 text-amber-500 text-xs">
-                        {Array.from({ length: item.rating }).map((_, i) => (
-                          <Star key={i} className="w-3 h-3 fill-amber-400" />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="pt-3 border-t border-slate-100 flex justify-end">
-              <button
-                onClick={() => setSelectedTopic(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Comprehensive Issue Details Modal */}
+      <IssueDetailModal
+        topic={selectedTopic}
+        isOpen={!!selectedTopic}
+        onClose={() => setSelectedTopic(null)}
+        orgId={orgId}
+        onCreateAction={() => {
+          setSelectedTopic(null);
+          if (onNavigateToPriorities) {
+            onNavigateToPriorities();
+          }
+        }}
+      />
     </div>
   );
 };

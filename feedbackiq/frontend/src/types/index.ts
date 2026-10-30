@@ -119,6 +119,16 @@ export interface ImportJob {
   updated_at: string;
 }
 
+export interface DatasetStats {
+  total_feedback: number;
+  student_canteen_count: number;
+  synthetic_count: number;
+  zomato_count: number;
+  other_count: number;
+  dataset_breakdown: Record<string, number>;
+}
+
+
 export type RiskLevelType = 'Critical' | 'High' | 'Medium' | 'Low' | 'Insufficient Evidence';
 export type VelocityTrendType = 'increasing' | 'stable' | 'decreasing' | 'new' | 'insufficient_data';
 

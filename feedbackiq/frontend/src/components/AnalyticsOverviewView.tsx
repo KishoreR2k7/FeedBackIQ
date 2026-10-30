@@ -23,8 +23,6 @@ interface AnalyticsOverviewViewProps {
   onNavigateToRecurrence?: () => void;
   onNavigateToActions?: () => void;
   onNavigateToFeedback?: () => void;
-  onNavigateToPipeline?: () => void;
-  onNavigateToIngest?: () => void;
 }
 
 export const AnalyticsOverviewView: React.FC<AnalyticsOverviewViewProps> = ({
@@ -32,8 +30,6 @@ export const AnalyticsOverviewView: React.FC<AnalyticsOverviewViewProps> = ({
   onNavigateToRecurrence,
   onNavigateToActions,
   onNavigateToFeedback,
-  onNavigateToPipeline: _onNavigateToPipeline,
-  onNavigateToIngest: _onNavigateToIngest,
 }) => {
   const [report, setReport] = useState<AnalyticsReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);

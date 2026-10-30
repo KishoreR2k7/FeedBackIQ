@@ -8,6 +8,7 @@ import {
   PaginatedFeedback,
   FeedbackAnalysis,
   ImportJob,
+  DatasetStats,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || '';
@@ -51,8 +52,8 @@ async function fetchJson<T>(url: string, options: RequestInit = {}): Promise<T> 
 
 export const api = {
   // System Health
-  getHealth: (): Promise<HealthResponse> => fetchJson<HealthResponse>('/health'),
-  getReadiness: (): Promise<ReadinessResponse> => fetchJson<ReadinessResponse>('/ready'),
+  getHealth: (): Promise<HealthResponse> => fetchJson<HealthResponse>('/api/v1/health'),
+  getReadiness: (): Promise<ReadinessResponse> => fetchJson<ReadinessResponse>('/api/v1/health/ready'),
 
   // Organizations
   getTemplates: (): Promise<Record<string, OrgTemplateConfig>> =>
@@ -79,6 +80,8 @@ export const api = {
       channel?: string;
       food_safety_only?: boolean;
       source_dataset?: string;
+      rating?: number;
+      has_analysis?: boolean;
     } = {},
     orgId?: string
   ): Promise<PaginatedFeedback> => {
@@ -94,12 +97,15 @@ export const api = {
     if (params.channel) query.set('channel', params.channel);
     if (params.food_safety_only) query.set('food_safety_only', 'true');
     if (params.source_dataset) query.set('source_dataset', params.source_dataset);
+    if (params.rating) query.set('rating', params.rating.toString());
+    if (params.has_analysis !== undefined) query.set('has_analysis', params.has_analysis.toString());
 
     const headers: Record<string, string> = {};
     if (orgId) headers['X-Organization-Id'] = orgId;
 
     return fetchJson<PaginatedFeedback>(`/api/v1/feedback?${query.toString()}`, { headers });
   },
+
 
   submitFeedback: (
     payload: {
@@ -137,6 +143,18 @@ export const api = {
       body: formData,
       headers,
     });
+  },
+
+  getDatasetStats: (orgId?: string): Promise<DatasetStats> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+    return fetchJson<DatasetStats>('/api/v1/feedback/dataset-stats', { headers });
+  },
+
+  getImportJobs: (limit = 20, orgId?: string): Promise<ImportJob[]> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+    return fetchJson<ImportJob[]>(`/api/v1/feedback/import-jobs?limit=${limit}`, { headers });
   },
 
   generateSynthetic: (

@@ -135,32 +135,32 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
     switch (risk) {
       case 'Critical':
         return (
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
             Critical Risk
           </span>
         );
       case 'High':
         return (
-          <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
             High Risk
           </span>
         );
       case 'Medium':
         return (
-          <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-yellow-500/10 text-yellow-300 border border-yellow-500/30">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
             Medium Risk
           </span>
         );
       case 'Low':
         return (
-          <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
             Low Risk
           </span>
         );
       case 'Insufficient Evidence':
       default:
         return (
-          <span className="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+          <span className="px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
             Insufficient Evidence
           </span>
         );
@@ -357,7 +357,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                       <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
                         Priority Score
                       </div>
-                      <div className="text-2xl font-black text-blue-600 font-mono">
+                      <div className="text-2xl font-bold text-blue-600 font-mono">
                         {issue.priority_score.toFixed(1)}
                         <span className="text-xs text-slate-400 font-normal"> / 100</span>
                       </div>
@@ -684,7 +684,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
               </div>
               <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                 <span className="text-[10px] uppercase font-bold text-slate-500 block">Priority Score</span>
-                <span className="text-base font-black text-blue-600 font-mono">
+                <span className="text-base font-bold text-blue-600 font-mono">
                   {selectedEvidenceIssue.priority_score.toFixed(1)}
                 </span>
                 <span className="text-[10px] text-slate-500 ml-1">/ 100</span>

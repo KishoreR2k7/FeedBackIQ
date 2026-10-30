@@ -1,7 +1,5 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
-  Upload,
-  Sparkles,
   FileText,
   CheckCircle2,
   AlertCircle,
@@ -9,7 +7,8 @@ import {
   PenLine,
   Star,
   Send,
-  Building2,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { Organization, ImportJob } from '../types';
@@ -18,12 +17,18 @@ import { resolveDepartmentRouting } from '../utils/routing';
 interface IngestionPanelProps {
   currentOrg: Organization | null;
   onIngestionComplete: () => void;
+  onNavigateToExplorer?: () => void;
 }
 
 export const IngestionPanel: React.FC<IngestionPanelProps> = ({
   currentOrg,
   onIngestionComplete,
+  onNavigateToExplorer,
 }) => {
+  // Ingestion Mode: 'manual' | 'csv' | 'synthetic'
+  const [activeMode, setActiveMode] = useState<'manual' | 'csv' | 'synthetic'>('manual');
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   // Manual text entry state
   const [item, setItem] = useState('');
   const [mealType, setMealType] = useState('Lunch');
@@ -39,7 +44,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
   const [seedRecurring, setSeedRecurring] = useState(true);
   const [lastJob, setLastJob] = useState<ImportJob | null>(null);
 
-  // Feedback notifications
+  // Status notifications
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -77,13 +82,13 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       );
 
       const sentimentStr = created.analysis?.sentiment
-        ? ` • Detected Sentiment: ${created.analysis.sentiment.toUpperCase()} (Sev ${created.analysis.severity_score}/5)`
+        ? ` • Sentiment: ${created.analysis.sentiment.toUpperCase()} (Sev ${created.analysis.severity_score}/5)`
         : '';
 
-      const deptStr = ` • Routed to: ${routing.department} (${routing.role})`;
+      const deptStr = ` • Routed to: ${routing.department}`;
 
       setSuccessMessage(
-        `Direct feedback for "${item || 'General Meal'}" successfully ingested and analyzed${sentimentStr}${deptStr}!`
+        `Feedback for "${item || 'General Meal'}" ingested and analyzed${sentimentStr}${deptStr}!`
       );
 
       // Reset form
@@ -134,7 +139,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       const res = await api.uploadCSV(file, currentOrg?.id);
       setLastJob(res.import_job);
       setSuccessMessage(
-        `Successfully processed "${file.name}": ${res.import_job.successful_records} records imported, ${res.import_job.duplicate_records} duplicates skipped.`
+        `Processed "${file.name}": ${res.import_job.successful_records} records imported, ${res.import_job.duplicate_records} duplicates skipped.`
       );
       onIngestionComplete();
     } catch (err: any) {
@@ -154,7 +159,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
     try {
       const res = await api.generateSynthetic(syntheticCount, seedRecurring, currentOrg?.id);
       setSuccessMessage(
-        `Successfully generated ${res.generated_count} synthetic records with realistic recurring failure clusters.`
+        `Generated ${res.generated_count} synthetic records with realistic recurring failure clusters.`
       );
       onIngestionComplete();
     } catch (err: any) {
@@ -165,286 +170,346 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="rounded-xl bg-white border border-slate-200 shadow-2xs overflow-hidden">
       {/* Dynamic Status Notifications */}
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5 shadow-2xs">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{successMessage}</span>
+        <div className="p-3 bg-emerald-50 border-b border-emerald-100 text-emerald-800 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2 flex-wrap">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{successMessage}</span>
+            {onNavigateToExplorer && (
+              <button
+                type="button"
+                onClick={onNavigateToExplorer}
+                className="underline font-bold text-emerald-900 hover:text-emerald-950 ml-1 cursor-pointer"
+              >
+                View in Feedback Explorer &rarr;
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="text-emerald-700 hover:text-emerald-900 font-bold text-xs"
+          >
+            ✕
+          </button>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5 shadow-2xs">
-          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-          <span>{errorMessage}</span>
+        <div className="p-3 bg-red-50 border-b border-red-100 text-red-800 text-xs flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+          <button
+            onClick={() => setErrorMessage(null)}
+            className="text-red-700 hover:text-red-900 font-bold text-xs"
+          >
+            ✕
+          </button>
         </div>
       )}
 
-      {/* 1. PRIMARY SECTION: Direct Text & Review Entry Form */}
-      <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-2xs">
-              <PenLine className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Write Direct Student / Diner Feedback</h3>
-              <p className="text-xs text-slate-500">
-                Type or paste real-time dining reviews. Auto-triggers AI sentiment extraction, safety checks, and department routing.
-              </p>
-            </div>
+      {/* Top Header & Mode Tabs */}
+      <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <PenLine className="w-3.5 h-3.5" />
           </div>
-
-          {/* Quick Scenario Pre-fill Pills */}
-          <div className="flex items-center gap-1.5 self-start sm:self-auto">
-            <span className="text-[11px] font-semibold text-slate-400 mr-1 hidden md:inline">Quick Presets:</span>
-            <button
-              type="button"
-              onClick={() => handleApplyPreset('cold')}
-              className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 transition"
-            >
-              🍲 Cold Food
-            </button>
-            <button
-              type="button"
-              onClick={() => handleApplyPreset('safety')}
-              className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition"
-            >
-              ⚠️ Safety Alert
-            </button>
-            <button
-              type="button"
-              onClick={() => handleApplyPreset('positive')}
-              className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition"
-            >
-              ⭐ Positive
-            </button>
+          <div>
+            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+              Feedback Ingestion Center
+            </h3>
+            <p className="text-[11px] text-slate-500">
+              Target Tenant: <span className="font-semibold text-slate-800">{currentOrg?.name || 'Default'}</span>
+            </p>
           </div>
         </div>
 
-        {/* The Form */}
-        <form onSubmit={handleSubmitManualFeedback} className="mt-4 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            {/* Dish / Item */}
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Dish / Item Name</label>
-              <input
-                type="text"
-                value={item}
-                onChange={(e) => setItem(e.target.value)}
-                placeholder="e.g. Sambar Rice, Dal Tadka..."
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition"
-              />
-            </div>
-
-            {/* Meal Slot */}
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Meal Service Slot</label>
-              <select
-                value={mealType}
-                onChange={(e) => setMealType(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
-              >
-                <option value="Breakfast">Breakfast</option>
-                <option value="Lunch">Lunch</option>
-                <option value="Evening Snacks">Evening Snacks</option>
-                <option value="Dinner">Dinner</option>
-              </select>
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">Issue Category</label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
-              >
-                <option value="Taste">Taste &amp; Seasoning</option>
-                <option value="Temperature">Temperature Upkeep</option>
-                <option value="Hygiene">Hygiene &amp; Cleanliness</option>
-                <option value="Freshness">Freshness &amp; Spoilage</option>
-                <option value="Portion">Portion &amp; Quantity</option>
-                <option value="Service">Service &amp; Counter Wait</option>
-                <option value="Ambience">Ambience &amp; Facilities</option>
-              </select>
-            </div>
-
-            {/* Rating Stars */}
-            <div>
-              <label className="block font-bold text-slate-700 mb-1">
-                Rating: <span className="font-mono text-blue-600 font-bold">{rating} / 5</span>
-              </label>
-              <div className="flex items-center gap-1.5 py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    className="focus:outline-none hover:scale-110 transition-transform"
-                  >
-                    <Star
-                      className={`w-4 h-4 ${star <= rating
-                          ? 'fill-amber-400 text-amber-400'
-                          : 'text-slate-300'
-                        }`}
-                    />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Feedback Text Area */}
-          <div>
-            <div className="flex items-center justify-between mb-1 text-xs">
-              <label className="font-bold text-slate-700">Diner Review / Written Feedback Comment</label>
-              <span className="text-[11px] text-slate-400 font-mono">{comment.length} characters</span>
-            </div>
-            <textarea
-              rows={3}
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Write or paste customer review text here (e.g. 'The dal served today at lunch was cold and sour, and found a wire strand in the chicken curry')..."
-              className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition leading-relaxed"
-            />
-          </div>
-
-          {/* Submit Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-            <div className="text-[11px] text-slate-500 flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-blue-600" />
-              <span>
-                Target Tenant: <strong>{currentOrg?.name || 'Default Mess'}</strong> ({currentOrg?.template_type || 'college'})
-              </span>
-            </div>
-
+        {/* Tab Controls & Collapse Toggle */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-white p-1 rounded-lg border border-slate-200 shadow-2xs">
             <button
-              type="submit"
-              disabled={isSubmittingText || !comment.trim()}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition shadow-sm shadow-blue-500/20 cursor-pointer"
+              type="button"
+              onClick={() => {
+                setActiveMode('manual');
+                setIsCollapsed(false);
+              }}
+              className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                activeMode === 'manual'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
             >
-              {isSubmittingText ? (
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Send className="w-3.5 h-3.5" />
-              )}
-              <span>{isSubmittingText ? 'Ingesting & AI Analyzing...' : 'Submit Feedback & Run AI Analysis'}</span>
+              Direct Entry
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveMode('csv');
+                setIsCollapsed(false);
+              }}
+              className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                activeMode === 'csv'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Upload CSV Feedback
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveMode('synthetic');
+                setIsCollapsed(false);
+              }}
+              className={`px-3 py-1 rounded text-xs font-semibold transition ${
+                activeMode === 'synthetic'
+                  ? 'bg-blue-600 text-white shadow-2xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Synthetic Scenario Generator
             </button>
           </div>
-        </form>
-      </div>
 
-      {/* 2. SECONDARY SECTION: Batch File Upload & Synthetic Generator */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* CSV Ingestion Box */}
-        <div className="rounded-2xl bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-xs">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
-                <Upload className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Upload CSV Feedback</h3>
-                <p className="text-xs text-slate-500">
-                  Native mapping for Zomato Bangalore Kaggle datasets &amp; canteen feedback forms.
-                </p>
-              </div>
-            </div>
-
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-4 border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-xl p-8 text-center cursor-pointer bg-slate-50/70 hover:bg-blue-50/30 transition-all group"
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <FileText className="w-8 h-8 text-slate-400 group-hover:text-blue-600 mx-auto mb-2 transition-colors" />
-              <p className="text-xs font-semibold text-slate-800 group-hover:text-blue-700">
-                {isUploading ? 'Ingesting and parsing CSV...' : 'Click to select CSV file'}
-              </p>
-              <p className="text-[11px] text-slate-500 mt-1">
-                Kaggle mapping: <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">name</code> → item, <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">rate</code> → rating, <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">reviews_list</code> → comment
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
-            <span className="text-slate-500 font-mono">Dataset: Zomato Kaggle / Canteen Form</span>
-            {lastJob ? (
-              <span className="text-blue-600 font-mono font-bold">{lastJob.status.toUpperCase()}</span>
+          <button
+            type="button"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-800 transition"
+            title={isCollapsed ? 'Expand ingestion form' : 'Collapse ingestion form'}
+          >
+            {isCollapsed ? (
+              <ChevronDown className="w-4 h-4" />
             ) : (
-              <span className="text-slate-400 font-mono">Ready for CSV</span>
+              <ChevronUp className="w-4 h-4" />
             )}
-          </div>
-        </div>
-
-        {/* Synthetic Generator Box */}
-        <div className="rounded-2xl bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-xs">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Synthetic Scenario Generator</h3>
-                <p className="text-xs text-slate-500">
-                  Seeds realistic recurrence clusters across 8 canonical canteen feedback fields.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-4 space-y-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <div>
-                <div className="flex justify-between text-xs text-slate-700 font-medium mb-1.5">
-                  <span>Record Volume:</span>
-                  <span className="font-mono text-blue-600 font-bold">{syntheticCount} Records</span>
-                </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="150"
-                  step="10"
-                  value={syntheticCount}
-                  onChange={(e) => setSyntheticCount(Number(e.target.value))}
-                  className="w-full accent-blue-600 cursor-pointer"
-                />
-              </div>
-
-              <label className="flex items-start gap-2.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={seedRecurring}
-                  onChange={(e) => setSeedRecurring(e.target.checked)}
-                  className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
-                <div className="text-xs text-slate-700">
-                  <span className="font-semibold text-slate-900">Seed Systemic Failure Scenarios</span>
-                  <p className="text-[11px] text-slate-500">
-                    Fields: <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">feedback_id, date, meal_type, item, rating, comment, channel, issue_category</code>
-                  </p>
-                </div>
-              </label>
-            </div>
-          </div>
-
-          <div className="mt-4 pt-3 flex justify-end">
-            <button
-              onClick={handleGenerateSynthetic}
-              disabled={isGenerating}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all shadow-md shadow-blue-500/20"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
-              {isGenerating ? 'Generating Synthetic Data...' : 'Generate Canteen Dataset'}
-            </button>
-          </div>
+          </button>
         </div>
       </div>
+
+      {/* Collapsible Ingestion Body */}
+      {!isCollapsed && (
+        <div className="p-4 sm:p-5">
+          {/* 1. Direct Entry Mode */}
+          {activeMode === 'manual' && (
+            <form onSubmit={handleSubmitManualFeedback} className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
+                <span className="text-xs font-semibold text-slate-700">Fill review details:</span>
+                {/* Presets */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-medium text-slate-400">Quick Scenarios:</span>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset('cold')}
+                    className="px-2 py-0.5 text-[11px] font-semibold rounded bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 transition"
+                  >
+                    Cold Food
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset('safety')}
+                    className="px-2 py-0.5 text-[11px] font-semibold rounded bg-red-50 hover:bg-red-100 text-red-700 transition"
+                  >
+                    Safety Hazard
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleApplyPreset('positive')}
+                    className="px-2 py-0.5 text-[11px] font-semibold rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition"
+                  >
+                    Positive Review
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                {/* Dish Name */}
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Dish / Item</label>
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) => setItem(e.target.value)}
+                    placeholder="e.g. Sambar Rice, Chicken Curry..."
+                    className="w-full px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white text-xs transition"
+                  />
+                </div>
+
+                {/* Meal Slot */}
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Meal Service</label>
+                  <select
+                    value={mealType}
+                    onChange={(e) => setMealType(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-800 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="Breakfast">Breakfast</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Evening Snacks">Evening Snacks</option>
+                    <option value="Dinner">Dinner</option>
+                  </select>
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Issue Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-2.5 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-800 text-xs font-medium focus:outline-none focus:border-blue-500 cursor-pointer"
+                  >
+                    <option value="Taste">Taste &amp; Seasoning</option>
+                    <option value="Temperature">Temperature Upkeep</option>
+                    <option value="Hygiene">Hygiene &amp; Cleanliness</option>
+                    <option value="Freshness">Freshness &amp; Spoilage</option>
+                    <option value="Portion">Portion &amp; Quantity</option>
+                    <option value="Service">Service &amp; Counter Wait</option>
+                  </select>
+                </div>
+
+                {/* Rating Stars */}
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">
+                    Rating: <span className="font-mono text-blue-600 font-bold">{rating} / 5</span>
+                  </label>
+                  <div className="flex items-center gap-1 py-1 px-2.5 bg-slate-50 border border-slate-200 rounded-lg">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        className="focus:outline-none hover:scale-110 transition-transform"
+                      >
+                        <Star
+                          className={`w-3.5 h-3.5 ${
+                            star <= rating
+                              ? 'fill-amber-400 text-amber-400'
+                              : 'text-slate-300'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Comment text */}
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1 text-xs">
+                  Review Comment / Complaint
+                </label>
+                <textarea
+                  rows={2}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="Enter written feedback comment (e.g. 'The dal served today at lunch was cold and sour...')"
+                  className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition leading-relaxed"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex justify-end pt-1">
+                <button
+                  type="submit"
+                  disabled={isSubmittingText || !comment.trim()}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition shadow-xs cursor-pointer"
+                >
+                  {isSubmittingText ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Send className="w-3.5 h-3.5" />
+                  )}
+                  <span>{isSubmittingText ? 'Ingesting & Analyzing...' : 'Submit & Analyze'}</span>
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* 2. CSV Import Mode */}
+          {activeMode === 'csv' && (
+            <div className="space-y-3">
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-slate-200 hover:border-blue-400 rounded-xl p-6 text-center cursor-pointer bg-slate-50/50 hover:bg-blue-50/20 transition group"
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <FileText className="w-7 h-7 text-slate-400 group-hover:text-blue-600 mx-auto mb-1.5 transition-colors" />
+                <p className="text-xs font-semibold text-slate-800 group-hover:text-blue-700">
+                  {isUploading ? 'Parsing and importing CSV records...' : 'Click to browse CSV feedback file'}
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Supported formats: Zomato Kaggle reviews, campus dining surveys, standard CSVs.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
+                <span>Fields mapped: item, rating, comment, meal_type, channel</span>
+                {lastJob && (
+                  <span className="font-mono font-semibold text-blue-600">
+                    Last Job: {lastJob.status.toUpperCase()} ({lastJob.successful_records} saved)
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 3. Synthetic Generator Mode */}
+          {activeMode === 'synthetic' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-3.5 rounded-lg border border-slate-200 text-xs">
+                <div>
+                  <div className="flex justify-between text-slate-700 font-semibold mb-1">
+                    <span>Generated Records:</span>
+                    <span className="font-mono text-blue-600 font-bold">{syntheticCount}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="150"
+                    step="10"
+                    value={syntheticCount}
+                    onChange={(e) => setSyntheticCount(Number(e.target.value))}
+                    className="w-full accent-blue-600 cursor-pointer"
+                  />
+                </div>
+
+                <label className="flex items-center gap-2 cursor-pointer pt-2 md:pt-0">
+                  <input
+                    type="checkbox"
+                    checked={seedRecurring}
+                    onChange={(e) => setSeedRecurring(e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <div>
+                    <span className="font-semibold text-slate-800">Seed Systemic Failure Clusters</span>
+                    <p className="text-[10px] text-slate-500">Injects cold temperature &amp; hygiene recurrence signals</p>
+                  </div>
+                </label>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleGenerateSynthetic}
+                  disabled={isGenerating}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition shadow-xs"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
+                  <span>{isGenerating ? 'Synthesizing...' : 'Generate Dataset'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

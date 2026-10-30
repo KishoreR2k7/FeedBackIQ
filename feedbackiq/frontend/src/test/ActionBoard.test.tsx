@@ -139,26 +139,41 @@ describe('PrioritizedActionBoard Component (Implementation 3)', () => {
     ).toBeInTheDocument();
   });
 
-  it('opens approval modal and allows manager to review and approve plan', async () => {
+  it('opens role correction modal and allows role to record correction and update status', async () => {
+    (api.assignTask as any).mockResolvedValue({ ...mockTasks[0], status: 'in_progress' });
+    (api.updateTaskStatus as any).mockResolvedValue({ ...mockTasks[0], status: 'completed' });
+
     render(<PrioritizedActionBoard orgId={mockOrgId} />);
 
     await waitFor(() => {
-      expect(screen.getByText('Review & Approve')).toBeInTheDocument();
+      expect(screen.getByText('Correct Issue & Update')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Review & Approve'));
+    fireEvent.click(screen.getByText('Correct Issue & Update'));
 
     await waitFor(() => {
-      expect(screen.getByText('Manager Authorization & Assignment')).toBeInTheDocument();
-      expect(screen.getByText('✓ Approve Action')).toBeInTheDocument();
+      expect(screen.getByText('Role Operational Correction & Status Update')).toBeInTheDocument();
+      expect(screen.getByText('Correction Action Taken (Physical / Culinary Fix)')).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText('Confirm Decision'));
+    // Fill in correction note
+    const textarea = screen.getByPlaceholderText(/Describe the physical correction executed/);
+    fireEvent.change(textarea, {
+      target: { value: 'Inspected dishwasher station and replaced metal wire scrubbers.' },
+    });
+
+    // Select Issue Corrected status
+    fireEvent.click(screen.getByText('Physical fix applied & resolved'));
+
+    fireEvent.click(screen.getByText('Save Correction & Update Status'));
 
     await waitFor(() => {
-      expect(api.approveTask).toHaveBeenCalledWith(
+      expect(api.updateTaskStatus).toHaveBeenCalledWith(
         'task-111',
-        expect.objectContaining({ approved: true }),
+        expect.objectContaining({
+          status: 'completed',
+          completion_notes: 'Inspected dishwasher station and replaced metal wire scrubbers.',
+        }),
         'org_admin',
         mockOrgId
       );

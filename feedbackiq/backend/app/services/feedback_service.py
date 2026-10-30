@@ -34,9 +34,14 @@ class FeedbackService:
         channel: Optional[str] = None,
         food_safety_only: bool = False,
         source_dataset: Optional[str] = None,
+        rating: Optional[int] = None,
+        has_analysis: Optional[bool] = None,
     ) -> PaginatedFeedbackResponse:
         # Base filter by tenant organization_id
         conditions = [Feedback.organization_id == organization_id]
+
+        if rating is not None:
+            conditions.append(Feedback.rating == rating)
 
         if meal_type:
             conditions.append(Feedback.meal_type.ilike(f"%{meal_type}%"))
@@ -59,6 +64,12 @@ class FeedbackService:
         if food_safety_only or sentiment:
             query = query.join(Feedback.analysis)
             count_stmt = count_stmt.join(Feedback.analysis)
+        elif has_analysis is True:
+            query = query.join(Feedback.analysis)
+            count_stmt = count_stmt.join(Feedback.analysis)
+        elif has_analysis is False:
+            query = query.outerjoin(Feedback.analysis).where(FeedbackAnalysis.id.is_(None))
+            count_stmt = count_stmt.outerjoin(Feedback.analysis).where(FeedbackAnalysis.id.is_(None))
 
         if food_safety_only:
             query = query.where(FeedbackAnalysis.food_safety_flag.is_(True))
