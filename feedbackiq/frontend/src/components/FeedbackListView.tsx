@@ -93,14 +93,14 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
   };
 
   const renderStars = (rating?: number) => {
-    if (!rating) return <span className="text-xs text-slate-500">No rating</span>;
+    if (!rating) return <span className="text-xs text-slate-400">No rating</span>;
     return (
       <div className="flex items-center gap-0.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`w-3 h-3 ${
-              star <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-700'
+              star <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-200'
             }`}
           />
         ))}
@@ -110,30 +110,30 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Search & Filter Toolbar */}
-      <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      {/* Filtering Toolbar */}
+      <div className="rounded-2xl bg-white border border-slate-200 p-4 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search by dish item or keyword..."
+              placeholder="Search dish or complaint keyword..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition"
             />
           </div>
 
-          {/* Filters & Actions */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* Meal Filter */}
+          {/* Filter Dropdowns */}
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Meal Type Filter */}
             <select
               value={mealTypeFilter}
               onChange={(e) => setMealTypeFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none cursor-pointer"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
             >
-              <option value="">All Meals</option>
+              <option value="">All Meal Slots</option>
               <option value="Breakfast">Breakfast</option>
               <option value="Lunch">Lunch</option>
               <option value="Evening Snacks">Evening Snacks</option>
@@ -144,22 +144,22 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none cursor-pointer"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
             >
               <option value="">All Categories</option>
-              <option value="Taste">Taste & Flavor</option>
-              <option value="Hygiene">Hygiene & Cleanliness</option>
+              <option value="Taste">Taste &amp; Flavor</option>
+              <option value="Hygiene">Hygiene &amp; Cleanliness</option>
               <option value="Temperature">Temperature</option>
-              <option value="Freshness">Freshness & Spoilage</option>
-              <option value="Portion">Portion & Quantity</option>
-              <option value="Service">Service & Waiting Time</option>
+              <option value="Freshness">Freshness &amp; Spoilage</option>
+              <option value="Portion">Portion &amp; Quantity</option>
+              <option value="Service">Service &amp; Waiting Time</option>
             </select>
 
             {/* Sentiment Filter */}
             <select
               value={sentimentFilter}
               onChange={(e) => setSentimentFilter(e.target.value)}
-              className="bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none cursor-pointer"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
             >
               <option value="">All Sentiments</option>
               <option value="positive">Positive</option>
@@ -174,11 +174,11 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
               onClick={() => setFoodSafetyOnly(!foodSafetyOnly)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
                 foodSafetyOnly
-                  ? 'bg-red-500/20 text-red-300 border-red-500/40'
-                  : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                  ? 'bg-red-50 text-red-700 border-red-300 shadow-2xs'
+                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
+              <ShieldAlert className="w-3.5 h-3.5 text-red-500" />
               <span>Safety Escalations</span>
             </button>
 
@@ -186,7 +186,7 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
             <button
               onClick={handleBatchAnalyze}
               disabled={isBatchAnalyzing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 transition"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition shadow-sm shadow-blue-500/20"
             >
               <Sparkles className={`w-3.5 h-3.5 ${isBatchAnalyzing ? 'animate-spin' : ''}`} />
               {isBatchAnalyzing ? 'Analyzing...' : 'Batch AI Analyze'}
@@ -196,10 +196,10 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
       </div>
 
       {/* Main Table */}
-      <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden">
+      <div className="rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-xs">
         {isLoading ? (
-          <div className="p-12 text-center text-xs text-slate-400">
-            <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-400" />
+          <div className="p-12 text-center text-xs text-slate-500">
+            <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-600" />
             Loading feedback records...
           </div>
         ) : !data || data.items.length === 0 ? (
@@ -211,10 +211,10 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/70 border-b border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <table className="w-full text-left text-xs text-slate-700">
+              <thead className="bg-slate-50/80 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                 <tr>
-                  <th className="px-4 py-3">Time & Meal</th>
+                  <th className="px-4 py-3">Time &amp; Meal</th>
                   <th className="px-4 py-3">Dish / Item</th>
                   <th className="px-4 py-3">Rating</th>
                   <th className="px-4 py-3">Student Comment</th>
@@ -222,7 +222,7 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                   <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-medium">
+              <tbody className="divide-y divide-slate-100 font-medium">
                 {data.items.map((fb) => {
                   const analysis = fb.analysis;
                   const isFoodSafety = analysis?.food_safety_flag;
@@ -230,24 +230,24 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                   return (
                     <tr
                       key={fb.id}
-                      className={`hover:bg-slate-800/30 transition ${
-                        isFoodSafety ? 'bg-red-950/20' : ''
+                      className={`hover:bg-blue-50/40 transition-colors ${
+                        isFoodSafety ? 'bg-red-50/40' : ''
                       }`}
                     >
                       {/* Date & Meal Slot */}
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-slate-200">
+                        <div className="text-slate-900 font-semibold">
                           {fb.date ? new Date(fb.date).toLocaleDateString() : 'N/A'}
                         </div>
-                        <div className="text-[10px] text-slate-400 font-mono">
+                        <div className="text-[10px] text-slate-500 font-mono">
                           {fb.meal_type || 'General'}
                         </div>
                       </td>
 
                       {/* Item */}
                       <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="font-semibold text-slate-200">{fb.item || 'General Meal'}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">
+                        <div className="font-bold text-slate-900">{fb.item || 'General Meal'}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">
                           {fb.source_dataset}
                         </div>
                       </td>
@@ -257,8 +257,8 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
 
                       {/* Comment */}
                       <td className="px-4 py-3 max-w-xs truncate">
-                        <p className="truncate text-slate-300" title={fb.comment || ''}>
-                          {fb.comment || <span className="text-slate-600">No comment</span>}
+                        <p className="truncate text-slate-800" title={fb.comment || ''}>
+                          {fb.comment || <span className="text-slate-400 italic">No comment</span>}
                         </p>
                       </td>
 
@@ -267,28 +267,28 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                         {analysis ? (
                           <div className="flex items-center gap-1.5">
                             <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
                                 analysis.sentiment === 'positive'
-                                  ? 'bg-emerald-500/10 text-emerald-300'
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                   : analysis.sentiment === 'negative'
-                                  ? 'bg-red-500/10 text-red-300'
-                                  : 'bg-purple-500/10 text-purple-300'
+                                  ? 'bg-red-50 text-red-700 border border-red-200'
+                                  : 'bg-blue-50 text-blue-700 border border-blue-200'
                               }`}
                             >
                               {analysis.sentiment}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-semibold border border-slate-200">
                               Sev {analysis.severity_score}
                             </span>
                             {isFoodSafety && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/40 flex items-center gap-1">
-                                <ShieldAlert className="w-3 h-3" />
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 border border-red-300 flex items-center gap-1">
+                                <ShieldAlert className="w-3 h-3 text-red-600" />
                                 Hazard
                               </span>
                             )}
                           </div>
                         ) : (
-                          <span className="text-[11px] text-slate-500 italic">Unanalyzed</span>
+                          <span className="text-[11px] text-slate-400 italic">Unanalyzed</span>
                         )}
                       </td>
 
@@ -297,18 +297,18 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                         {analysis ? (
                           <button
                             onClick={() => handleViewAnalysis(fb)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-300 bg-slate-800 hover:bg-slate-700 transition"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition"
                           >
-                            <Eye className="w-3.5 h-3.5" />
+                            <Eye className="w-3.5 h-3.5 text-blue-600" />
                             View
                           </button>
                         ) : (
                           <button
                             onClick={() => handleAnalyzeSingle(fb)}
                             disabled={analyzingId === fb.id}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 disabled:opacity-50 transition"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 disabled:opacity-50 transition"
                           >
-                            <Sparkles className={`w-3.5 h-3.5 ${analyzingId === fb.id ? 'animate-spin' : ''}`} />
+                            <Sparkles className={`w-3.5 h-3.5 text-blue-600 ${analyzingId === fb.id ? 'animate-spin' : ''}`} />
                             {analyzingId === fb.id ? 'Extracting...' : 'AI Analyze'}
                           </button>
                         )}
@@ -321,26 +321,25 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
           </div>
         )}
 
-        {/* Pagination Footer */}
+        {/* Pagination Bar */}
         {data && data.total_pages > 1 && (
-          <div className="p-4 bg-slate-950/60 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
             <div>
-              Showing page <span className="text-slate-200 font-semibold">{currentPage}</span> of{' '}
-              <span className="text-slate-200 font-semibold">{data.total_pages}</span> (Total{' '}
-              {data.total} records)
+              Showing page <span className="font-semibold text-slate-900">{data.page}</span> of{' '}
+              <span className="font-semibold text-slate-900">{data.total_pages}</span> ({data.total} records)
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 disabled={currentPage <= 1}
-                className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 disabled:opacity-40 hover:bg-slate-800 transition"
+                className="p-1 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setCurrentPage(Math.min(data.total_pages, currentPage + 1))}
                 disabled={currentPage >= data.total_pages}
-                className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 disabled:opacity-40 hover:bg-slate-800 transition"
+                className="p-1 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -349,13 +348,15 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
         )}
       </div>
 
-      {/* Analysis Details Drawer / Modal */}
-      <AnalysisModal
-        feedback={selectedFeedback}
-        analysis={selectedAnalysis}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      {/* Analysis Details Modal */}
+      {selectedFeedback && selectedAnalysis && (
+        <AnalysisModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          feedback={selectedFeedback}
+          analysis={selectedAnalysis}
+        />
+      )}
     </div>
   );
 };

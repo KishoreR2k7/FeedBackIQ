@@ -7,6 +7,7 @@ import {
   CheckSquare,
   Building2,
   Server,
+  Zap,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -16,21 +17,21 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
   const navItems = [
-    { id: 'overview', label: 'Platform Status', icon: LayoutDashboard, badge: 'PS 2.5' },
-    { id: 'feedback', label: 'Feedback Ingestion', icon: MessageSquareText, badge: 'Cap 1' },
-    { id: 'analytics', label: 'Aspect Intelligence', icon: BrainCircuit, badge: 'Cap 1' },
-    { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'Cap 2' },
-    { id: 'actions', label: 'Prioritized Actions', icon: CheckSquare, badge: 'Cap 3' },
-    { id: 'capa', label: 'CAPA Action Board', icon: CheckSquare, badge: 'Live Ops' },
-    { id: 'tenants', label: 'Organization & Templates', icon: Building2, badge: 'Config' },
-    { id: 'system', label: 'System Architecture', icon: Server, badge: 'Docs' },
+    { id: 'overview', label: 'Platform Status', icon: LayoutDashboard, badge: 'Overview' },
+    { id: 'feedback', label: 'Feedback Ingestion', icon: MessageSquareText, badge: 'Live Feed' },
+    { id: 'analytics', label: 'Aspect Intelligence', icon: BrainCircuit, badge: 'Themes' },
+    { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'Prediction' },
+    { id: 'actions', label: 'Prioritized Actions', icon: CheckSquare, badge: 'Priority' },
+    { id: 'capa', label: 'CAPA Action Board', icon: CheckSquare, badge: 'Execution' },
+    { id: 'tenants', label: 'Organization & Templates', icon: Building2, badge: 'Tenants' },
+    { id: 'system', label: 'System Architecture', icon: Server, badge: 'Infra' },
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-800/80 bg-slate-950/80 p-4 shrink-0 flex flex-col justify-between hidden md:flex">
+    <aside className="w-64 border-r border-slate-200 bg-white p-4 shrink-0 flex flex-col justify-between hidden md:flex shadow-xs">
       <div className="space-y-1">
-        <div className="px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-slate-500">
-          Core Capabilities (PS 2.5)
+        <div className="px-3 py-2 text-[10px] font-bold tracking-wider uppercase text-slate-400">
+          Navigation
         </div>
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -41,14 +42,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
               onClick={() => onSelectTab(item.id)}
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                 isActive
-                  ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30'
-                  : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/60'
+                  ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
               <div className="flex items-center gap-2.5">
                 <Icon
                   className={`w-4 h-4 ${
-                    isActive ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-200'
+                    isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'
                   }`}
                 />
                 <span>{item.label}</span>
@@ -56,8 +57,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
               <span
                 className={`text-[10px] px-2 py-0.5 rounded font-mono font-medium ${
                   isActive
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-slate-900 text-slate-500 border border-slate-800'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-100 text-slate-500 border border-slate-200'
                 }`}
               >
                 {item.badge}
@@ -68,14 +69,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab }) => {
       </div>
 
       {/* Platform Version Footer */}
-      <div className="p-3 rounded-xl bg-slate-900/50 border border-slate-800/60">
-        <div className="flex items-center justify-between text-[11px] text-slate-400">
-          <span>Engine Status</span>
-          <span className="text-emerald-400 font-semibold">PostgreSQL + FastAPI</span>
+      <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-100/80">
+        <div className="flex items-center gap-2 text-xs font-bold text-blue-900">
+          <Zap className="w-4 h-4 text-blue-600" />
+          <span>Real-time Decision Engine</span>
         </div>
-        <div className="mt-1 text-[10px] text-slate-500">
-          Multi-Tenant SaaS Foundation
-        </div>
+        <p className="mt-1 text-[11px] text-slate-600 leading-normal">
+          AI feedback clustering, recurrence forecasting, and prioritized kitchen actions.
+        </p>
       </div>
     </aside>
   );

@@ -67,30 +67,30 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
     <div className="space-y-6">
       {/* Notifications */}
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs flex items-center gap-2.5">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5 shadow-2xs">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-red-950/40 border border-red-500/40 text-red-200 text-xs flex items-center gap-2.5">
-          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2.5 shadow-2xs">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* CSV Ingestion Box */}
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 flex flex-col justify-between">
+        <div className="rounded-2xl bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-xs">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
                 <Upload className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-100">Upload CSV Feedback</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-sm font-bold text-slate-900">Upload CSV Feedback</h3>
+                <p className="text-xs text-slate-500">
                   Native mapping for Zomato Bangalore Kaggle datasets &amp; canteen feedback forms.
                 </p>
               </div>
@@ -98,7 +98,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
 
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="mt-4 border-2 border-dashed border-slate-800 hover:border-emerald-500/50 rounded-xl p-8 text-center cursor-pointer bg-slate-950/60 hover:bg-slate-950/90 transition group"
+              className="mt-4 border-2 border-dashed border-slate-200 hover:border-blue-500 rounded-xl p-8 text-center cursor-pointer bg-slate-50/70 hover:bg-blue-50/30 transition-all group"
             >
               <input
                 ref={fileInputRef}
@@ -107,46 +107,46 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <FileText className="w-8 h-8 text-slate-500 group-hover:text-emerald-400 mx-auto mb-2 transition" />
-              <p className="text-xs font-semibold text-slate-200">
+              <FileText className="w-8 h-8 text-slate-400 group-hover:text-blue-600 mx-auto mb-2 transition-colors" />
+              <p className="text-xs font-semibold text-slate-800 group-hover:text-blue-700">
                 {isUploading ? 'Ingesting and parsing CSV...' : 'Click to select CSV file'}
               </p>
               <p className="text-[11px] text-slate-500 mt-1">
-                Kaggle mapping: <code>name</code> → item, <code>rate</code> → rating, <code>reviews_list</code> → comment
+                Kaggle mapping: <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">name</code> → item, <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">rate</code> → rating, <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">reviews_list</code> → comment
               </p>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
             <span className="text-slate-500 font-mono">Dataset: Zomato Kaggle / Canteen Form</span>
             {lastJob ? (
-              <span className="text-emerald-400 font-mono font-semibold">{lastJob.status.toUpperCase()}</span>
+              <span className="text-blue-600 font-mono font-bold">{lastJob.status.toUpperCase()}</span>
             ) : (
-              <span className="text-slate-500 font-mono">Ready for CSV</span>
+              <span className="text-slate-400 font-mono">Ready for CSV</span>
             )}
           </div>
         </div>
 
         {/* Synthetic Generator Box */}
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-6 flex flex-col justify-between">
+        <div className="rounded-2xl bg-white border border-slate-200 p-6 flex flex-col justify-between shadow-xs">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-100">Synthetic Scenario Generator</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-sm font-bold text-slate-900">Synthetic Scenario Generator</h3>
+                <p className="text-xs text-slate-500">
                   Seeds realistic recurrence clusters across 8 canonical canteen feedback fields.
                 </p>
               </div>
             </div>
 
-            <div className="mt-4 space-y-4 bg-slate-950/60 border border-slate-800 rounded-xl p-4">
+            <div className="mt-4 space-y-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
               <div>
-                <div className="flex justify-between text-xs text-slate-300 font-medium mb-1.5">
+                <div className="flex justify-between text-xs text-slate-700 font-medium mb-1.5">
                   <span>Record Volume:</span>
-                  <span className="font-mono text-emerald-400 font-bold">{syntheticCount} Records</span>
+                  <span className="font-mono text-blue-600 font-bold">{syntheticCount} Records</span>
                 </div>
                 <input
                   type="range"
@@ -155,7 +155,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
                   step="10"
                   value={syntheticCount}
                   onChange={(e) => setSyntheticCount(Number(e.target.value))}
-                  className="w-full accent-emerald-500"
+                  className="w-full accent-blue-600 cursor-pointer"
                 />
               </div>
 
@@ -164,12 +164,12 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
                   type="checkbox"
                   checked={seedRecurring}
                   onChange={(e) => setSeedRecurring(e.target.checked)}
-                  className="mt-0.5 rounded border-slate-700 text-emerald-500 focus:ring-emerald-500"
+                  className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <div className="text-xs text-slate-300">
-                  <span className="font-semibold text-slate-200">Seed Systemic Failure Scenarios</span>
-                  <p className="text-[11px] text-slate-400">
-                    Fields: <code>feedback_id, date, meal_type, item, rating, comment, channel, issue_category</code>
+                <div className="text-xs text-slate-700">
+                  <span className="font-semibold text-slate-900">Seed Systemic Failure Scenarios</span>
+                  <p className="text-[11px] text-slate-500">
+                    Fields: <code className="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">feedback_id, date, meal_type, item, rating, comment, channel, issue_category</code>
                   </p>
                 </div>
               </label>
@@ -180,7 +180,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
             <button
               onClick={handleGenerateSynthetic}
               disabled={isGenerating}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 transition shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition-all shadow-md shadow-blue-500/20"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} />
               {isGenerating ? 'Generating Synthetic Data...' : 'Generate Canteen Dataset'}

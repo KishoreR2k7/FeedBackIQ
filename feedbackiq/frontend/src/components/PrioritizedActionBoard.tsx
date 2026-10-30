@@ -268,49 +268,49 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   const getRiskBadge = (risk: string) => {
     switch (risk.toLowerCase()) {
       case 'critical':
-        return 'bg-rose-500/15 text-rose-400 border border-rose-500/30';
+        return 'bg-red-50 text-red-700 border border-red-200';
       case 'high':
-        return 'bg-amber-500/15 text-amber-400 border border-amber-500/30';
+        return 'bg-amber-50 text-amber-700 border border-amber-200';
       case 'medium':
-        return 'bg-sky-500/15 text-sky-400 border border-sky-500/30';
+        return 'bg-blue-50 text-blue-700 border border-blue-200';
       default:
-        return 'bg-slate-500/15 text-slate-400 border border-slate-500/30';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
     }
   };
 
   const getStatusBadge = (status: TaskStatusType) => {
     switch (status) {
       case 'proposed':
-        return 'bg-slate-800 text-slate-300 border border-slate-700';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
       case 'awaiting_approval':
-        return 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 animate-pulse';
+        return 'bg-amber-50 text-amber-800 border border-amber-200 animate-pulse';
       case 'assigned':
-        return 'bg-slate-800 text-slate-200 border border-slate-700';
+        return 'bg-blue-50 text-blue-700 border border-blue-200';
       case 'in_progress':
-        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        return 'bg-blue-100 text-blue-800 border border-blue-300';
       case 'completed':
-        return 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+        return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
       case 'verified':
-        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        return 'bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold';
       case 'rejected':
-        return 'bg-rose-500/15 text-rose-400 border border-rose-500/30';
+        return 'bg-red-50 text-red-700 border border-red-200';
       default:
-        return 'bg-slate-800 text-slate-300 border border-slate-700';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
     }
   };
 
   const getVerificationOutcomeBadge = (outcome: VerificationOutcomeType) => {
     switch (outcome) {
       case 'Improved':
-        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
       case 'Worsened':
-        return 'bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        return 'bg-red-50 text-red-700 border border-red-200';
       case 'No Clear Improvement':
-        return 'bg-slate-800 text-slate-300 border border-slate-700';
+        return 'bg-slate-100 text-slate-700 border border-slate-200';
       case 'Insufficient Evidence':
-        return 'bg-slate-800 text-slate-400 border border-slate-700';
+        return 'bg-slate-100 text-slate-600 border border-slate-200';
       default:
-        return 'bg-slate-800 text-slate-400 border border-slate-700';
+        return 'bg-slate-100 text-slate-600 border border-slate-200';
     }
   };
 
@@ -324,20 +324,20 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Header & Persona Switcher */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/50 to-slate-950 border border-slate-800/90 shadow-xl">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-2xl bg-white border border-slate-200 shadow-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            <div className="p-2 rounded-xl bg-blue-50 border border-blue-200 text-blue-600">
               <CheckSquare className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold text-white tracking-tight">
+            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
               Prioritized Action Board &amp; CAPA
             </h2>
-            <span className="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono">
+            <span className="text-[11px] px-2.5 py-0.5 rounded-full font-semibold bg-blue-50 text-blue-700 border border-blue-200 font-mono">
               Capability 3
             </span>
           </div>
-          <p className="text-xs text-slate-400 max-w-2xl">
+          <p className="text-xs text-slate-600 max-w-2xl font-medium">
             Generates evidence-grounded corrective and preventive action recommendations (CAPA) with deterministic priority scoring, manager approvals, staff delegation, and closed-loop outcome verification.
           </p>
         </div>
@@ -346,34 +346,34 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           {/* Notifications Button */}
           <button
             onClick={() => setShowNotificationsDrawer(!showNotificationsDrawer)}
-            className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 transition shadow-sm"
+            className="relative flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition shadow-xs"
           >
-            <Bell className="w-4 h-4 text-emerald-400" />
+            <Bell className="w-4 h-4 text-blue-600" />
             <span>Alerts</span>
             {unreadCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500 text-slate-950 font-mono">
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-600 text-white font-mono">
                 {unreadCount}
               </span>
             )}
           </button>
 
           {/* Persona Role Switcher for Testability */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-              <User className="w-3.5 h-3.5 text-emerald-400" /> Persona:
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+              <User className="w-3.5 h-3.5 text-blue-600" /> Persona:
             </span>
             <select
               value={actingRole}
               onChange={(e) => setActingRole(e.target.value as any)}
-              className="bg-transparent text-emerald-300 font-semibold focus:outline-none cursor-pointer text-xs"
+              className="bg-transparent text-blue-700 font-bold focus:outline-none cursor-pointer text-xs"
             >
-              <option value="org_admin" className="bg-slate-900 text-slate-200">
+              <option value="org_admin" className="bg-white text-slate-800">
                 Operations Manager (Admin)
               </option>
-              <option value="quality_reviewer" className="bg-slate-900 text-slate-200">
+              <option value="quality_reviewer" className="bg-white text-slate-800">
                 Quality Reviewer (Reviewer)
               </option>
-              <option value="staff" className="bg-slate-900 text-slate-200">
+              <option value="staff" className="bg-white text-slate-800">
                 Kitchen Staff (Operator)
               </option>
             </select>
@@ -383,7 +383,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           <button
             onClick={handleGenerateTasks}
             disabled={isGenerating}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition disabled:opacity-50"
           >
             <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
             <span>{isGenerating ? 'Synthesizing...' : 'Generate Action Tasks'}</span>
@@ -393,67 +393,67 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
       {/* KPI Counters Bar */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-medium text-slate-400 uppercase">Total Tasks</div>
-            <div className="text-xl font-bold text-slate-100 mt-0.5 font-mono">{totalCount}</div>
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Total Tasks</div>
+            <div className="text-xl font-bold text-slate-900 mt-0.5 font-mono">{totalCount}</div>
           </div>
-          <FileCheck className="w-5 h-5 text-slate-500" />
+          <FileCheck className="w-5 h-5 text-slate-400" />
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/20 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-medium text-slate-400 uppercase">Awaiting Approval</div>
-            <div className="text-xl font-bold text-emerald-300 mt-0.5 font-mono">{awaitingApprovalCount}</div>
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Awaiting Approval</div>
+            <div className="text-xl font-bold text-amber-600 mt-0.5 font-mono">{awaitingApprovalCount}</div>
           </div>
-          <Clock className="w-5 h-5 text-emerald-400" />
+          <Clock className="w-5 h-5 text-amber-500" />
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/20 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-medium text-slate-400 uppercase">In Progress</div>
-            <div className="text-xl font-bold text-emerald-300 mt-0.5 font-mono">{inProgressCount}</div>
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">In Progress</div>
+            <div className="text-xl font-bold text-blue-600 mt-0.5 font-mono">{inProgressCount}</div>
           </div>
-          <PlayCircle className="w-5 h-5 text-emerald-400" />
+          <PlayCircle className="w-5 h-5 text-blue-500" />
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-emerald-500/30 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <div className="text-[11px] font-medium text-emerald-400 uppercase">Verified</div>
-            <div className="text-xl font-bold text-emerald-300 mt-0.5 font-mono">{verifiedCount}</div>
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Verified</div>
+            <div className="text-xl font-bold text-emerald-600 mt-0.5 font-mono">{verifiedCount}</div>
           </div>
-          <Award className="w-5 h-5 text-emerald-400" />
+          <Award className="w-5 h-5 text-emerald-500" />
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/40 border border-rose-500/30 flex items-center justify-between col-span-2 md:col-span-1">
+        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex items-center justify-between col-span-2 md:col-span-1">
           <div>
-            <div className="text-[11px] font-medium text-rose-400 uppercase">Safety Overrides</div>
-            <div className="text-xl font-bold text-rose-300 mt-0.5 font-mono">{safetyOverrideCount}</div>
+            <div className="text-[11px] font-semibold text-red-600 uppercase tracking-wider">Safety Overrides</div>
+            <div className="text-xl font-bold text-red-600 mt-0.5 font-mono">{safetyOverrideCount}</div>
           </div>
-          <ShieldAlert className="w-5 h-5 text-rose-400" />
+          <ShieldAlert className="w-5 h-5 text-red-500" />
         </div>
       </div>
 
       {/* Notifications Drawer (Slide-down / Collapsible) */}
       {showNotificationsDrawer && (
-        <div className="p-5 rounded-2xl bg-slate-900/90 border border-amber-500/40 shadow-2xl space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="p-5 rounded-2xl bg-white border border-blue-200 shadow-xl space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4 text-amber-400" />
-              <h3 className="text-xs font-bold text-slate-100 uppercase tracking-wider">
+              <Bell className="w-4 h-4 text-blue-600" />
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                 In-App Notifications &amp; Delivery Telemetry
               </h3>
             </div>
             <button
               onClick={() => setShowNotificationsDrawer(false)}
-              className="text-slate-400 hover:text-slate-200 text-xs"
+              className="text-slate-400 hover:text-slate-600 text-xs font-semibold"
             >
               Close
             </button>
           </div>
 
           {notifications.length === 0 ? (
-            <div className="text-xs text-slate-400 py-3 text-center">
+            <div className="text-xs text-slate-500 py-3 text-center">
               No recent notifications dispatched for this organization.
             </div>
           ) : (
@@ -463,20 +463,20 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   key={notif.id}
                   className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
                     notif.is_read
-                      ? 'bg-slate-950/40 border-slate-800/60 opacity-70'
-                      : 'bg-slate-950/90 border-amber-500/30'
+                      ? 'bg-slate-50 border-slate-200 opacity-70'
+                      : 'bg-blue-50/40 border-blue-200'
                   }`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-200">{notif.title}</span>
+                      <span className="font-semibold text-slate-900">{notif.title}</span>
                       <span
                         className={`text-[10px] px-2 py-0.2 rounded-md font-medium ${
                           notif.delivery_status === 'delivered'
-                            ? 'bg-emerald-500/20 text-emerald-400'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : notif.delivery_status === 'simulated'
-                            ? 'bg-sky-500/20 text-sky-400'
-                            : 'bg-rose-500/20 text-rose-400'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            : 'bg-red-50 text-red-700 border border-red-200'
                         }`}
                       >
                         {notif.delivery_status}
@@ -485,12 +485,12 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                         {new Date(notif.created_at).toLocaleTimeString()}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-300">{notif.message}</p>
+                    <p className="text-[11px] text-slate-600">{notif.message}</p>
                   </div>
                   {!notif.is_read && (
                     <button
                       onClick={() => handleMarkNotificationRead(notif.id)}
-                      className="shrink-0 text-[10px] px-2 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium"
+                      className="shrink-0 text-[10px] px-2 py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold"
                     >
                       Mark Read
                     </button>
@@ -503,17 +503,17 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
       )}
 
       {/* Filter Controls Bar */}
-      <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Search Item */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Filter by food item..."
               value={searchItem}
               onChange={(e) => setSearchItem(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 w-48"
+              className="pl-8 pr-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-500 w-48 font-medium"
             />
           </div>
 
@@ -521,7 +521,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:outline-none"
+            className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
           >
             <option value="">All Lifecycle Stages</option>
             <option value="proposed">Proposed</option>
@@ -537,7 +537,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:outline-none"
+            className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
           >
             <option value="">All Risk Levels</option>
             <option value="Critical">Critical</option>
@@ -550,7 +550,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 focus:outline-none"
+            className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
           >
             <option value="">All Roles</option>
             <option value="Head Chef">Head Chef</option>
@@ -563,7 +563,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
         <button
           onClick={fetchTasks}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Refresh</span>
@@ -589,25 +589,25 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             return (
               <div
                 key={task.id}
-                className={`p-5 rounded-2xl bg-slate-900/40 border transition-all hover:border-slate-700/80 ${
+                className={`p-6 rounded-2xl bg-white border transition-all shadow-xs hover:shadow-md ${
                   isSafety
-                    ? 'border-rose-500/30 bg-rose-950/10'
-                    : 'border-slate-800/80'
+                    ? 'border-red-300 bg-red-50/20 ring-1 ring-red-300/40'
+                    : 'border-slate-200 hover:border-blue-300'
                 }`}
               >
                 {/* Task Header: Cluster Key, Priority Score, Risk, Safety override */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/70">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                   <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="font-mono text-xs font-bold text-slate-200">
+                    <span className="font-mono text-sm font-bold text-slate-900">
                       {task.item || task.issue_cluster_key}
                     </span>
                     {task.issue_category && (
-                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 font-medium">
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium border border-slate-200">
                         {task.issue_category}
                       </span>
                     )}
                     {task.meal_type && (
-                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-800/60 text-slate-400 font-medium">
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium border border-slate-200">
                         {task.meal_type}
                       </span>
                     )}
@@ -623,8 +623,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
                     {/* Safety Override Pill */}
                     {isSafety && (
-                      <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
-                        <Flame className="w-3 h-3 text-rose-400" />
+                      <span className="flex items-center gap-1 text-[11px] px-2.5 py-0.5 rounded-full font-bold bg-red-600 text-white shadow-xs">
+                        <Flame className="w-3 h-3 text-white" />
                         Rule 9 Safety Floor
                       </span>
                     )}
@@ -633,13 +633,13 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   {/* Priority Score & Status Badges */}
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400 uppercase font-semibold">Priority Score</div>
-                      <div className="text-base font-extrabold text-emerald-400 font-mono">
-                        {task.priority_score.toFixed(1)} <span className="text-xs text-slate-500 font-normal">/ 100</span>
+                      <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Priority Score</div>
+                      <div className="text-xl font-black text-blue-600 font-mono">
+                        {task.priority_score.toFixed(1)} <span className="text-xs text-slate-400 font-normal">/ 100</span>
                       </div>
                     </div>
 
-                    <div className="h-7 w-[1px] bg-slate-800" />
+                    <div className="h-7 w-[1px] bg-slate-200" />
 
                     <div className="flex items-center gap-2">
                       <span
@@ -658,32 +658,32 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   {/* Left Column: Summary & Evidence */}
                   <div className="lg:col-span-5 space-y-3">
                     <div>
-                      <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                      <div className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                         Issue Summary
                       </div>
-                      <p className="text-xs text-slate-200 mt-1 leading-relaxed font-medium">
+                      <p className="text-xs text-slate-800 mt-1 leading-relaxed font-medium">
                         {task.issue_summary}
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 space-y-1">
-                      <div className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1.5 font-mono">
-                        <Info className="w-3 h-3 text-emerald-400" />
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="text-[10px] font-bold text-slate-600 uppercase flex items-center gap-1.5 font-mono">
+                        <Info className="w-3.5 h-3.5 text-blue-600" />
                         Evidence &amp; Priority Rationale
                       </div>
-                      <p className="text-[11px] text-slate-300 leading-relaxed">
+                      <p className="text-[11px] text-slate-700 leading-relaxed">
                         {task.evidence_and_priority_reason}
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-1">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-600 pt-1">
                       <div>
                         <span className="text-slate-500">Effort: </span>
-                        <span className="font-semibold text-slate-300">{task.estimated_effort}</span>
+                        <span className="font-semibold text-slate-800">{task.estimated_effort}</span>
                       </div>
                       <div>
                         <span className="text-slate-500">Approval Required: </span>
-                        <span className="font-semibold text-slate-300">{task.required_approval}</span>
+                        <span className="font-semibold text-slate-800">{task.required_approval}</span>
                       </div>
                     </div>
                   </div>
@@ -691,72 +691,72 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   {/* Right Column: Corrective & Preventive Action Plans */}
                   <div className="lg:col-span-7 space-y-3">
                     {/* Corrective Action (Immediate) */}
-                    <div className="p-3.5 rounded-xl bg-slate-950/80 border border-emerald-500/30 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-blue-50/60 border border-blue-200 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-[11px] font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
                           Suggested Corrective Action (Immediate)
                         </span>
                       </div>
-                      <p className="text-xs text-slate-200 leading-relaxed">
+                      <p className="text-xs text-slate-800 leading-relaxed font-medium">
                         {task.corrective_action}
                       </p>
                     </div>
 
                     {/* Preventive Action (Systemic) */}
-                    <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                          <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                        <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 text-blue-600" />
                           Suggested Preventive Action (Systemic Root-Cause)
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300 leading-relaxed">
+                      <p className="text-xs text-slate-700 leading-relaxed">
                         {task.preventive_action}
                       </p>
                     </div>
 
                     {/* Verification criteria & expected outcome */}
-                    <div className="text-[11px] text-slate-400 flex flex-wrap gap-x-4 gap-y-1">
+                    <div className="text-[11px] text-slate-600 flex flex-wrap gap-x-4 gap-y-1">
                       <div>
-                        <strong className="text-slate-300">Expected Outcome:</strong> {task.expected_outcome}
+                        <strong className="text-slate-800">Expected Outcome:</strong> {task.expected_outcome}
                       </div>
                       <div>
-                        <strong className="text-slate-300">Verification Criteria:</strong> {task.verification_criteria}
+                        <strong className="text-slate-800">Verification Criteria:</strong> {task.verification_criteria}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer Controls: Assignee, Due date, Completion note, Action Buttons */}
-                <div className="pt-4 border-t border-slate-800/70 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   {/* Metadata: Role, Assignee, Due Date */}
                   <div className="flex flex-wrap items-center gap-4 text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-300">
+                    <div className="flex items-center gap-1.5 text-slate-700">
                       <span className="text-slate-500">Role:</span>
-                      <span className="font-semibold text-emerald-400">{task.responsible_role}</span>
+                      <span className="font-semibold text-blue-700">{task.responsible_role}</span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-slate-300">
-                      <UserCheck className="w-3.5 h-3.5 text-slate-500" />
+                    <div className="flex items-center gap-1.5 text-slate-700">
+                      <UserCheck className="w-3.5 h-3.5 text-slate-400" />
                       <span className="text-slate-500">Assignee:</span>
-                      <span className="font-semibold text-slate-200">
-                        {task.assignee_name || <em className="text-slate-500">Unassigned</em>}
+                      <span className="font-semibold text-slate-800">
+                        {task.assignee_name || <em className="text-slate-400">Unassigned</em>}
                       </span>
                     </div>
 
                     {task.due_date && (
-                      <div className="flex items-center gap-1.5 text-slate-300">
-                        <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                      <div className="flex items-center gap-1.5 text-slate-700">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
                         <span className="text-slate-500">Due:</span>
-                        <span className="font-medium text-amber-300">
+                        <span className="font-semibold text-amber-700">
                           {new Date(task.due_date).toLocaleDateString()}
                         </span>
                       </div>
                     )}
 
                     {task.completion_notes && (
-                      <div className="text-[11px] text-teal-300 bg-teal-500/10 px-2.5 py-1 rounded-md border border-teal-500/20">
+                      <div className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
                         <strong>Notes:</strong> {task.completion_notes}
                       </div>
                     )}
@@ -771,7 +771,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                       <>
                         <button
                           onClick={() => openApproveModal(task)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-sm"
+                          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
                         >
                           <Check className="w-3.5 h-3.5" />
                           <span>Review &amp; Approve</span>
@@ -783,9 +783,9 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     {task.status === 'assigned' || task.approval_status === 'approved' ? (
                       <button
                         onClick={() => openAssignModal(task)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition"
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
                       >
-                        <UserCheck className="w-3.5 h-3.5 text-sky-400" />
+                        <UserCheck className="w-3.5 h-3.5 text-blue-600" />
                         <span>Reassign</span>
                       </button>
                     ) : null}
@@ -794,7 +794,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     {task.status === 'assigned' && (
                       <button
                         onClick={() => openStatusModal(task, 'in_progress')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow-sm"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
                       >
                         <PlayCircle className="w-3.5 h-3.5" />
                         <span>Start Work</span>
@@ -805,7 +805,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     {task.status === 'in_progress' && (
                       <button
                         onClick={() => openStatusModal(task, 'completed')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white transition shadow-sm"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition shadow-xs"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         <span>Mark Completed</span>
@@ -816,7 +816,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     {(task.status === 'completed' || task.status === 'verified') && (
                       <button
                         onClick={() => openVerifyModal(task)}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition shadow-sm"
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
                       >
                         <Award className="w-3.5 h-3.5" />
                         <span>{task.status === 'verified' ? 'View Verification' : 'Verify Outcome'}</span>
@@ -827,9 +827,9 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
                 {/* Inline Verification Result Display if Verified */}
                 {task.verification_status && task.verification_status !== 'Pending' && (
-                  <div className="mt-4 p-3.5 rounded-xl bg-slate-950/80 border border-indigo-500/30 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+                  <div className="mt-4 p-3.5 rounded-xl bg-blue-50/50 border border-blue-200 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-3">
-                      <span className="text-[11px] font-bold text-slate-400 uppercase">
+                      <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
                         Closed-Loop Outcome:
                       </span>
                       <span
@@ -842,16 +842,16 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     </div>
 
                     {task.verification_results && (
-                      <div className="flex items-center gap-5 text-slate-300 font-mono text-[11px]">
+                      <div className="flex items-center gap-5 text-slate-700 font-mono text-[11px]">
                         <div>
                           Pre-Complaints:{' '}
-                          <strong className="text-amber-400">
+                          <strong className="text-amber-700">
                             {task.verification_results.pre_action_complaints}
                           </strong>
                         </div>
                         <div>
                           Post-Complaints:{' '}
-                          <strong className="text-emerald-400">
+                          <strong className="text-emerald-700">
                             {task.verification_results.post_action_complaints}
                           </strong>
                         </div>
@@ -861,8 +861,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                             <strong
                               className={
                                 task.verification_results.complaint_change_percent < 0
-                                  ? 'text-emerald-400'
-                                  : 'text-rose-400'
+                                  ? 'text-emerald-700'
+                                  : 'text-red-700'
                               }
                             >
                               {task.verification_results.complaint_change_percent > 0 ? '+' : ''}
@@ -882,35 +882,35 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
       {/* MODAL 1: Manager Review & Approval */}
       {actionModalType === 'approve' && selectedTask && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-emerald-400" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <FileCheck className="w-4 h-4 text-blue-600" />
                 Manager Authorization &amp; Assignment
               </h3>
               <button
                 onClick={() => setActionModalType(null)}
-                className="text-slate-400 hover:text-slate-200 text-xs"
+                className="text-slate-400 hover:text-slate-600 text-xs font-semibold"
               >
                 Cancel
               </button>
             </div>
 
             {modalError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
                 {modalError}
               </div>
             )}
 
-            <div className="text-xs text-slate-300 space-y-1">
-              <div className="font-semibold text-white">{selectedTask.item || selectedTask.issue_cluster_key}</div>
-              <p className="text-slate-400">{selectedTask.issue_summary}</p>
+            <div className="text-xs text-slate-700 space-y-1">
+              <div className="font-bold text-slate-900">{selectedTask.item || selectedTask.issue_cluster_key}</div>
+              <p className="text-slate-600">{selectedTask.issue_summary}</p>
             </div>
 
             <div className="space-y-3 pt-2 text-xs">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase">
+                <label className="block text-[11px] font-semibold text-slate-600 mb-1.5 uppercase">
                   Approval Decision
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -919,8 +919,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     onClick={() => setApprovalDecision(true)}
                     className={`py-2 rounded-xl font-bold border transition ${
                       approvalDecision
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                        : 'bg-slate-950 text-slate-400 border-slate-800'
+                        ? 'bg-blue-50 text-blue-700 border-blue-400'
+                        : 'bg-slate-50 text-slate-600 border-slate-200'
                     }`}
                   >
                     ✓ Approve Action
@@ -930,8 +930,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     onClick={() => setApprovalDecision(false)}
                     className={`py-2 rounded-xl font-bold border transition ${
                       !approvalDecision
-                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/50'
-                        : 'bg-slate-950 text-slate-400 border-slate-800'
+                        ? 'bg-red-50 text-red-700 border-red-300'
+                        : 'bg-slate-50 text-slate-600 border-slate-200'
                     }`}
                   >
                     ✕ Reject Action
@@ -942,7 +942,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               {approvalDecision ? (
                 <>
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                       Assign to Staff / Role
                     </label>
                     <input
@@ -950,25 +950,25 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                       placeholder="e.g. Chef Sanjay, Quality Inspector..."
                       value={assigneeName}
                       onChange={(e) => setAssigneeName(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                    <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                       Target Due Date
                     </label>
                     <input
                       type="date"
                       value={dueDate}
                       onChange={(e) => setDueDate(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-emerald-500"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
                     />
                   </div>
                 </>
               ) : (
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                  <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                     Rejection Reason
                   </label>
                   <textarea
@@ -976,23 +976,23 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     placeholder="Provide operational reason for rejecting this CAPA recommendation..."
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-rose-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-red-500"
                   />
                 </div>
               )}
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+            <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
               <button
                 onClick={() => setActionModalType(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleApproveSubmit}
                 disabled={isSubmittingModal}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-xs"
               >
                 {isSubmittingModal ? 'Submitting...' : 'Confirm Decision'}
               </button>
@@ -1003,30 +1003,30 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
       {/* MODAL 2: Assign Task */}
       {actionModalType === 'assign' && selectedTask && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-sky-400" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-blue-600" />
                 Delegate Task to Staff
               </h3>
               <button
                 onClick={() => setActionModalType(null)}
-                className="text-slate-400 hover:text-slate-200 text-xs"
+                className="text-slate-400 hover:text-slate-600 text-xs font-semibold"
               >
                 Cancel
               </button>
             </div>
 
             {modalError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
                 {modalError}
               </div>
             )}
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                   Staff Assignee Name
                 </label>
                 <input
@@ -1034,34 +1034,34 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   placeholder="e.g. Ramesh Kumar (Kitchen Lead)"
                   value={assigneeName}
                   onChange={(e) => setAssigneeName(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-sky-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                   Deadline / Due Date
                 </label>
                 <input
                   type="date"
                   value={dueDate}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-sky-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+            <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
               <button
                 onClick={() => setActionModalType(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleAssignSubmit}
                 disabled={isSubmittingModal}
-                className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-xs"
               >
                 {isSubmittingModal ? 'Assigning...' : 'Assign Task'}
               </button>
@@ -1072,36 +1072,36 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
       {/* MODAL 3: Update Progress / Completion */}
       {actionModalType === 'status' && selectedTask && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-teal-400" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" />
                 Update Task Execution Progress
               </h3>
               <button
                 onClick={() => setActionModalType(null)}
-                className="text-slate-400 hover:text-slate-200 text-xs"
+                className="text-slate-400 hover:text-slate-600 text-xs font-semibold"
               >
                 Cancel
               </button>
             </div>
 
             {modalError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
                 {modalError}
               </div>
             )}
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                   Target Status
                 </label>
                 <select
                   value={statusProgress}
                   onChange={(e) => setStatusProgress(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-teal-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
                 >
                   <option value="in_progress">In Progress</option>
                   <option value="completed">Completed</option>
@@ -1109,7 +1109,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1 uppercase">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1 uppercase">
                   Execution &amp; Completion Notes
                 </label>
                 <textarea
@@ -1117,22 +1117,22 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   placeholder="Detail the actual corrective/preventive actions taken (e.g. recalibrated bain-marie temperature, replaced supplier batch, inspected oil)..."
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none focus:border-teal-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end gap-2">
+            <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">
               <button
                 onClick={() => setActionModalType(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={handleStatusSubmit}
                 disabled={isSubmittingModal}
-                className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-xs"
               >
                 {isSubmittingModal ? 'Saving...' : 'Update Status'}
               </button>
@@ -1143,42 +1143,42 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
       {/* MODAL 4: Closed-Loop Outcome Verification */}
       {actionModalType === 'verify' && selectedTask && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Award className="w-4 h-4 text-indigo-400" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Award className="w-4 h-4 text-blue-600" />
                 Before/After Statistical Outcome Verification
               </h3>
               <button
                 onClick={() => setActionModalType(null)}
-                className="text-slate-400 hover:text-slate-200 text-xs"
+                className="text-slate-400 hover:text-slate-600 text-xs font-semibold"
               >
                 Close
               </button>
             </div>
 
             {modalError && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
                 {modalError}
               </div>
             )}
 
-            <div className="text-xs text-slate-300">
-              <div className="font-semibold text-white">{selectedTask.item || selectedTask.issue_cluster_key}</div>
-              <p className="text-slate-400 text-[11px] mt-0.5">
+            <div className="text-xs text-slate-700">
+              <div className="font-bold text-slate-900">{selectedTask.item || selectedTask.issue_cluster_key}</div>
+              <p className="text-slate-500 text-[11px] mt-0.5">
                 Evaluation Window: Compares complaint volumes and customer ratings strictly before vs. after completion of corrective measures.
               </p>
             </div>
 
             <div className="flex items-center gap-3 text-xs">
-              <label className="text-[11px] font-semibold text-slate-400 uppercase">
+              <label className="text-[11px] font-semibold text-slate-600 uppercase">
                 Comparison Window:
               </label>
               <select
                 value={verificationWindowDays}
                 onChange={(e) => setVerificationWindowDays(parseInt(e.target.value, 10))}
-                className="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-200 text-xs focus:outline-none"
+                className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
               >
                 <option value={7}>7 Days Pre vs 7 Days Post</option>
                 <option value={14}>14 Days Pre vs 14 Days Post</option>
@@ -1188,7 +1188,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               <button
                 onClick={handleRunVerification}
                 disabled={isSubmittingModal}
-                className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition disabled:opacity-50"
+                className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition disabled:opacity-50 shadow-xs"
               >
                 {isSubmittingModal ? 'Analyzing...' : 'Run Statistical Comparison'}
               </button>
@@ -1196,9 +1196,9 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
 
             {/* Verification Result Card */}
             {verificationResult && (
-              <div className="p-4 rounded-xl bg-slate-950/80 border border-indigo-500/30 space-y-3 mt-3">
+              <div className="p-4 rounded-xl bg-blue-50/40 border border-blue-200 space-y-3 mt-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase">
+                  <span className="text-[11px] font-bold text-slate-600 uppercase">
                     Verification Outcome
                   </span>
                   <span
@@ -1211,27 +1211,27 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
                     <div className="text-[10px] text-slate-500 uppercase font-semibold">Pre Complaints</div>
-                    <div className="text-base font-bold text-amber-400 font-mono mt-0.5">
+                    <div className="text-base font-bold text-amber-700 font-mono mt-0.5">
                       {verificationResult.pre_action_complaints}
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
                     <div className="text-[10px] text-slate-500 uppercase font-semibold">Post Complaints</div>
-                    <div className="text-base font-bold text-emerald-400 font-mono mt-0.5">
+                    <div className="text-base font-bold text-emerald-700 font-mono mt-0.5">
                       {verificationResult.post_action_complaints}
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
                     <div className="text-[10px] text-slate-500 uppercase font-semibold">Volume Change</div>
                     <div
                       className={`text-base font-bold font-mono mt-0.5 ${
                         (verificationResult.complaint_change_percent ?? 0) < 0
-                          ? 'text-emerald-400'
-                          : 'text-rose-400'
+                          ? 'text-emerald-700'
+                          : 'text-red-700'
                       }`}
                     >
                       {verificationResult.complaint_change_percent !== undefined
@@ -1240,9 +1240,9 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
                     <div className="text-[10px] text-slate-500 uppercase font-semibold">Rating Delta</div>
-                    <div className="text-base font-bold text-indigo-300 font-mono mt-0.5">
+                    <div className="text-base font-bold text-blue-700 font-mono mt-0.5">
                       {verificationResult.post_action_avg_rating && verificationResult.pre_action_avg_rating
                         ? `${(verificationResult.post_action_avg_rating - verificationResult.pre_action_avg_rating).toFixed(2)} ★`
                         : 'N/A'}
@@ -1250,8 +1250,8 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-slate-900/60 border border-slate-800 text-[11px] text-slate-300 space-y-1">
-                  <span className="font-semibold text-slate-400 uppercase tracking-wider block">
+                <div className="p-3 rounded-lg bg-white border border-blue-200 text-[11px] text-slate-700 space-y-1">
+                  <span className="font-bold text-blue-900 uppercase tracking-wider block">
                     Non-Causal Analytical Disclosure
                   </span>
                   <p className="leading-relaxed">{verificationResult.non_causal_explanation}</p>
@@ -1259,10 +1259,10 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               </div>
             )}
 
-            <div className="pt-3 border-t border-slate-800 flex justify-end">
+            <div className="pt-3 border-t border-slate-100 flex justify-end">
               <button
                 onClick={() => setActionModalType(null)}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold"
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold"
               >
                 Done
               </button>

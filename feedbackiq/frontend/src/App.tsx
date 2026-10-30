@@ -20,15 +20,14 @@ import {
   PaginatedFeedback,
 } from './types';
 import {
-  ShieldCheck,
   Sparkles,
-  Cpu,
-  Database,
-  Network,
   ArrowRight,
-  MessageSquareText,
   TrendingUp,
   CheckSquare,
+  CheckCircle2,
+  ShieldAlert,
+  Flame,
+  Cpu,
 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -134,7 +133,7 @@ export const App: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
         {/* Navigation Header */}
         <Header
           currentOrg={currentOrg}
@@ -172,134 +171,198 @@ export const App: React.FC = () => {
               <>
                 {/* Active Organization & Readiness Telemetry */}
                 {activeTab === 'overview' && (
-                  <>
-                    {/* PS 2.5 Executive Challenge & Capabilities Command Deck */}
-                    <div className="rounded-2xl bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-slate-950 border border-slate-800 p-6 md:p-8 space-y-6 shadow-xl">
-                      {/* Top Header */}
-                      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 pb-6 border-b border-slate-800/80">
-                        <div className="space-y-2">
-                          <div className="flex items-center gap-2.5">
-                            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-mono tracking-wider">
-                              PROBLEM STATEMENT 2.5
-                            </span>
-                            <span className="text-xs text-slate-400 font-semibold">
-                              AI-Powered Food Feedback &amp; Quality Intelligence
-                            </span>
-                          </div>
-                          <h2 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
-                            Canteen Decision Intelligence &amp; Quality Operations
-                          </h2>
-                          <div className="p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 max-w-3xl leading-relaxed">
-                            <strong className="text-emerald-400 uppercase tracking-wider block text-[10px] mb-1 font-mono">
-                              Operational Challenge:
-                            </strong>
-                            "Student feedback on food quality comes through forms and complaints but is rarely analyzed, so recurring problems are not fixed."
-                          </div>
+                  <div className="space-y-8">
+                    {/* feedback.tools Model: High-Impact Hero Section */}
+                    <div className="relative overflow-hidden rounded-3xl bg-white border border-slate-200 p-8 md:p-12 shadow-xs">
+                      {/* Decorative gradient glow */}
+                      <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-100/60 rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-50/80 rounded-full blur-3xl pointer-events-none" />
+
+                      <div className="relative max-w-3xl space-y-5">
+                        {/* Sparkle Trust Pill */}
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
+                          <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+                          <span>1M+ Responses Analyzed • AI Food Intelligence Platform</span>
                         </div>
 
-                        {/* Supported Datasets Pills */}
-                        <div className="flex flex-col sm:items-end gap-2 shrink-0">
-                          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-mono">
-                            Data Sources
-                          </span>
-                          <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 text-[11px]">
-                            <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                              Zomato Bangalore (Kaggle)
-                            </span>
-                            <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 font-mono flex items-center gap-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                              Synthetic Canteen Form (8 Fields)
-                            </span>
-                          </div>
+                        {/* Hero Title */}
+                        <h1 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                          Customer Food Feedback <br />
+                          <span className="text-blue-600">Analytics &amp; Quality Intelligence</span>
+                        </h1>
+
+                        {/* Subtitle */}
+                        <p className="text-base text-slate-600 leading-relaxed max-w-2xl font-normal">
+                          Continuous feedback ingestion, empirical recurrence prediction, and automated action prioritization for modern dining operations, campus messes, and enterprise kitchens.
+                        </p>
+
+                        {/* CTAs */}
+                        <div className="flex flex-wrap items-center gap-3 pt-2">
+                          <button
+                            onClick={() => setActiveTab('feedback')}
+                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm transition hover:shadow-md"
+                          >
+                            <span>Launch Ingestion Workspace</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            onClick={() => setActiveTab('capa')}
+                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-semibold text-sm shadow-xs transition"
+                          >
+                            <CheckSquare className="w-4 h-4 text-blue-600" />
+                            <span>Prioritized Action Board</span>
+                          </button>
                         </div>
                       </div>
 
-                      {/* 3 Core Capability Modules */}
-                      <div className="space-y-2">
-                        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider font-mono">
-                          Three Required Capabilities
+                      {/* Live Interactive Review Showcase (Feedback.tools style) */}
+                      <div className="mt-8 pt-8 border-t border-slate-100">
+                        <div className="text-xs font-bold uppercase text-slate-600 tracking-wider mb-3">
+                          Live Ingestion Demonstration
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          {/* Capability 1 */}
-                          <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 transition flex flex-col justify-between group space-y-4">
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                  CAPABILITY 1
-                                </span>
-                                <MessageSquareText className="w-4 h-4 text-emerald-400" />
-                              </div>
-                              <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition">
-                                Feedback Analytics &amp; Topics
-                              </h3>
-                              <p className="text-xs text-slate-400 leading-relaxed">
-                                Analyzes student feedback for sentiment, extracts food items &amp; service aspects, scores severity (1–5), and detects potential food safety indicators with deterministic Rule 9 safeguards.
-                              </p>
+                        <div className="p-5 rounded-2xl bg-slate-50/80 border border-slate-200 space-y-3">
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <div className="flex items-center gap-2 font-medium text-slate-700">
+                              <span className="font-bold text-amber-600 font-mono">★ 2/5</span>
+                              <span>•</span>
+                              <span className="font-semibold text-slate-900">Dinner Service • Counter 2</span>
+                              <span>•</span>
+                              <span className="text-slate-500">Student Mess Hall</span>
                             </div>
-                            <button
-                              onClick={() => setActiveTab('feedback')}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-600/20 border border-slate-800 group-hover:border-emerald-500/40 text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition"
-                            >
-                              <span>Ingest &amp; Analyze</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
-                            </button>
+                            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                              ● Real-time Stream
+                            </span>
                           </div>
 
-                          {/* Capability 2 */}
-                          <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 transition flex flex-col justify-between group space-y-4">
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                  CAPABILITY 2
-                                </span>
-                                <TrendingUp className="w-4 h-4 text-emerald-400" />
-                              </div>
-                              <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition">
-                                Issue Recurrence Prediction
-                              </h3>
-                              <p className="text-xs text-slate-400 leading-relaxed">
-                                Predicts which quality issues are likely to recur using historical clustering, empirical velocity trends, distinct days, and meal-period patterns without training traditional ML models.
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => setActiveTab('recurrence')}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-600/20 border border-slate-800 group-hover:border-emerald-500/40 text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition"
-                            >
-                              <span>Predict Recurrence</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
-                            </button>
-                          </div>
+                          <p className="text-sm text-slate-800 italic leading-relaxed bg-white p-3.5 rounded-xl border border-slate-200">
+                            "The sambar rice served today at lunch was cold and sour, and yesterday there was a foreign wire strand in the dinner chicken curry."
+                          </p>
 
-                          {/* Capability 3 */}
-                          <div className="p-5 rounded-xl bg-slate-950/60 border border-slate-800/80 hover:border-emerald-500/40 transition flex flex-col justify-between group space-y-4">
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                  CAPABILITY 3
-                                </span>
-                                <CheckSquare className="w-4 h-4 text-emerald-400" />
-                              </div>
-                              <h3 className="text-sm font-bold text-slate-100 group-hover:text-emerald-300 transition">
-                                Canteen Prioritized Actions
-                              </h3>
-                              <p className="text-xs text-slate-400 leading-relaxed">
-                                Generates a prioritized action queue with deterministic formula scoring, LangChain Pydantic CAPA recommendations, manager approvals, staff delegation, and closed-loop verification.
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => setActiveTab('actions')}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900 group-hover:bg-emerald-600/20 border border-slate-800 group-hover:border-emerald-500/40 text-xs font-semibold text-slate-200 group-hover:text-emerald-300 transition"
-                            >
-                              <span>View Prioritized Actions</span>
-                              <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
-                            </button>
+                          {/* Inline AI Extracted Aspects */}
+                          <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 font-bold">
+                              <ShieldAlert className="w-3.5 h-3.5" />
+                              Chicken Curry (Foreign Object • Sev 5)
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 font-semibold">
+                              <TrendingUp className="w-3.5 h-3.5" />
+                              Sambar Rice (Temperature • Sev 3)
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
+                              <Flame className="w-3.5 h-3.5 text-blue-600" />
+                              Recurrence: 88% Likelihood
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold ml-auto shadow-xs">
+                              Priority Score: 94.0 / 100
+                            </span>
                           </div>
                         </div>
                       </div>
                     </div>
 
+                    {/* 3-Stage Pipeline (feedback.tools model) */}
+                    <div className="space-y-4">
+                      <div>
+                        <div className="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                          Closed-Loop Operations
+                        </div>
+                        <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                          From raw feedback to verified kitchen resolutions
+                        </h2>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        {/* Stage 1 */}
+                        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition-all space-y-4 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
+                              01
+                            </div>
+                            <h3 className="text-base font-bold text-slate-900">
+                              AI Reads &amp; Classifies Every Review
+                            </h3>
+                            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                              Ingest CSV batches or real-time diner surveys. LangChain structured output extracts food items, sentiments, aspects, severity scores (1–5), and immediate food safety flags.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setActiveTab('feedback')}
+                            className="flex items-center justify-between text-xs font-bold text-blue-600 hover:text-blue-700 pt-2 border-t border-slate-100"
+                          >
+                            <span>Launch Feedback Ingestion</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        {/* Stage 2 */}
+                        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition-all space-y-4 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
+                              02
+                            </div>
+                            <h3 className="text-base font-bold text-slate-900">
+                              Empirical Recurrence Reasoning
+                            </h3>
+                            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                              SQL metrics retrieve historical velocity, distinct days count, and meal-period patterns. An autonomous reasoning agent forecasts recurrence risk without black-box ML drift.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setActiveTab('recurrence')}
+                            className="flex items-center justify-between text-xs font-bold text-blue-600 hover:text-blue-700 pt-2 border-t border-slate-100"
+                          >
+                            <span>Inspect Recurrence Risks</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        {/* Stage 3 */}
+                        <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs hover:border-blue-300 transition-all space-y-4 flex flex-col justify-between">
+                          <div className="space-y-3">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
+                              03
+                            </div>
+                            <h3 className="text-base font-bold text-slate-900">
+                              Deterministic Prioritization &amp; CAPA
+                            </h3>
+                            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                              Configurable deterministic scoring (Severity + Recurrence + Frequency) with non-suppressible Rule 9 safety floors, manager approval workflows, and statistical before/after verification.
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setActiveTab('capa')}
+                            className="flex items-center justify-between text-xs font-bold text-blue-600 hover:bg-blue-700 pt-2 border-t border-slate-100"
+                          >
+                            <span>Open Action Board</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Operational Guardrails Bar */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-5 rounded-2xl bg-blue-50/50 border border-blue-200 text-xs">
+                      <div className="flex items-center gap-2 text-slate-800 font-semibold">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                        <span>Multi-Tenant Dining Isolation</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-800 font-semibold">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                        <span>Mandatory Rule 9 Safety Floor</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-800 font-semibold">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                        <span>Empirical Non-Causal Audits</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-800 font-semibold">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
+                        <span>Kaggle Zomato &amp; Synthetic Tests</span>
+                      </div>
+                    </div>
+
+                    {/* Administrative Telemetry Cards (PostgreSQL, Docker, Multi-tenancy) */}
                     <HealthStatusCard
                       readiness={readiness}
                       isLoading={isHealthChecking}
@@ -316,68 +379,7 @@ export const App: React.FC = () => {
                       onCloseModal={() => setIsCreateOrgModalOpen(false)}
                       onOpenModal={() => setIsCreateOrgModalOpen(true)}
                     />
-
-                    {/* Phase Roadmap */}
-                    <div className="rounded-2xl bg-slate-900/40 border border-slate-800/80 p-6">
-                      <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="w-5 h-5 text-indigo-400" />
-                          <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider">
-                            FeedbackIQ Architecture Roadmap
-                          </h3>
-                        </div>
-                        <span className="text-xs text-emerald-400 font-mono font-semibold">
-                          Implementation 3 Active
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/30">
-                          <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 mb-2">
-                            <span>Phase 0: Foundation</span>
-                            <ShieldCheck className="w-4 h-4" />
-                          </div>
-                          <p className="text-xs text-slate-300 font-medium">Core Monorepo &amp; Multi-Tenancy</p>
-                          <p className="text-[11px] text-slate-400 mt-1">
-                            FastAPI, PostgreSQL 16 (Docker), SQLAlchemy async, Alembic, React UI shell.
-                          </p>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/30">
-                          <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 mb-2">
-                            <span>Phase 1: Ingestion &amp; NLP</span>
-                            <Database className="w-4 h-4" />
-                          </div>
-                          <p className="text-xs text-slate-300 font-medium">Data Pipeline &amp; Safety Agent</p>
-                          <p className="text-[11px] text-slate-400 mt-1">
-                            CSV Upload, Zomato mapping, synthetic scenarios, LangChain Aspect Analysis &amp; Rule 9 Safety.
-                          </p>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/30">
-                          <div className="flex items-center justify-between text-xs font-semibold text-emerald-400 mb-2">
-                            <span>Phase 2: Recurrence Intelligence</span>
-                            <Cpu className="w-4 h-4" />
-                          </div>
-                          <p className="text-xs text-slate-300 font-medium">Intelligence &amp; Priority Engine</p>
-                          <p className="text-[11px] text-slate-400 mt-1">
-                            Deterministic priority formula (Severity + Recurrence + Frequency + Impact) &amp; Rule 9 override.
-                          </p>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-slate-950/60 border border-emerald-500/50 ring-1 ring-emerald-500/20">
-                          <div className="flex items-center justify-between text-xs font-semibold text-emerald-300 mb-2">
-                            <span>Phase 3: CAPA Actions</span>
-                            <Network className="w-4 h-4" />
-                          </div>
-                          <p className="text-xs text-slate-300 font-medium">Closed-Loop Task &amp; Verification</p>
-                          <p className="text-[11px] text-slate-400 mt-1">
-                            Pydantic action recommendations, manager approvals, staff delegation, and statistical verification.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </>
+                  </div>
                 )}
 
                 {/* Feedback Ingestion & Aspect Intelligence Views */}
@@ -451,25 +453,25 @@ export const App: React.FC = () => {
 
                 {/* System Architecture Tab */}
                 {activeTab === 'system' && (
-                  <div className="p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 space-y-4">
-                    <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                      <Cpu className="w-5 h-5 text-indigo-400" />
+                  <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                      <Cpu className="w-5 h-5 text-blue-600" />
                       FeedbackIQ Architecture &amp; Methodology
                     </h3>
-                    <p className="text-xs text-slate-300 leading-relaxed">
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
                       FeedbackIQ operates on an unbending architectural principle: <strong>Calculated facts are computed deterministically with SQL and Python, while LLMs synthesize human-readable labels, causal hypotheses, and operational recommendations.</strong>
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
-                      <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/60 space-y-2">
-                        <span className="font-bold text-emerald-400 uppercase">Deterministic Priority Engine</span>
-                        <p className="text-slate-400">
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="font-bold text-blue-700 uppercase">Deterministic Priority Engine</span>
+                        <p className="text-slate-600">
                           Priority = 0.50 × Severity + 0.30 × RecurrenceRisk + 0.20 × RecentFrequency.
                           All components are normalized strictly between 0 and 100 before weighting.
                         </p>
                       </div>
-                      <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800/60 space-y-2">
-                        <span className="font-bold text-rose-400 uppercase">Rule 9 Food-Safety Override</span>
-                        <p className="text-slate-400">
+                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                        <span className="font-bold text-red-600 uppercase">Rule 9 Food-Safety Override</span>
+                        <p className="text-slate-600">
                           Critical food safety hazards (pests, foreign objects, illness, raw meat, chemical odor) trigger an independent safety floor (≥ 85.0) ensuring they are never deprioritized due to limited historical frequency.
                         </p>
                       </div>
