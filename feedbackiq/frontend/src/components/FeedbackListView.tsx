@@ -13,6 +13,7 @@ import { Feedback, FeedbackAnalysis, PaginatedFeedback } from '../types';
 import { api } from '../services/api';
 import { AnalysisModal } from './AnalysisModal';
 import { EmptyState } from './EmptyState';
+import { resolveDepartmentRouting } from '../utils/routing';
 
 interface FeedbackListViewProps {
   data: PaginatedFeedback | null;
@@ -262,30 +263,42 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                         </p>
                       </td>
 
-                      {/* AI Analysis Badges */}
+                      {/* AI Analysis Badges & Department Routing */}
                       <td className="px-4 py-3 whitespace-nowrap">
                         {analysis ? (
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                analysis.sentiment === 'positive'
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : analysis.sentiment === 'negative'
-                                  ? 'bg-red-50 text-red-700 border border-red-200'
-                                  : 'bg-blue-50 text-blue-700 border border-blue-200'
-                              }`}
-                            >
-                              {analysis.sentiment}
-                            </span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-semibold border border-slate-200">
-                              Sev {analysis.severity_score}
-                            </span>
-                            {isFoodSafety && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 border border-red-300 flex items-center gap-1">
-                                <ShieldAlert className="w-3 h-3 text-red-600" />
-                                Hazard
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  analysis.sentiment === 'positive'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : analysis.sentiment === 'negative'
+                                    ? 'bg-red-50 text-red-700 border border-red-200'
+                                    : 'bg-blue-50 text-blue-700 border border-blue-200'
+                                }`}
+                              >
+                                {analysis.sentiment}
                               </span>
-                            )}
+                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                                Sev {analysis.severity_score}
+                              </span>
+                              {isFoodSafety && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 border border-red-300 flex items-center gap-1">
+                                  <ShieldAlert className="w-3 h-3 text-red-600" />
+                                  Hazard
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 text-[10px]">
+                              <span className="text-slate-400 font-mono">Dept:</span>
+                              <span className="font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.2 rounded border border-blue-100">
+                                {resolveDepartmentRouting(
+                                  analysis.issue_categories[0] || fb.issue_category,
+                                  analysis.food_safety_flag,
+                                  analysis.severity_score
+                                ).department}
+                              </span>
+                            </div>
                           </div>
                         ) : (
                           <span className="text-[11px] text-slate-400 italic">Unanalyzed</span>

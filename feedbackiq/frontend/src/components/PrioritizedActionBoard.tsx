@@ -546,18 +546,20 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             <option value="Low">Low</option>
           </select>
 
-          {/* Responsible Role Filter */}
+          {/* Responsible Department & Role Filter */}
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium cursor-pointer"
           >
-            <option value="">All Roles</option>
-            <option value="Head Chef">Head Chef</option>
-            <option value="Food Safety Officer">Food Safety Officer</option>
-            <option value="Quality Assurance Lead">Quality Assurance Lead</option>
-            <option value="Canteen Operations Manager">Canteen Operations Manager</option>
-            <option value="Hygiene Supervisor">Hygiene Supervisor</option>
+            <option value="">All Departments &amp; Roles</option>
+            <option value="Head Chef">Kitchen: Head Chef</option>
+            <option value="Hygiene Supervisor">Hygiene: Hygiene Supervisor</option>
+            <option value="Food Safety Officer">Food Safety: Safety Officer</option>
+            <option value="Dining Hall Operations Supervisor">Service: Dining Operations Supervisor</option>
+            <option value="Procurement & Kitchen Store Manager">Stores: Procurement Manager</option>
+            <option value="Canteen Operations Manager">Operations: Canteen Manager</option>
+            <option value="Quality Assurance Lead">QA: QA Lead</option>
           </select>
         </div>
 
@@ -733,7 +735,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   {/* Metadata: Role, Assignee, Due Date */}
                   <div className="flex flex-wrap items-center gap-4 text-xs">
                     <div className="flex items-center gap-1.5 text-slate-700">
-                      <span className="text-slate-500">Role:</span>
+                      <span className="text-slate-500">Dept &amp; Role:</span>
                       <span className="font-semibold text-blue-700">{task.responsible_role}</span>
                     </div>
 

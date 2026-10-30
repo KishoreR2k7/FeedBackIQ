@@ -18,6 +18,7 @@ import { api } from '../services/api';
 import { PrioritizedIssueItem, PriorityConfig, RiskLevelType, Feedback } from '../types';
 import { LoadingState } from './LoadingState';
 import { EmptyState } from './EmptyState';
+import { resolveDepartmentRouting } from '../utils/routing';
 
 interface PrioritizedIssuesViewProps {
   orgId?: string;
@@ -335,6 +336,9 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                     </span>
                     <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
                       🔬 {issue.real_records_count ?? 0} real / {issue.synthetic_records_count ?? 0} synthetic
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+                      🏢 Dept: {resolveDepartmentRouting(issue.issue_category, issue.is_safety_override).department} ({resolveDepartmentRouting(issue.issue_category, issue.is_safety_override).role})
                     </span>
                   </div>
                 </div>
