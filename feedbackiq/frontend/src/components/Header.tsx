@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, BookOpen, Layers, ChevronDown } from 'lucide-react';
+import { Activity, BookOpen, Layers, ChevronDown, ArrowLeft, Menu, X } from 'lucide-react';
 import { Organization, ReadinessResponse } from '../types';
 
 interface HeaderProps {
@@ -10,6 +10,9 @@ interface HeaderProps {
   readiness: ReadinessResponse | null;
   isChecking: boolean;
   onRefreshHealth: () => void;
+  onNavigateTab?: (tab: string) => void;
+  isMobileMenuOpen?: boolean;
+  onToggleMobileMenu?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,37 +23,62 @@ export const Header: React.FC<HeaderProps> = ({
   readiness,
   isChecking,
   onRefreshHealth,
+  onNavigateTab,
+  isMobileMenuOpen,
+  onToggleMobileMenu,
 }) => {
   const isReady = readiness?.status === 'ready';
 
   return (
-    <header className="h-16 border-b border-slate-200/80 bg-white/95 backdrop-blur sticky top-0 z-30 px-6 flex items-center justify-between shadow-xs">
-      {/* Brand & Project Info */}
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 text-white">
-          <Layers className="w-5 h-5" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-base font-bold text-slate-900 tracking-tight">FeedbackIQ</h1>
-            <span className="px-2 py-0.5 text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200 rounded-full">
-              SaaS MVP
-            </span>
-            <span className="hidden sm:inline-flex px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 rounded-md uppercase tracking-wider font-mono">
-              PS 2.5
-            </span>
-            <span className="hidden lg:inline text-xs font-medium text-slate-500 border-l border-slate-200 pl-2">
-              Food Quality Intelligence Platform
-            </span>
+    <header className="h-16 border-b border-slate-200/80 bg-white sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between shadow-xs">
+      {/* Brand, Mobile Toggle & Breadcrumb */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {onToggleMobileMenu && (
+          <button
+            onClick={onToggleMobileMenu}
+            aria-label="Toggle navigation menu"
+            className="md:hidden p-1.5 -ml-1 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5 text-slate-700" />
+            ) : (
+              <Menu className="w-5 h-5 text-slate-700" />
+            )}
+          </button>
+        )}
+
+        <button
+          onClick={() => onNavigateTab && onNavigateTab('overview')}
+          className="flex items-center gap-2.5 text-left group"
+        >
+          <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 text-white">
+            <Layers className="w-4 h-4" />
           </div>
-          <p className="text-[11px] text-slate-500 hidden sm:block">
-            Sentiment Analysis • Recurrence Prediction • Canteen Prioritized Actions
-          </p>
-        </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-sm md:text-base font-black text-slate-900 tracking-tight group-hover:text-blue-600 transition">
+                FeedbackIQ
+              </h1>
+              <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 rounded-full">
+                SaaS MVP
+              </span>
+            </div>
+          </div>
+        </button>
+
+        {onNavigateTab && (
+          <button
+            onClick={() => onNavigateTab('overview')}
+            className="hidden sm:flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Landing Page</span>
+          </button>
+        )}
       </div>
 
       {/* Right Actions: Tenant Selector, Health Pill, Docs */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {/* Tenant Switcher */}
         <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg hover:border-blue-300 transition-colors">
           <select
@@ -64,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
               }
             }}
             aria-label="Select active tenant"
-            className="appearance-none bg-transparent text-xs font-semibold text-slate-800 pl-3 pr-8 py-2 focus:outline-none cursor-pointer"
+            className="appearance-none bg-transparent text-xs font-semibold text-slate-800 pl-3 pr-8 py-1.5 focus:outline-none cursor-pointer"
           >
             {organizations.length === 0 ? (
               <option value="" className="text-slate-400">
@@ -88,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onRefreshHealth}
           title="Click to re-ping Backend & Database health"
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
             isReady
               ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70 shadow-xs'
               : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/70 shadow-xs'
