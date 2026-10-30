@@ -28,6 +28,8 @@ interface FeedbackListViewProps {
   setSentimentFilter: (val: string) => void;
   foodSafetyOnly: boolean;
   setFoodSafetyOnly: (val: boolean) => void;
+  sourceDatasetFilter?: string;
+  setSourceDatasetFilter?: (val: string) => void;
   searchQuery: string;
   setSearchQuery: (val: string) => void;
   currentPage: number;
@@ -47,6 +49,8 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
   setSentimentFilter,
   foodSafetyOnly,
   setFoodSafetyOnly,
+  sourceDatasetFilter = '',
+  setSourceDatasetFilter,
   searchQuery,
   setSearchQuery,
   currentPage,
@@ -109,6 +113,30 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
     );
   };
 
+  const renderDatasetBadge = (source?: string, channel?: string) => {
+    const src = (source || '').toLowerCase();
+    const ch = (channel || '').toLowerCase();
+    if (src.includes('zomato') || ch === 'zomato_review') {
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+          🍽️ Kaggle Review
+        </span>
+      );
+    }
+    if (src.includes('synth')) {
+      return (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+          🧪 Synthetic Demo
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        🎓 Student Canteen
+      </span>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* Filtering Toolbar */}
@@ -128,6 +156,20 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
 
           {/* Filter Dropdowns */}
           <div className="flex flex-wrap items-center gap-2">
+            {/* Source Dataset Filter */}
+            {setSourceDatasetFilter && (
+              <select
+                value={sourceDatasetFilter}
+                onChange={(e) => setSourceDatasetFilter(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer"
+              >
+                <option value="">All Data Sources</option>
+                <option value="canteen">🎓 Student Canteen Only</option>
+                <option value="synth">🧪 Synthetic Demo Only</option>
+                <option value="zomato">🍽️ Kaggle Restaurant Only</option>
+              </select>
+            )}
+
             {/* Meal Type Filter */}
             <select
               value={mealTypeFilter}
@@ -245,11 +287,11 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                         </div>
                       </td>
 
-                      {/* Item */}
+                      {/* Item & Provenance */}
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="font-bold text-slate-900">{fb.item || 'General Meal'}</div>
-                        <div className="text-[10px] text-slate-400 font-mono">
-                          {fb.source_dataset}
+                        <div className="mt-0.5">
+                          {renderDatasetBadge(fb.source_dataset, fb.channel)}
                         </div>
                       </td>
 

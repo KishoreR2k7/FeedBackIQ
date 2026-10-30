@@ -8,6 +8,7 @@ import { TopicTrendView } from './components/TopicTrendView';
 import { PrioritizedIssuesView } from './components/PrioritizedIssuesView';
 import { PrioritizedActionBoard } from './components/PrioritizedActionBoard';
 import { TenantSelector } from './components/TenantSelector';
+import { AnalyticsOverviewView } from './components/AnalyticsOverviewView';
 import { LoadingState } from './components/LoadingState';
 import { ErrorAlert } from './components/ErrorAlert';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -35,6 +36,7 @@ export const App: React.FC = () => {
   const [mealTypeFilter, setMealTypeFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [sentimentFilter, setSentimentFilter] = useState('');
+  const [sourceDatasetFilter, setSourceDatasetFilter] = useState('');
   const [foodSafetyOnly, setFoodSafetyOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,6 +61,7 @@ export const App: React.FC = () => {
           issue_category: categoryFilter || undefined,
           sentiment: sentimentFilter || undefined,
           food_safety_only: foodSafetyOnly || undefined,
+          source_dataset: sourceDatasetFilter || undefined,
         },
         currentOrg.id
       );
@@ -68,7 +71,7 @@ export const App: React.FC = () => {
     } finally {
       setIsLoadingFeedback(false);
     }
-  }, [currentOrg, currentPage, mealTypeFilter, categoryFilter, sentimentFilter, foodSafetyOnly, searchQuery]);
+  }, [currentOrg, currentPage, mealTypeFilter, categoryFilter, sentimentFilter, sourceDatasetFilter, foodSafetyOnly, searchQuery]);
 
   // Fetch initial telemetry and tenants
   const loadInitialData = useCallback(async () => {
@@ -128,7 +131,7 @@ export const App: React.FC = () => {
     return (
       <ErrorBoundary>
         <LandingPage
-          onEnterWorkspace={(tab = 'feedback') => setActiveTab(tab)}
+          onEnterWorkspace={(tab = 'dashboard') => setActiveTab(tab)}
           currentOrg={currentOrg}
           organizations={organizations}
           templates={templates}
@@ -195,7 +198,17 @@ export const App: React.FC = () => {
               />
             ) : (
               <>
-                {/* Feedback Ingestion & Aspect Intelligence Views */}
+                {/* Executive Overview & Full Feedback Analytics */}
+                {(activeTab === 'dashboard' || activeTab === 'analytics') && (
+                  <AnalyticsOverviewView
+                    orgId={currentOrg?.id}
+                    onNavigateToRecurrence={() => setActiveTab('recurrence')}
+                    onNavigateToActions={() => setActiveTab('actions')}
+                    onNavigateToFeedback={() => setActiveTab('feedback')}
+                  />
+                )}
+
+                {/* Feedback Ingestion & Feedback Explorer */}
                 {activeTab === 'feedback' && (
                   <div className="space-y-6">
                     <IngestionPanel
@@ -214,6 +227,8 @@ export const App: React.FC = () => {
                       setCategoryFilter={setCategoryFilter}
                       sentimentFilter={sentimentFilter}
                       setSentimentFilter={setSentimentFilter}
+                      sourceDatasetFilter={sourceDatasetFilter}
+                      setSourceDatasetFilter={setSourceDatasetFilter}
                       foodSafetyOnly={foodSafetyOnly}
                       setFoodSafetyOnly={setFoodSafetyOnly}
                       searchQuery={searchQuery}
@@ -224,8 +239,8 @@ export const App: React.FC = () => {
                   </div>
                 )}
 
-                {/* Topic Trends & Aspect Intelligence */}
-                {(activeTab === 'analytics' || activeTab === 'recurrence') && (
+                {/* Topic Trends & Recurrence Risks */}
+                {activeTab === 'recurrence' && (
                   <TopicTrendView
                     orgId={currentOrg?.id}
                     onNavigateToPriorities={() => setActiveTab('actions')}

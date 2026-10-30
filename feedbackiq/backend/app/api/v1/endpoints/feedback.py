@@ -61,6 +61,7 @@ async def list_feedback(
     date_to: Optional[datetime] = None,
     channel: Optional[str] = None,
     food_safety_only: bool = False,
+    source_dataset: Optional[str] = None,
     org: Organization = Depends(resolve_org_or_first),
     db: AsyncSession = Depends(get_db),
 ) -> PaginatedFeedbackResponse:
@@ -78,6 +79,7 @@ async def list_feedback(
         date_to=date_to,
         channel=channel,
         food_safety_only=food_safety_only,
+        source_dataset=source_dataset,
     )
 
 
@@ -114,6 +116,7 @@ async def get_feedback(
 
 
 @router.post("/upload-csv", response_model=CSVUploadResponse, summary="Upload Feedback CSV")
+@router.post("/import", response_model=CSVUploadResponse, summary="Import Feedback CSV (Alias)")
 async def upload_csv_feedback(
     file: UploadFile = File(...),
     org: Organization = Depends(resolve_org_or_first),
@@ -202,6 +205,7 @@ async def analyze_single_feedback(
 
 
 @router.post("/batch-analyze", response_model=BatchAnalysisResponse, summary="Execute Batch AI Analysis")
+@router.post("/analysis/run", response_model=BatchAnalysisResponse, summary="Execute Batch AI Analysis (Alias)")
 async def batch_analyze_feedback(
     payload: BatchAnalysisRequest,
     org: Organization = Depends(resolve_org_or_first),

@@ -28,6 +28,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const primaryNav = [
+    { id: 'dashboard', label: 'Overview & Analytics', icon: BrainCircuit, badge: 'PS 2.5' },
     { id: 'feedback', label: 'Feedback Ingestion', icon: MessageSquareText, badge: 'Live' },
     { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'AI' },
     { id: 'actions', label: 'Prioritized Actions', icon: Sliders, badge: 'Queue' },
@@ -35,7 +36,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   const secondaryNav = [
-    { id: 'analytics', label: 'Aspect Intelligence', icon: BrainCircuit },
     { id: 'tenants', label: 'Organization & Templates', icon: Building2 },
     { id: 'system', label: 'System Architecture', icon: Server },
   ];

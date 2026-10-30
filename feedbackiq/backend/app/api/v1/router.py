@@ -6,6 +6,9 @@ from app.api.v1.endpoints import (
     intelligence,
     tasks,
     notifications,
+    analytics,
+    issues,
+    actions,
 )
 
 api_router = APIRouter()
@@ -15,3 +18,6 @@ api_router.include_router(feedback.router)
 api_router.include_router(intelligence.router)
 api_router.include_router(tasks.router)
 api_router.include_router(notifications.router)
+api_router.include_router(analytics.router)
+api_router.include_router(issues.router)
+api_router.include_router(actions.router)

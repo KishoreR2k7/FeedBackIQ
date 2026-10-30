@@ -46,8 +46,9 @@ if settings.BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-# Mount API v1 router
+# Mount API v1 router and /api compatibility alias
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(api_router, prefix="/api")
 
 
 # Top-level orchestrator health & readiness probes

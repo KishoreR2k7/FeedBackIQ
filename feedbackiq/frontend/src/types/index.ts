@@ -281,3 +281,96 @@ export interface NotificationItem {
   updated_at: string;
 }
 
+export interface AnalyticsOverview {
+  total_feedback: number;
+  positive_count: number;
+  negative_count: number;
+  neutral_count: number;
+  satisfaction_percentage: number;
+  negative_percentage: number;
+  average_rating: number;
+  active_recurring_issues: number;
+  critical_issues: number;
+  pending_actions: number;
+  student_canteen_count: number;
+  synthetic_count: number;
+  zomato_count: number;
+}
+
+export interface SentimentByMeal {
+  meal_type: string;
+  positive: number;
+  negative: number;
+  neutral: number;
+  total: number;
+  average_rating: number;
+}
+
+export interface SentimentTrend {
+  date: string;
+  positive: number;
+  negative: number;
+  neutral: number;
+  total: number;
+  average_rating: number;
+}
+
+export interface FoodItemStat {
+  item: string;
+  total_feedback: number;
+  complaint_count: number;
+  positive_count: number;
+  average_rating: number;
+  top_issue?: string;
+}
+
+export interface CommonComplaintStat {
+  issue: string;
+  category: string;
+  count: number;
+  sample_comment: string;
+  severity: number;
+}
+
+export interface CategoryDistributionItem {
+  category: string;
+  count: number;
+  percentage: number;
+}
+
+export interface ExtractedTopicItem {
+  topic: string;
+  item: string;
+  category: string;
+  meal_type?: string;
+  count: number;
+  average_rating: number;
+  sentiment_ratio: number;
+  sample_quotes: string[];
+}
+
+export interface AnalyticsReport {
+  overview: AnalyticsOverview;
+  sentiment_by_meal: SentimentByMeal[];
+  sentiment_trend: SentimentTrend[];
+  top_food_items: FoodItemStat[];
+  top_complaints: CommonComplaintStat[];
+  category_distribution: CategoryDistributionItem[];
+  common_topics: ExtractedTopicItem[];
+}
+
+export interface RecurrencePrediction {
+  issue_name: string;
+  affected_food_item: string;
+  meal_type?: string;
+  number_of_occurrences: number;
+  recent_frequency: number;
+  historical_frequency: number;
+  severity: number;
+  recurrence_risk_score: number;
+  risk_category: string;
+  has_insufficient_evidence: boolean;
+  supporting_evidence: string[];
+  recommended_preventive_action: string;
+}
+

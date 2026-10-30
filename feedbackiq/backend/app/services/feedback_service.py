@@ -33,6 +33,7 @@ class FeedbackService:
         date_to: Optional[datetime] = None,
         channel: Optional[str] = None,
         food_safety_only: bool = False,
+        source_dataset: Optional[str] = None,
     ) -> PaginatedFeedbackResponse:
         # Base filter by tenant organization_id
         conditions = [Feedback.organization_id == organization_id]
@@ -45,6 +46,8 @@ class FeedbackService:
             conditions.append(Feedback.issue_category.ilike(f"%{issue_category}%"))
         if channel:
             conditions.append(Feedback.channel == channel)
+        if source_dataset:
+            conditions.append(Feedback.source_dataset.ilike(f"%{source_dataset}%"))
         if date_from:
             conditions.append(func.coalesce(Feedback.date, Feedback.created_at) >= date_from)
         if date_to:

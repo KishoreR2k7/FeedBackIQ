@@ -78,6 +78,7 @@ export const api = {
       date_to?: string;
       channel?: string;
       food_safety_only?: boolean;
+      source_dataset?: string;
     } = {},
     orgId?: string
   ): Promise<PaginatedFeedback> => {
@@ -92,6 +93,7 @@ export const api = {
     if (params.date_to) query.set('date_to', params.date_to);
     if (params.channel) query.set('channel', params.channel);
     if (params.food_safety_only) query.set('food_safety_only', 'true');
+    if (params.source_dataset) query.set('source_dataset', params.source_dataset);
 
     const headers: Record<string, string> = {};
     if (orgId) headers['X-Organization-Id'] = orgId;
@@ -444,6 +446,81 @@ export const api = {
         method: 'POST',
         headers,
       }
+    );
+  },
+
+  // Analytics & Intelligence Overview
+  getAnalyticsOverview: (
+    params: {
+      meal_type?: string;
+      item?: string;
+      issue_category?: string;
+      sentiment?: string;
+      channel?: string;
+      source_dataset?: string;
+      date_from?: string;
+      date_to?: string;
+    } = {},
+    orgId?: string
+  ): Promise<import('../types').AnalyticsOverview> => {
+    const query = new URLSearchParams();
+    if (params.meal_type) query.set('meal_type', params.meal_type);
+    if (params.item) query.set('item', params.item);
+    if (params.issue_category) query.set('issue_category', params.issue_category);
+    if (params.sentiment) query.set('sentiment', params.sentiment);
+    if (params.channel) query.set('channel', params.channel);
+    if (params.source_dataset) query.set('source_dataset', params.source_dataset);
+    if (params.date_from) query.set('date_from', params.date_from);
+    if (params.date_to) query.set('date_to', params.date_to);
+
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').AnalyticsOverview>(
+      `/api/v1/analytics/overview?${query.toString()}`,
+      { headers }
+    );
+  },
+
+  getAnalyticsReport: (
+    params: {
+      meal_type?: string;
+      item?: string;
+      issue_category?: string;
+      sentiment?: string;
+      channel?: string;
+      source_dataset?: string;
+      date_from?: string;
+      date_to?: string;
+    } = {},
+    orgId?: string
+  ): Promise<import('../types').AnalyticsReport> => {
+    const query = new URLSearchParams();
+    if (params.meal_type) query.set('meal_type', params.meal_type);
+    if (params.item) query.set('item', params.item);
+    if (params.issue_category) query.set('issue_category', params.issue_category);
+    if (params.sentiment) query.set('sentiment', params.sentiment);
+    if (params.channel) query.set('channel', params.channel);
+    if (params.source_dataset) query.set('source_dataset', params.source_dataset);
+    if (params.date_from) query.set('date_from', params.date_from);
+    if (params.date_to) query.set('date_to', params.date_to);
+
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').AnalyticsReport>(
+      `/api/v1/analytics/report?${query.toString()}`,
+      { headers }
+    );
+  },
+
+  getPredictions: (orgId?: string): Promise<import('../types').RecurrencePrediction[]> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<import('../types').RecurrencePrediction[]>(
+      '/api/v1/issues/predictions',
+      { headers }
     );
   },
 };
