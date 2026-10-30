@@ -91,12 +91,13 @@ async def create_single_feedback(
     fb = await FeedbackService.create_feedback(db, payload, organization_id=org.id)
     if fb.comment:
         try:
-            await FeedbackService.analyze_feedback(db, fb.id, org.id)
-            refreshed = await FeedbackService.get_by_id(db, fb.id, org.id)
-            if refreshed:
-                fb = refreshed
+            await FeedbackService.analyze_feedback_item(db, fb)
         except Exception:
             pass
+
+    refreshed = await FeedbackService.get_by_id(db, fb.id, org.id)
+    if refreshed:
+        fb = refreshed
     return FeedbackResponse.model_validate(fb)
 
 
