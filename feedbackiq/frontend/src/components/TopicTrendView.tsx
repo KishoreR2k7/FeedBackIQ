@@ -5,8 +5,7 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Activity,
-  CheckCircle2,
+  Sparkles,
   Clock,
   Quote,
   ShieldAlert,
@@ -174,7 +173,7 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
             {isAssessing ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <Activity className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" />
             )}
             Run Recurrence Agent
           </button>
@@ -184,7 +183,7 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
       {assessmentSuccess && (
         <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-center justify-between shadow-2xs">
           <div className="flex items-center gap-2 font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <Sparkles className="w-4 h-4 text-blue-600" />
             <span>{assessmentSuccess}</span>
           </div>
           {onNavigateToPriorities && (
@@ -262,11 +261,10 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
           {trends.map((cluster) => (
             <div
               key={cluster.issue_cluster_key}
-              className={`rounded-2xl bg-white border p-5 transition-all shadow-xs hover:shadow-md ${
-                cluster.has_food_safety_hazard
+              className={`rounded-2xl bg-white border p-5 transition-all shadow-xs hover:shadow-md ${cluster.has_food_safety_hazard
                   ? 'border-red-300 ring-1 ring-red-300/40'
                   : 'border-slate-200 hover:border-blue-300'
-              }`}
+                }`}
             >
               {/* Card Header */}
               <div className="flex items-start justify-between gap-3">

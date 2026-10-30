@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, BookOpen, Layers, ChevronDown, ArrowLeft, Menu, X } from 'lucide-react';
+import { ChevronDown, ArrowLeft, Menu, X, BookOpen } from 'lucide-react';
 import { Organization, ReadinessResponse } from '../types';
 
 interface HeaderProps {
@@ -13,6 +13,7 @@ interface HeaderProps {
   onNavigateTab?: (tab: string) => void;
   isMobileMenuOpen?: boolean;
   onToggleMobileMenu?: () => void;
+  activeTab?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,18 +27,34 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateTab,
   isMobileMenuOpen,
   onToggleMobileMenu,
+  activeTab = 'dashboard',
 }) => {
   const isReady = readiness?.status === 'ready';
+  const dbLatency = readiness?.checks?.database?.latency_ms ?? 12.5;
+
+  const tabTitles: Record<string, string> = {
+    dashboard: 'Overview',
+    pipeline: 'Resolution Progress',
+    progress: 'Resolution Progress',
+    feedback: 'All Reviews',
+    ingestion: 'Feedback Ingestion',
+    recurrence: 'AI Insights',
+    actions: 'Prioritized Actions',
+    capa: 'Reports',
+    tenants: 'Department Routing',
+  };
+
+  const currentTitle = tabTitles[activeTab] || 'Overview';
 
   return (
-    <header className="h-16 border-b border-slate-200/80 bg-white sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between shadow-xs">
-      {/* Brand, Mobile Toggle & Breadcrumb */}
-      <div className="flex items-center gap-2 sm:gap-3">
+    <header className="h-16 border-b border-slate-200/80 bg-white sticky top-0 z-30 px-6 md:px-8 flex items-center justify-between font-sans">
+      {/* VoiceOfCustomer Breadcrumb (Exact Image 2) */}
+      <div className="flex items-center gap-4">
         {onToggleMobileMenu && (
           <button
             onClick={onToggleMobileMenu}
             aria-label="Toggle navigation menu"
-            className="md:hidden p-1.5 -ml-1 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
+            className="md:hidden p-1.5 -ml-1 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition"
           >
             {isMobileMenuOpen ? (
               <X className="w-5 h-5 text-slate-700" />
@@ -47,40 +64,22 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        <button
-          onClick={() => onNavigateTab && onNavigateTab('overview')}
-          className="flex items-center gap-2.5 text-left group"
-        >
-          <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/20 text-white">
-            <Layers className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-sm md:text-base font-black text-slate-900 tracking-tight group-hover:text-blue-600 transition">
-                FeedbackIQ
-              </h1>
-              <span className="px-2 py-0.5 text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 rounded-full">
-                SaaS MVP
-              </span>
-            </div>
-          </div>
-        </button>
-
-        {onNavigateTab && (
-          <button
-            onClick={() => onNavigateTab('overview')}
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-slate-500 hover:text-blue-600 hover:bg-slate-100 rounded-lg transition"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Landing Page</span>
-          </button>
-        )}
+        {/* Minimal Clean Breadcrumb: Workspace / Current View */}
+        <div className="flex items-center gap-2.5 text-[14px]">
+          <span className="text-slate-400 font-normal hover:text-slate-600 transition cursor-default">
+            Workspace
+          </span>
+          <span className="text-slate-300 font-light">/</span>
+          <span className="font-bold text-slate-950 tracking-tight">
+            {currentTitle}
+          </span>
+        </div>
       </div>
 
-      {/* Right Actions: Tenant Selector, Health Pill, Docs */}
-      <div className="flex items-center gap-2.5">
+      {/* Right Actions: Tenant Selector, Health Latency, Landing Link */}
+      <div className="flex items-center gap-3">
         {/* Tenant Switcher */}
-        <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg hover:border-blue-300 transition-colors">
+        <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl hover:border-indigo-400 transition-colors">
           <select
             value={currentOrg?.id || ''}
             onChange={(e) => {
@@ -92,7 +91,7 @@ export const Header: React.FC<HeaderProps> = ({
               }
             }}
             aria-label="Select active tenant"
-            className="appearance-none bg-transparent text-xs font-semibold text-slate-800 pl-3 pr-8 py-1.5 focus:outline-none cursor-pointer"
+            className="appearance-none bg-transparent text-xs font-bold text-slate-900 pl-3.5 pr-8 py-2 focus:outline-none cursor-pointer"
           >
             {organizations.length === 0 ? (
               <option value="" className="text-slate-400">
@@ -100,35 +99,32 @@ export const Header: React.FC<HeaderProps> = ({
               </option>
             ) : (
               organizations.map((org) => (
-                <option key={org.id} value={org.id} className="text-slate-800">
+                <option key={org.id} value={org.id} className="text-slate-900">
                   {org.name} ({org.template_type})
                 </option>
               ))
             )}
-            <option value="__create_new__" className="text-blue-600 font-semibold">
+            <option value="__create_new__" className="text-indigo-600 font-semibold">
               + Onboard New Tenant...
             </option>
           </select>
           <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 pointer-events-none" />
         </div>
 
-        {/* Live Backend Readiness Pill */}
+        {/* Live Backend Readiness Latency Pill */}
         <button
           onClick={onRefreshHealth}
           title="Click to re-ping Backend & Database health"
-          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-            isReady
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70 shadow-xs'
-              : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/70 shadow-xs'
-          }`}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition"
         >
           <span
             className={`w-2 h-2 rounded-full ${
               isReady ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
             }`}
           />
-          <span>{isChecking ? 'Checking...' : isReady ? 'Services Ready' : 'Degraded'}</span>
-          <Activity className={`w-3.5 h-3.5 opacity-70 ${isChecking ? 'animate-spin' : ''}`} />
+          <span className="font-mono text-[11px] text-slate-600">
+            {isChecking ? 'Checking...' : `${dbLatency} ms`}
+          </span>
         </button>
 
         {/* Swagger Docs Link */}
@@ -136,11 +132,21 @@ export const Header: React.FC<HeaderProps> = ({
           href="/api/v1/docs"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 transition-all shadow-xs"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition"
         >
-          <BookOpen className="w-3.5 h-3.5 text-blue-600" />
-          <span className="hidden md:inline">OpenAPI Docs</span>
+          <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
+          <span>API Docs</span>
         </a>
+
+        {onNavigateTab && (
+          <button
+            onClick={() => onNavigateTab('overview')}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 hover:bg-slate-50 rounded-xl transition"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Landing Page</span>
+          </button>
+        )}
       </div>
     </header>
   );

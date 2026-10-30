@@ -83,7 +83,9 @@ export const TenantSelector: React.FC<TenantSelectorProps> = ({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-1 font-mono">Tenant Slug: {currentOrg?.slug || 'none'} • UUID: {currentOrg?.id || 'none'}</p>
+              <p className="text-xs text-slate-500 mt-1 font-mono">
+                Tenant Slug: {currentOrg?.slug || 'none'} • UUID: {currentOrg?.id || 'none'}
+              </p>
             </div>
           </div>
 
@@ -166,89 +168,6 @@ export const TenantSelector: React.FC<TenantSelectorProps> = ({
         )}
       </div>
 
-      {/* Deterministic Department Routing Matrix */}
-      <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-xs space-y-4">
-        <div>
-          <h4 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <Building className="w-4 h-4 text-blue-600" />
-            Automatic Department Dispatch Routing Matrix
-          </h4>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Rules engine that automatically directs incoming student complaints and CAPA corrective actions to the responsible operating team.
-          </p>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-700">
-            <thead className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-              <tr>
-                <th className="px-4 py-2.5">Operating Department</th>
-                <th className="px-4 py-2.5">Responsible Role</th>
-                <th className="px-4 py-2.5">Trigger Conditions</th>
-                <th className="px-4 py-2.5">Target SLA</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium">
-              <tr className="hover:bg-slate-50/50">
-                <td className="px-4 py-2.5 font-bold text-red-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500" />
-                  Food Safety &amp; Quality Control
-                </td>
-                <td className="px-4 py-2.5 text-slate-800">Food Safety Officer</td>
-                <td className="px-4 py-2.5 text-slate-600">
-                  Any food safety hazard flag (pests, raw meat, foreign object) OR Severity &ge; 4
-                </td>
-                <td className="px-4 py-2.5 font-mono text-red-600 font-bold">2h Immediate SLA</td>
-              </tr>
-              <tr className="hover:bg-slate-50/50">
-                <td className="px-4 py-2.5 font-bold text-blue-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  Kitchen Operations
-                </td>
-                <td className="px-4 py-2.5 text-slate-800">Head Chef / Catering Lead</td>
-                <td className="px-4 py-2.5 text-slate-600">
-                  Taste &amp; Seasoning, Food Temperature Upkeep, Portion &amp; Quantity
-                </td>
-                <td className="px-4 py-2.5 font-mono text-slate-700">12h Meal Cycle SLA</td>
-              </tr>
-              <tr className="hover:bg-slate-50/50">
-                <td className="px-4 py-2.5 font-bold text-amber-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" />
-                  Procurement &amp; Inventory
-                </td>
-                <td className="px-4 py-2.5 text-slate-800">Supply Chain Manager</td>
-                <td className="px-4 py-2.5 text-slate-600">
-                  Ingredient spoilage, vendor raw material quality, ration availability
-                </td>
-                <td className="px-4 py-2.5 font-mono text-slate-700">24h Restock SLA</td>
-              </tr>
-              <tr className="hover:bg-slate-50/50">
-                <td className="px-4 py-2.5 font-bold text-purple-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-500" />
-                  Facilities &amp; Hygiene
-                </td>
-                <td className="px-4 py-2.5 text-slate-800">Housekeeping Supervisor</td>
-                <td className="px-4 py-2.5 text-slate-600">
-                  Mess hall cleanliness, washbasin hygiene, water supply, dining tables
-                </td>
-                <td className="px-4 py-2.5 font-mono text-slate-700">12h Shift SLA</td>
-              </tr>
-              <tr className="hover:bg-slate-50/50">
-                <td className="px-4 py-2.5 font-bold text-emerald-700 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  Service &amp; Student Welfare
-                </td>
-                <td className="px-4 py-2.5 text-slate-800">Dining Hall Operations Admin</td>
-                <td className="px-4 py-2.5 text-slate-600">
-                  Counter serving delay, queue congestion, staff interaction, token counter
-                </td>
-                <td className="px-4 py-2.5 font-mono text-slate-700">24h Admin SLA</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       {/* Available Organization Tenants Table */}
       <div className="rounded-2xl bg-white border border-slate-200 p-5 shadow-xs">
         <h4 className="text-sm font-bold text-slate-900 mb-3">
@@ -261,11 +180,10 @@ export const TenantSelector: React.FC<TenantSelectorProps> = ({
               <div
                 key={org.id}
                 onClick={() => onSelectOrg(org)}
-                className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                  isSelected
+                className={`p-4 rounded-xl border cursor-pointer transition-all ${isSelected
                     ? 'bg-blue-50/80 border-blue-400 ring-1 ring-blue-400 shadow-xs'
                     : 'bg-white border-slate-200 hover:border-blue-300 hover:bg-slate-50'
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-xs text-slate-900">{org.name}</span>

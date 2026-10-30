@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import {
   Upload,
-  FlaskConical,
+  Sparkles,
   FileText,
   CheckCircle2,
   AlertCircle,
@@ -10,24 +10,19 @@ import {
   Star,
   Send,
   Building2,
-  ArrowRight,
 } from 'lucide-react';
 import { api } from '../services/api';
-import { Organization, ImportJob, PaginatedFeedback } from '../types';
+import { Organization, ImportJob } from '../types';
 import { resolveDepartmentRouting } from '../utils/routing';
 
 interface IngestionPanelProps {
   currentOrg: Organization | null;
   onIngestionComplete: () => void;
-  onNavigateToFeedback?: () => void;
-  feedbackData?: PaginatedFeedback | null;
 }
 
 export const IngestionPanel: React.FC<IngestionPanelProps> = ({
   currentOrg,
   onIngestionComplete,
-  onNavigateToFeedback,
-  feedbackData,
 }) => {
   // Manual text entry state
   const [item, setItem] = useState('');
@@ -88,7 +83,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
       const deptStr = ` • Routed to: ${routing.department} (${routing.role})`;
 
       setSuccessMessage(
-        `Direct feedback for "${item || 'General Meal'}" successfully ingested and classified${sentimentStr}${deptStr}!`
+        `Direct feedback for "${item || 'General Meal'}" successfully ingested and analyzed${sentimentStr}${deptStr}!`
       );
 
       // Reset form
@@ -173,20 +168,9 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
     <div className="space-y-6">
       {/* Dynamic Status Notifications */}
       {successMessage && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>{successMessage}</span>
-          </div>
-          {onNavigateToFeedback && (
-            <button
-              onClick={onNavigateToFeedback}
-              className="font-bold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 underline text-xs"
-            >
-              <span>View in Explorer</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          )}
+        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2.5 shadow-2xs">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+          <span>{successMessage}</span>
         </div>
       )}
 
@@ -205,9 +189,9 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
               <PenLine className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Direct Student / Diner Feedback Entry</h3>
+              <h3 className="text-sm font-bold text-slate-900">Write Direct Student / Diner Feedback</h3>
               <p className="text-xs text-slate-500">
-                Log real-time dining reviews. Automatically executes aspect extraction, safety checks, and department routing.
+                Type or paste real-time dining reviews. Auto-triggers AI sentiment extraction, safety checks, and department routing.
               </p>
             </div>
           </div>
@@ -301,11 +285,10 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
                     className="focus:outline-none hover:scale-110 transition-transform"
                   >
                     <Star
-                      className={`w-4 h-4 ${
-                        star <= rating
+                      className={`w-4 h-4 ${star <= rating
                           ? 'fill-amber-400 text-amber-400'
                           : 'text-slate-300'
-                      }`}
+                        }`}
                     />
                   </button>
                 ))}
@@ -347,7 +330,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
               ) : (
                 <Send className="w-3.5 h-3.5" />
               )}
-              <span>{isSubmittingText ? 'Ingesting & Analyzing...' : 'Submit Feedback & Classify'}</span>
+              <span>{isSubmittingText ? 'Ingesting & AI Analyzing...' : 'Submit Feedback & Run AI Analysis'}</span>
             </button>
           </div>
         </form>
@@ -406,7 +389,7 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
           <div>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center">
-                <FlaskConical className="w-5 h-5" />
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Synthetic Scenario Generator</h3>
@@ -462,74 +445,6 @@ export const IngestionPanel: React.FC<IngestionPanelProps> = ({
           </div>
         </div>
       </div>
-
-      {/* 3. RECENT INGESTION PREVIEW TABLE */}
-      {feedbackData && feedbackData.items.length > 0 && (
-        <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                Recent Ingested Feedback Records
-              </h4>
-              <p className="text-[11px] text-slate-500">
-                Live buffer of newly submitted and imported dining records.
-              </p>
-            </div>
-            {onNavigateToFeedback && (
-              <button
-                onClick={onNavigateToFeedback}
-                className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1"
-              >
-                <span>Open Full Explorer ({feedbackData.total})</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-700">
-              <thead className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                <tr>
-                  <th className="px-3 py-2">Item</th>
-                  <th className="px-3 py-2">Meal</th>
-                  <th className="px-3 py-2">Rating</th>
-                  <th className="px-3 py-2">Comment</th>
-                  <th className="px-3 py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {feedbackData.items.slice(0, 5).map((fb) => (
-                  <tr key={fb.id} className="hover:bg-slate-50/60">
-                    <td className="px-3 py-2 font-bold text-slate-900">{fb.item || 'General Meal'}</td>
-                    <td className="px-3 py-2 text-slate-600">{fb.meal_type || 'General'}</td>
-                    <td className="px-3 py-2 text-amber-500 font-bold">★ {fb.rating || '-'}/5</td>
-                    <td className="px-3 py-2 text-slate-600 max-w-xs truncate" title={fb.comment || ''}>
-                      {fb.comment || 'No comment text'}
-                    </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
-                      {fb.analysis ? (
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 uppercase">
-                            {fb.analysis.sentiment}
-                          </span>
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
-                            Sev {fb.analysis.severity_score}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 text-slate-600">
-                          Pending
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
-

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  ShieldCheck,
+  Sparkles,
   ArrowRight,
   TrendingUp,
   CheckSquare,
@@ -72,16 +72,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         {/* Public Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-600">
           <button
-            onClick={() => onEnterWorkspace('ingestion')}
-            className="px-3 py-2 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition"
-          >
-            Feedback Ingestion
-          </button>
-          <button
             onClick={() => onEnterWorkspace('feedback')}
             className="px-3 py-2 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition"
           >
-            Feedback Explorer
+            Feedback Ingestion
           </button>
           <button
             onClick={() => onEnterWorkspace('recurrence')}
@@ -142,16 +136,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <button
             onClick={onRefreshHealth}
             title="Click to re-ping Backend & Database health"
-            className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-              isReady
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'bg-amber-50 text-amber-700 border-amber-200'
-            }`}
+            className={`hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${isReady
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-amber-50 text-amber-700 border-amber-200'
+              }`}
           >
             <span
-              className={`w-2 h-2 rounded-full ${
-                isReady ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-              }`}
+              className={`w-2 h-2 rounded-full ${isReady ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                }`}
             />
             <span>{isHealthChecking ? 'Checking...' : isReady ? 'Services Ready' : 'Degraded'}</span>
             <Activity className={`w-3.5 h-3.5 opacity-70 ${isHealthChecking ? 'animate-spin' : ''}`} />
@@ -176,10 +168,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-50/80 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative max-w-3xl space-y-6">
-            {/* Trust Pill */}
+            {/* Sparkle Trust Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-              <span>Statistical Recurrence &amp; Closed-Loop Quality Intelligence Platform</span>
+              <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+              <span>1M+ Responses Analyzed • AI Dining Intelligence Platform</span>
             </div>
 
             {/* Headline */}

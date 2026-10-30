@@ -3,7 +3,7 @@ import {
   AlertOctagon,
   ShieldAlert,
   Sliders,
-  Calculator,
+  Sparkles,
   CheckCircle,
   HelpCircle,
   Filter,
@@ -206,7 +206,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
             {isAssessing ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <Calculator className="w-4 h-4" />
+              <Sparkles className="w-4 h-4" />
             )}
             Re-assess All Clusters
           </button>
@@ -301,11 +301,10 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
           {issues.map((issue) => (
             <div
               key={issue.id || issue.issue_cluster_key}
-              className={`p-6 rounded-2xl bg-white border transition-all shadow-xs hover:shadow-md ${
-                issue.is_safety_override
+              className={`p-6 rounded-2xl bg-white border transition-all shadow-xs hover:shadow-md ${issue.is_safety_override
                   ? 'border-red-300 bg-red-50/20 ring-1 ring-red-300/40'
                   : 'border-slate-200 hover:border-blue-300'
-              }`}
+                }`}
             >
               {/* Top Row: Title, Badges, Actions */}
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -696,33 +695,30 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
             <div className="flex border-b border-slate-200 bg-slate-50/50 px-4 text-xs font-semibold">
               <button
                 onClick={() => setEvidenceModalTab('evidence')}
-                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
-                  evidenceModalTab === 'evidence'
+                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${evidenceModalTab === 'evidence'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
+                  }`}
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 Supporting Complaints ({evidenceFeedbacks.length})
               </button>
               <button
                 onClick={() => setEvidenceModalTab('hypotheses')}
-                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
-                  evidenceModalTab === 'hypotheses'
+                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${evidenceModalTab === 'hypotheses'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
+                  }`}
               >
                 <HelpCircle className="w-3.5 h-3.5" />
                 AI Hypotheses &amp; Reasoning
               </button>
               <button
                 onClick={() => setEvidenceModalTab('trace')}
-                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${
-                  evidenceModalTab === 'trace'
+                className={`py-3 px-4 border-b-2 transition-all flex items-center gap-2 ${evidenceModalTab === 'trace'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-slate-500 hover:text-slate-800'
-                }`}
+                  }`}
               >
                 <GitBranch className="w-3.5 h-3.5" />
                 LangGraph Workflow Trace
@@ -879,12 +875,12 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
                     {(selectedEvidenceIssue.execution_trace && selectedEvidenceIssue.execution_trace.length > 0
                       ? selectedEvidenceIssue.execution_trace
                       : [
-                          '1. retrieve_evidence: Aggregated SQL complaint metrics, velocity window, distinct days count, and synthetic record split.',
-                          '2. reason_recurrence: LLM reasoning prompt evaluated recurrence risk and labeled hypotheses.',
-                          '3. safety_override: Deterministic Rule 9 validator verified critical food hazards.',
-                          '4. priority_scoring: Deterministic formula applied weights w_severity, w_recurrence_risk, w_recent_frequency.',
-                          '5. persist_assessment: Committed recurrence assessment and prioritized issue record into PostgreSQL.'
-                        ]
+                        '1. retrieve_evidence: Aggregated SQL complaint metrics, velocity window, distinct days count, and synthetic record split.',
+                        '2. reason_recurrence: LLM reasoning prompt evaluated recurrence risk and labeled hypotheses.',
+                        '3. safety_override: Deterministic Rule 9 validator verified critical food hazards.',
+                        '4. priority_scoring: Deterministic formula applied weights w_severity, w_recurrence_risk, w_recent_frequency.',
+                        '5. persist_assessment: Committed recurrence assessment and prioritized issue record into PostgreSQL.'
+                      ]
                     ).map((traceStep, idx) => (
                       <div
                         key={idx}

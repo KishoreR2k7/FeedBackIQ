@@ -5,7 +5,7 @@ import {
   Clock,
   UserCheck,
   Calendar,
-  PlusCircle,
+  Sparkles,
   RefreshCw,
   Search,
   CheckCircle2,
@@ -385,7 +385,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             disabled={isGenerating}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition disabled:opacity-50"
           >
-            <PlusCircle className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
+            <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
             <span>{isGenerating ? 'Synthesizing...' : 'Generate Action Tasks'}</span>
           </button>
         </div>
@@ -461,23 +461,21 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
               {notifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${
-                    notif.is_read
+                  className={`p-3 rounded-xl border flex items-start justify-between gap-3 text-xs ${notif.is_read
                       ? 'bg-slate-50 border-slate-200 opacity-70'
                       : 'bg-blue-50/40 border-blue-200'
-                  }`}
+                    }`}
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-slate-900">{notif.title}</span>
                       <span
-                        className={`text-[10px] px-2 py-0.2 rounded-md font-medium ${
-                          notif.delivery_status === 'delivered'
+                        className={`text-[10px] px-2 py-0.2 rounded-md font-medium ${notif.delivery_status === 'delivered'
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : notif.delivery_status === 'simulated'
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-red-50 text-red-700 border border-red-200'
-                        }`}
+                              ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                              : 'bg-red-50 text-red-700 border border-red-200'
+                          }`}
                       >
                         {notif.delivery_status}
                       </span>
@@ -591,11 +589,10 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             return (
               <div
                 key={task.id}
-                className={`p-6 rounded-2xl bg-white border transition-all shadow-xs hover:shadow-md ${
-                  isSafety
+                className={`p-6 rounded-2xl bg-white border transition-all shadow-xs hover:shadow-md ${isSafety
                     ? 'border-red-300 bg-red-50/20 ring-1 ring-red-300/40'
                     : 'border-slate-200 hover:border-blue-300'
-                }`}
+                  }`}
               >
                 {/* Task Header: Cluster Key, Priority Score, Risk, Safety override */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -770,16 +767,16 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                     {(task.status === 'awaiting_approval' ||
                       task.status === 'proposed' ||
                       task.approval_status === 'awaiting_approval') && (
-                      <>
-                        <button
-                          onClick={() => openApproveModal(task)}
-                          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
-                        >
-                          <Check className="w-3.5 h-3.5" />
-                          <span>Review &amp; Approve</span>
-                        </button>
-                      </>
-                    )}
+                        <>
+                          <button
+                            onClick={() => openApproveModal(task)}
+                            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white transition shadow-xs"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>Review &amp; Approve</span>
+                          </button>
+                        </>
+                      )}
 
                     {/* Assignment Control (Approved but not assigned) */}
                     {task.status === 'assigned' || task.approval_status === 'approved' ? (
@@ -919,22 +916,20 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   <button
                     type="button"
                     onClick={() => setApprovalDecision(true)}
-                    className={`py-2 rounded-xl font-bold border transition ${
-                      approvalDecision
+                    className={`py-2 rounded-xl font-bold border transition ${approvalDecision
                         ? 'bg-blue-50 text-blue-700 border-blue-400'
                         : 'bg-slate-50 text-slate-600 border-slate-200'
-                    }`}
+                      }`}
                   >
                     ✓ Approve Action
                   </button>
                   <button
                     type="button"
                     onClick={() => setApprovalDecision(false)}
-                    className={`py-2 rounded-xl font-bold border transition ${
-                      !approvalDecision
+                    className={`py-2 rounded-xl font-bold border transition ${!approvalDecision
                         ? 'bg-red-50 text-red-700 border-red-300'
                         : 'bg-slate-50 text-slate-600 border-slate-200'
-                    }`}
+                      }`}
                   >
                     ✕ Reject Action
                   </button>
@@ -1230,11 +1225,10 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
                   <div className="p-2.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
                     <div className="text-[10px] text-slate-500 uppercase font-semibold">Volume Change</div>
                     <div
-                      className={`text-base font-bold font-mono mt-0.5 ${
-                        (verificationResult.complaint_change_percent ?? 0) < 0
+                      className={`text-base font-bold font-mono mt-0.5 ${(verificationResult.complaint_change_percent ?? 0) < 0
                           ? 'text-emerald-700'
                           : 'text-red-700'
-                      }`}
+                        }`}
                     >
                       {verificationResult.complaint_change_percent !== undefined
                         ? `${verificationResult.complaint_change_percent > 0 ? '+' : ''}${verificationResult.complaint_change_percent.toFixed(1)}%`
