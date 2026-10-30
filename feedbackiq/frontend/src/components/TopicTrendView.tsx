@@ -5,7 +5,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Minus,
-  Sparkles,
+  Activity,
+  CheckCircle2,
   Clock,
   Quote,
   ShieldAlert,
@@ -173,7 +174,7 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
             {isAssessing ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <Sparkles className="w-4 h-4" />
+              <Activity className="w-4 h-4" />
             )}
             Run Recurrence Agent
           </button>
@@ -183,7 +184,7 @@ export const TopicTrendView: React.FC<TopicTrendViewProps> = ({
       {assessmentSuccess && (
         <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex items-center justify-between shadow-2xs">
           <div className="flex items-center gap-2 font-medium">
-            <Sparkles className="w-4 h-4 text-blue-600" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>{assessmentSuccess}</span>
           </div>
           {onNavigateToPriorities && (

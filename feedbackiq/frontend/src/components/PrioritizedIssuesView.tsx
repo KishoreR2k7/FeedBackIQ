@@ -3,7 +3,7 @@ import {
   AlertOctagon,
   ShieldAlert,
   Sliders,
-  Sparkles,
+  Calculator,
   CheckCircle,
   HelpCircle,
   Filter,
@@ -206,7 +206,7 @@ export const PrioritizedIssuesView: React.FC<PrioritizedIssuesViewProps> = ({
             {isAssessing ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
             ) : (
-              <Sparkles className="w-4 h-4" />
+              <Calculator className="w-4 h-4" />
             )}
             Re-assess All Clusters
           </button>

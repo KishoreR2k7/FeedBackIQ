@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ShieldAlert, Sparkles, Tag, Quote, Building2, UserCheck, Clock } from 'lucide-react';
+import { X, ShieldAlert, Layers, Tag, Quote, Building2, UserCheck, Clock } from 'lucide-react';
 import { Feedback, FeedbackAnalysis } from '../types';
 import { resolveDepartmentRouting } from '../utils/routing';
 
@@ -52,12 +52,12 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
         <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-2xs">
-              <Sparkles className="w-4 h-4" />
+              <Layers className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">AI Feedback Intelligence</h3>
+              <h3 className="text-base font-bold text-slate-900">Feedback Aspect &amp; Sentiment Analysis</h3>
               <p className="text-xs text-slate-500">
-                LangChain Structured Extraction • Model: <span className="font-mono text-blue-700 font-semibold">{analysis.model_name}</span>
+                Structured Aspect Extraction • Classifier: <span className="font-mono text-blue-700 font-semibold">{analysis.model_name}</span>
               </p>
             </div>
           </div>
@@ -199,7 +199,7 @@ export const AnalysisModal: React.FC<AnalysisModalProps> = ({
 
           <div>
             <div className="text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              <Tag className="w-3.5 h-3.5 text-emerald-600" />
               <span>Identified Dishes &amp; Ingredients</span>
             </div>
             <div className="flex flex-wrap gap-1.5">

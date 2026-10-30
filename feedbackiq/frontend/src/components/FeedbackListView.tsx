@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import {
   Search,
-  Sparkles,
   ShieldAlert,
   ChevronLeft,
   ChevronRight,
   Eye,
   Star,
   RefreshCw,
+  UploadCloud,
+  PlayCircle,
 } from 'lucide-react';
 import { Feedback, FeedbackAnalysis, PaginatedFeedback } from '../types';
 import { api } from '../services/api';
@@ -34,6 +35,7 @@ interface FeedbackListViewProps {
   setSearchQuery: (val: string) => void;
   currentPage: number;
   setCurrentPage: (page: number) => void;
+  onNavigateToIngest?: () => void;
 }
 
 export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
@@ -55,6 +57,7 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
   setSearchQuery,
   currentPage,
   setCurrentPage,
+  onNavigateToIngest,
 }) => {
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [isBatchAnalyzing, setIsBatchAnalyzing] = useState(false);
@@ -225,14 +228,25 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
               <span>Safety Escalations</span>
             </button>
 
+            {/* Ingest Quick Link Button */}
+            {onNavigateToIngest && (
+              <button
+                onClick={onNavigateToIngest}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-blue-300 transition shadow-2xs"
+              >
+                <UploadCloud className="w-3.5 h-3.5 text-blue-600" />
+                <span>Ingest &amp; Import</span>
+              </button>
+            )}
+
             {/* Batch Analyze Button */}
             <button
               onClick={handleBatchAnalyze}
               disabled={isBatchAnalyzing}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition shadow-sm shadow-blue-500/20"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 transition shadow-2xs"
             >
-              <Sparkles className={`w-3.5 h-3.5 ${isBatchAnalyzing ? 'animate-spin' : ''}`} />
-              {isBatchAnalyzing ? 'Analyzing...' : 'Batch AI Analyze'}
+              <PlayCircle className={`w-3.5 h-3.5 ${isBatchAnalyzing ? 'animate-spin' : ''}`} />
+              {isBatchAnalyzing ? 'Classifying...' : 'Classify Pending'}
             </button>
           </div>
         </div>
@@ -249,7 +263,7 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
           <div className="p-8">
             <EmptyState
               title="No Feedback Records Found"
-              description="No feedback records match the current filter or dataset is empty. Use the Ingestion tab above to upload CSV or generate synthetic feedback."
+              description="No feedback records match the current filter or dataset is empty. Use the Ingestion Hub to enter student feedback or upload CSV."
             />
           </div>
         ) : (
@@ -261,7 +275,7 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                   <th className="px-4 py-3">Dish / Item</th>
                   <th className="px-4 py-3">Rating</th>
                   <th className="px-4 py-3">Student Comment</th>
-                  <th className="px-4 py-3">AI Intelligence</th>
+                  <th className="px-4 py-3">Aspects &amp; Routing</th>
                   <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
@@ -305,7 +319,7 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                         </p>
                       </td>
 
-                      {/* AI Analysis Badges & Department Routing */}
+                      {/* Analysis Badges & Department Routing */}
                       <td className="px-4 py-3 whitespace-nowrap">
                         {analysis ? (
                           <div className="space-y-1">
@@ -363,8 +377,8 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
                             disabled={analyzingId === fb.id}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 disabled:opacity-50 transition"
                           >
-                            <Sparkles className={`w-3.5 h-3.5 text-blue-600 ${analyzingId === fb.id ? 'animate-spin' : ''}`} />
-                            {analyzingId === fb.id ? 'Extracting...' : 'AI Analyze'}
+                            <PlayCircle className={`w-3.5 h-3.5 text-blue-600 ${analyzingId === fb.id ? 'animate-spin' : ''}`} />
+                            {analyzingId === fb.id ? 'Classifying...' : 'Classify'}
                           </button>
                         )}
                       </td>
@@ -415,3 +429,4 @@ export const FeedbackListView: React.FC<FeedbackListViewProps> = ({
     </div>
   );
 };
+

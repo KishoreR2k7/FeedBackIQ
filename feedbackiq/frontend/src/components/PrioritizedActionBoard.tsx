@@ -5,7 +5,7 @@ import {
   Clock,
   UserCheck,
   Calendar,
-  Sparkles,
+  PlusCircle,
   RefreshCw,
   Search,
   CheckCircle2,
@@ -385,7 +385,7 @@ export const PrioritizedActionBoard: React.FC<PrioritizedActionBoardProps> = ({
             disabled={isGenerating}
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition disabled:opacity-50"
           >
-            <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
+            <PlusCircle className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
             <span>{isGenerating ? 'Synthesizing...' : 'Generate Action Tasks'}</span>
           </button>
         </div>

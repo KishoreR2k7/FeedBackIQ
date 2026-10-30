@@ -1,14 +1,14 @@
 import React from 'react';
 import {
+  BarChart3,
   MessageSquareText,
-  BrainCircuit,
+  UploadCloud,
   TrendingUp,
+  SlidersHorizontal,
   CheckSquare,
   Building2,
-  Server,
   ArrowLeft,
-  Sliders,
-  Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { Organization } from '../types';
 
@@ -28,16 +28,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
 }) => {
   const primaryNav = [
-    { id: 'dashboard', label: 'Overview & Analytics', icon: BrainCircuit, badge: 'PS 2.5' },
-    { id: 'feedback', label: 'Feedback Ingestion', icon: MessageSquareText, badge: 'Live' },
-    { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'AI' },
-    { id: 'actions', label: 'Prioritized Actions', icon: Sliders, badge: 'Queue' },
-    { id: 'capa', label: 'CAPA Action Board', icon: CheckSquare, badge: 'Tasks' },
+    { id: 'dashboard', label: 'Executive Analytics', icon: BarChart3, badge: 'KPIs' },
+    { id: 'feedback', label: 'Feedback Explorer', icon: MessageSquareText, badge: 'Data' },
+    { id: 'ingestion', label: 'Feedback Ingestion', icon: UploadCloud, badge: 'Import' },
+    { id: 'recurrence', label: 'Recurrence Risks', icon: TrendingUp, badge: 'Velocity' },
+    { id: 'actions', label: 'Prioritized Actions', icon: SlidersHorizontal, badge: 'Priority' },
+    { id: 'capa', label: 'CAPA Action Board', icon: CheckSquare, badge: 'Workflow' },
   ];
 
   const secondaryNav = [
-    { id: 'tenants', label: 'Organization & Templates', icon: Building2 },
-    { id: 'system', label: 'System Architecture', icon: Server },
+    { id: 'tenants', label: 'Departments & Tenants', icon: Building2, badge: 'Config' },
   ];
 
   const handleNavClick = (tabId: string) => {
@@ -76,103 +76,115 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-[10px] text-blue-600 font-mono">Site</span>
           </button>
 
-        {/* Section 1: Core Operations */}
-        <div className="space-y-1">
-          <div className="px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-slate-400">
-            Operations Pipeline
+          {/* Section 1: Core Operations Pipeline */}
+          <div className="space-y-1">
+            <div className="px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-slate-400">
+              Operations Pipeline
+            </div>
+            {primaryNav.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon
+                      className={`w-4 h-4 ${
+                        isActive ? 'text-white' : 'text-slate-400'
+                      }`}
+                    />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge && (
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${
+                        isActive
+                          ? 'bg-blue-700 text-white'
+                          : 'bg-slate-100 text-slate-500 border border-slate-200'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
-          {primaryNav.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                  isActive
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isActive ? 'text-white' : 'text-slate-400'
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </div>
-                {item.badge && (
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${
-                      isActive
-                        ? 'bg-blue-700 text-white'
-                        : 'bg-slate-100 text-slate-500 border border-slate-200'
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+
+          {/* Section 2: Configuration & Department Routing */}
+          <div className="space-y-1 pt-2 border-t border-slate-100">
+            <div className="px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-slate-400">
+              Administration
+            </div>
+            {secondaryNav.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon
+                      className={`w-4 h-4 ${
+                        isActive ? 'text-white' : 'text-slate-400'
+                      }`}
+                    />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge && (
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded font-mono font-bold ${
+                        isActive
+                          ? 'bg-blue-700 text-white'
+                          : 'bg-slate-100 text-slate-500 border border-slate-200'
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Section 2: Insights & Configuration */}
-        <div className="space-y-1 pt-2 border-t border-slate-100">
-          <div className="px-3 py-1.5 text-[10px] font-bold tracking-wider uppercase text-slate-400">
-            Analytics &amp; Config
+        {/* Bottom Tenant Profile Card */}
+        <div className="space-y-3 pt-3 border-t border-slate-100">
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-slate-800 truncate">
+                {currentOrg ? currentOrg.name : 'Default Workspace'}
+              </span>
+            </div>
+            <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
+              {currentOrg ? `Template: ${currentOrg.template_type}` : 'Active Organization'}
+            </p>
           </div>
-          {secondaryNav.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
-                  isActive
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isActive ? 'text-white' : 'text-slate-400'
-                    }`}
-                  />
-                  <span>{item.label}</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
-      {/* Bottom Tenant Profile & Decision Engine Card */}
-      <div className="space-y-3 pt-3 border-t border-slate-100">
-        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-slate-800 truncate">
-              {currentOrg ? currentOrg.name : 'Default Workspace'}
-            </span>
+          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-medium">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span>FeedbackIQ Operations</span>
+            </div>
+            <span className="font-mono">v0.1.0</span>
           </div>
-          <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">
-            {currentOrg ? `Template: ${currentOrg.template_type}` : 'Active Organization'}
-          </p>
         </div>
-
-        <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 font-medium">
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>FeedbackIQ SaaS</span>
-          </div>
-          <span className="font-mono">v0.1.0</span>
-        </div>
-      </div>
-    </aside>
-  </>
+      </aside>
+    </>
   );
 };
+

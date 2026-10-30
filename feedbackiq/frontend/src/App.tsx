@@ -20,7 +20,6 @@ import {
   OrgTemplateConfig,
   PaginatedFeedback,
 } from './types';
-import { Cpu } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -179,8 +178,8 @@ export const App: React.FC = () => {
             onCloseMobile={() => setIsMobileMenuOpen(false)}
           />
 
-          {/* Primary Viewport Area */}
-          <main className="flex-1 h-full overflow-y-auto p-4 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
+          {/* Primary Viewport Area (Full Width, Enterprise Density) */}
+          <main className="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-8 space-y-6 w-full">
             {/* Global Error Banner */}
             {error && (
               <ErrorAlert
@@ -198,8 +197,8 @@ export const App: React.FC = () => {
               />
             ) : (
               <>
-                {/* Executive Overview & Full Feedback Analytics */}
-                {(activeTab === 'dashboard' || activeTab === 'analytics') && (
+                {/* 1. Executive Analytics & Telemetry Dashboard */}
+                {activeTab === 'dashboard' && (
                   <AnalyticsOverviewView
                     orgId={currentOrg?.id}
                     onNavigateToRecurrence={() => setActiveTab('recurrence')}
@@ -208,38 +207,42 @@ export const App: React.FC = () => {
                   />
                 )}
 
-                {/* Feedback Ingestion & Feedback Explorer */}
+                {/* 2. Feedback Records Explorer */}
                 {activeTab === 'feedback' && (
-                  <div className="space-y-6">
-                    <IngestionPanel
-                      currentOrg={currentOrg}
-                      onIngestionComplete={loadFeedback}
-                    />
-
-                    <FeedbackListView
-                      data={feedbackData}
-                      isLoading={isLoadingFeedback}
-                      onRefresh={loadFeedback}
-                      orgId={currentOrg?.id}
-                      mealTypeFilter={mealTypeFilter}
-                      setMealTypeFilter={setMealTypeFilter}
-                      categoryFilter={categoryFilter}
-                      setCategoryFilter={setCategoryFilter}
-                      sentimentFilter={sentimentFilter}
-                      setSentimentFilter={setSentimentFilter}
-                      sourceDatasetFilter={sourceDatasetFilter}
-                      setSourceDatasetFilter={setSourceDatasetFilter}
-                      foodSafetyOnly={foodSafetyOnly}
-                      setFoodSafetyOnly={setFoodSafetyOnly}
-                      searchQuery={searchQuery}
-                      setSearchQuery={setSearchQuery}
-                      currentPage={currentPage}
-                      setCurrentPage={setCurrentPage}
-                    />
-                  </div>
+                  <FeedbackListView
+                    data={feedbackData}
+                    isLoading={isLoadingFeedback}
+                    onRefresh={loadFeedback}
+                    orgId={currentOrg?.id}
+                    mealTypeFilter={mealTypeFilter}
+                    setMealTypeFilter={setMealTypeFilter}
+                    categoryFilter={categoryFilter}
+                    setCategoryFilter={setCategoryFilter}
+                    sentimentFilter={sentimentFilter}
+                    setSentimentFilter={setSentimentFilter}
+                    sourceDatasetFilter={sourceDatasetFilter}
+                    setSourceDatasetFilter={setSourceDatasetFilter}
+                    foodSafetyOnly={foodSafetyOnly}
+                    setFoodSafetyOnly={setFoodSafetyOnly}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    onNavigateToIngest={() => setActiveTab('ingestion')}
+                  />
                 )}
 
-                {/* Topic Trends & Recurrence Risks */}
+                {/* 3. Feedback Ingestion Hub */}
+                {activeTab === 'ingestion' && (
+                  <IngestionPanel
+                    currentOrg={currentOrg}
+                    onIngestionComplete={loadFeedback}
+                    onNavigateToFeedback={() => setActiveTab('feedback')}
+                    feedbackData={feedbackData}
+                  />
+                )}
+
+                {/* 4. Recurrence Patterns & Risk Intelligence */}
                 {activeTab === 'recurrence' && (
                   <TopicTrendView
                     orgId={currentOrg?.id}
@@ -247,7 +250,7 @@ export const App: React.FC = () => {
                   />
                 )}
 
-                {/* Prioritized Issues & Rule 9 Safety Overrides (Deterministic Priority Queue) */}
+                {/* 5. Deterministic Prioritized Action Queue */}
                 {activeTab === 'actions' && (
                   <PrioritizedIssuesView
                     orgId={currentOrg?.id}
@@ -255,7 +258,7 @@ export const App: React.FC = () => {
                   />
                 )}
 
-                {/* CAPA Action Board & Task Lifecycle Management */}
+                {/* 6. CAPA Action Board & Statistical Verification */}
                 {activeTab === 'capa' && (
                   <PrioritizedActionBoard
                     orgId={currentOrg?.id}
@@ -263,7 +266,7 @@ export const App: React.FC = () => {
                   />
                 )}
 
-                {/* Tenant Settings Tab */}
+                {/* 7. Tenant Settings & Department Routing Matrix */}
                 {activeTab === 'tenants' && (
                   <TenantSelector
                     currentOrg={currentOrg}
@@ -275,34 +278,6 @@ export const App: React.FC = () => {
                     onCloseModal={() => setIsCreateOrgModalOpen(false)}
                     onOpenModal={() => setIsCreateOrgModalOpen(true)}
                   />
-                )}
-
-                {/* System Architecture & Methodology Tab */}
-                {activeTab === 'system' && (
-                  <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
-                    <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <Cpu className="w-5 h-5 text-blue-600" />
-                      FeedbackIQ Architecture &amp; Methodology
-                    </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                      FeedbackIQ operates on an unbending architectural principle: <strong>Calculated facts are computed deterministically with SQL and Python, while LLMs synthesize human-readable labels, causal hypotheses, and operational recommendations.</strong>
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs pt-2">
-                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                        <span className="font-bold text-blue-700 uppercase">Deterministic Priority Engine</span>
-                        <p className="text-slate-600">
-                          Priority = 0.50 × Severity + 0.30 × RecurrenceRisk + 0.20 × RecentFrequency.
-                          All components are normalized strictly between 0 and 100 before weighting.
-                        </p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-                        <span className="font-bold text-red-600 uppercase">Rule 9 Food-Safety Override</span>
-                        <p className="text-slate-600">
-                          Critical food safety hazards (pests, foreign objects, illness, raw meat, chemical odor) trigger an independent safety floor (≥ 85.0) ensuring they are never deprioritized due to limited historical frequency.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 )}
               </>
             )}

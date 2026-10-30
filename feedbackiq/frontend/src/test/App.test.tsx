@@ -187,11 +187,10 @@ describe('FeedbackIQ Application Shell', () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Tenant Slug: st-andrews-mess • UUID: 11111111-1111-1111-1111-111111111111')
-      ).toBeInTheDocument();
-      expect(screen.getByText('24 Hours')).toBeInTheDocument();
+      expect(screen.getByText('St. Andrews Campus Mess (college)')).toBeInTheDocument();
     });
+    expect(screen.getByText(/Tenant Slug:\s*st-andrews-mess/)).toBeInTheDocument();
+    expect(screen.getByText('24 Hours')).toBeInTheDocument();
   });
 
   it('navigates to Feedback Ingestion & AI Intelligence view', async () => {

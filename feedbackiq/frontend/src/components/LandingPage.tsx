@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Sparkles,
+  ShieldCheck,
   ArrowRight,
   TrendingUp,
   CheckSquare,
@@ -72,10 +72,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         {/* Public Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-600">
           <button
-            onClick={() => onEnterWorkspace('feedback')}
+            onClick={() => onEnterWorkspace('ingestion')}
             className="px-3 py-2 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition"
           >
             Feedback Ingestion
+          </button>
+          <button
+            onClick={() => onEnterWorkspace('feedback')}
+            className="px-3 py-2 rounded-lg hover:text-blue-600 hover:bg-blue-50 transition"
+          >
+            Feedback Explorer
           </button>
           <button
             onClick={() => onEnterWorkspace('recurrence')}
@@ -170,10 +176,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-50/80 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative max-w-3xl space-y-6">
-            {/* Sparkle Trust Pill */}
+            {/* Trust Pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-              <span>1M+ Responses Analyzed • AI Dining Intelligence Platform</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+              <span>Statistical Recurrence &amp; Closed-Loop Quality Intelligence Platform</span>
             </div>
 
             {/* Headline */}

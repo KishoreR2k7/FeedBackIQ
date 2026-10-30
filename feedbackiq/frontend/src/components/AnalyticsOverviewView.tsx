@@ -9,7 +9,7 @@ import {
   Layers,
   Utensils,
   GraduationCap,
-  Sparkles,
+  FlaskConical,
   ArrowUpRight,
   Quote,
 } from 'lucide-react';
@@ -124,7 +124,7 @@ export const AnalyticsOverviewView: React.FC<AnalyticsOverviewViewProps> = ({
               Student Canteen: {overview?.student_canteen_count ?? 0}
             </span>
             <span className="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 border border-blue-300 font-semibold flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5" />
+              <FlaskConical className="w-3.5 h-3.5" />
               Synthetic Scenarios: {overview?.synthetic_count ?? 0}
             </span>
             <span className="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 border border-purple-300 font-semibold flex items-center gap-1">
@@ -573,10 +573,10 @@ export const AnalyticsOverviewView: React.FC<AnalyticsOverviewViewProps> = ({
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
                     <Quote className="w-4 h-4 text-blue-600" />
-                    AI-Extracted Quality Topics Grounded in Real Quotes
+                    Quality Topic Clusters Grounded in Student Evidence
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Aspect clusters extracted from actual student feedback with verified supporting quotes.
+                    Aspect clusters extracted from student feedback with verified supporting quotes.
                   </p>
                 </div>
                 {onNavigateToRecurrence && (
