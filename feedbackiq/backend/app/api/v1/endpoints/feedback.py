@@ -87,8 +87,16 @@ async def create_single_feedback(
     org: Organization = Depends(resolve_org_or_first),
     db: AsyncSession = Depends(get_db),
 ) -> FeedbackResponse:
-    """Submit a single feedback record scoped to the active tenant."""
+    """Submit a single feedback record scoped to the active tenant with immediate AI analysis."""
     fb = await FeedbackService.create_feedback(db, payload, organization_id=org.id)
+    if fb.comment:
+        try:
+            await FeedbackService.analyze_feedback(db, fb.id, org.id)
+            refreshed = await FeedbackService.get_by_id(db, fb.id, org.id)
+            if refreshed:
+                fb = refreshed
+        except Exception:
+            pass
     return FeedbackResponse.model_validate(fb)
 
 

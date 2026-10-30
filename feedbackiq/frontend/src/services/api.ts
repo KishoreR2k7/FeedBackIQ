@@ -99,6 +99,30 @@ export const api = {
     return fetchJson<PaginatedFeedback>(`/api/v1/feedback?${query.toString()}`, { headers });
   },
 
+  submitFeedback: (
+    payload: {
+      meal_type?: string;
+      item?: string;
+      rating?: number;
+      comment: string;
+      issue_category?: string;
+      channel?: string;
+    },
+    orgId?: string
+  ): Promise<Feedback> => {
+    const headers: Record<string, string> = {};
+    if (orgId) headers['X-Organization-Id'] = orgId;
+
+    return fetchJson<Feedback>('/api/v1/feedback', {
+      method: 'POST',
+      body: JSON.stringify({
+        ...payload,
+        source_dataset: 'manual_entry',
+      }),
+      headers,
+    });
+  },
+
   uploadCSV: (file: File, orgId?: string): Promise<{ import_job: ImportJob; message: string }> => {
     const formData = new FormData();
     formData.append('file', file);
